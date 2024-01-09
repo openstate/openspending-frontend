@@ -1,38 +1,20 @@
-# create-svelte
+# Open Spending
+Bekijk en vergelijk de huishoudboekjes van lokale overheden
 
-Everything you need to build a Svelte project, powered by [`create-svelte`](https://github.com/sveltejs/kit/tree/master/packages/create-svelte).
+## Developers
+Open Spending is gebouwd met [Svelte Kit](https://kit.svelte.dev/). De onderstaande informatie (in het Engels) helpt je op weg om als developer mee te bouwen aan Open Spending:
 
-## Creating a project
-
-If you're seeing this, you've probably already done this step. Congrats!
-
-```bash
-# create a new project in the current directory
-npm create svelte@latest
-
-# create a new project in my-app
-npm create svelte@latest my-app
-```
-
-## Developing
-
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
+Wanneer je dit project hebt ge-cloned/ge-forkt installeer je de dependencies met `npm install` (or `pnpm install` or `yarn`), en kun je een onwikkel-omgeving starten:
 
 ```bash
-npm run dev
-
-# or start the server and open the app in a new browser tab
 npm run dev -- --open
 ```
 
-## Building
+### Building
 
-To create a production version of your app:
+Om een productieomgeving van deze App te maken, type je het volgende commando:
 
 ```bash
 npm run build
 ```
-
-You can preview the production build with `npm run preview`.
-
-> To deploy your app, you may need to install an [adapter](https://kit.svelte.dev/docs/adapters) for your target environment.
+Je kunt een preview van de productieomgeving starten met `npm run preview`.
