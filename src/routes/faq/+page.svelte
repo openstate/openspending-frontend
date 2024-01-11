@@ -39,12 +39,18 @@
 		</h2>
 		<div id="faq-2" class="accordion-collapse collapse">
 			<div class="accordion-body">
-				Voor openspending.nl worden de data gebruikt uit de CBS-Iv3 standaard. <abbr title="Informatie voor Derden">Iv3</abbr> staat voor
-				<a href="https://www.rijksoverheid.nl/onderwerpen/financien-gemeenten-en-provincies/uitwisseling-financiele-gegevens-met-sisa-en-iv3/informatie-voor-derden-iv3">Informatie voor Derden</a>. Deze gegevens worden door provincies, waterschappen,
-				gemeenschappelijke regelingen en gemeenten elk kwartaal geleverd aan het CBS. De informatie
-				die wij gebruiken voor Open Spending bestaat uit begrotingscijfers en kwartaal- en
-				jaarrealisaties. Daarnaast werkt Open State aan het vrijgeven van financiële detaildata, dit
-				zijn exports van de financiële databases van overheden die meer detail geven dan Iv3.
+				Voor openspending.nl worden de data gebruikt uit de CBS-Iv3 standaard. <abbr
+					title="Informatie voor Derden">Iv3</abbr
+				>
+				staat voor
+				<a
+					href="https://www.rijksoverheid.nl/onderwerpen/financien-gemeenten-en-provincies/uitwisseling-financiele-gegevens-met-sisa-en-iv3/informatie-voor-derden-iv3"
+					>Informatie voor Derden</a
+				>. Deze gegevens worden door provincies, waterschappen, gemeenschappelijke regelingen en
+				gemeenten elk kwartaal geleverd aan het CBS. De informatie die wij gebruiken voor Open
+				Spending bestaat uit begrotingscijfers en kwartaal- en jaarrealisaties. Daarnaast werkt Open
+				State aan het vrijgeven van financiële detaildata, dit zijn exports van de financiële
+				databases van overheden die meer detail geven dan Iv3.
 			</div>
 		</div>
 	</div>
