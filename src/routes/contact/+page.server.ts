@@ -53,7 +53,7 @@ export const actions = {
 			});
 		} else {
 			return sendMail(data)
-				.then((_) => {
+				.then((_a) => {
 					return { success: true, data };
 				})
 				.catch((e) => {

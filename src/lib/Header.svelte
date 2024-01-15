@@ -1,19 +1,29 @@
 <script lang="ts">
 	import { page } from '$app/stores';
 	import { onMount } from 'svelte';
-	$: pageTitle =
-		$page.url.pathname === '/'
-			? 'Home'
-			: menuItems.has($page.url.pathname)
-				? menuItems.get($page.url.pathname)!.title ?? menuItems.get($page.url.pathname)!.label
-				: 'Pagina niet gevonden';
+  type MenuItem = { route: string, label?: string }
+	const menuItems:MenuItem[] = [
+    {route: '/', label: 'Home' },
+    {route: '/gegevens' },
+    {route: '/faq', label: 'FAQ' },
+    {route: '/contact' },
+    {route: '/lijstenmaker' },
+  ];
 
-	const menuItems: Map<string, { label: string; title?: string }> = new Map();
-	menuItems.set('/gegevens', { label: 'Gegevens' });
-	menuItems.set('/over', { label: 'Over' });
-	menuItems.set('/faq', { label: 'FAQ' });
-	menuItems.set('/lijstenmaker', { label: 'Lijstenmaker' });
-	menuItems.set('/contact', { label: 'Contact' });
+	const routeToTitle = (term: string): string => term.replace(/^\//, '').slice(0, 1).toLocaleUpperCase() + term.replace(/^\//, '').slice(1)
+
+	$: current = menuItems.filter(menuItem => active(menuItem)).pop()
+
+	$: getPagetitle = () => {
+		const menuItem = current
+		return menuItem === undefined 
+			? `Pagina "${$page.route.id}" niet gevonden`
+			: menuItem.label ?? routeToTitle(menuItem.route)
+	}
+
+	$: active = (menuItem: MenuItem): boolean => 
+		$page.route.id === menuItem.route || ($page.route.id??'-').split('/', 2).join('/') === menuItem.route
+
 	onMount(() => {
 		const header = document.querySelector('header');
 		window.onscroll = () => {
@@ -24,11 +34,12 @@
 			}
 		};
 	});
+	
 </script>
 
 <svelte:head>
-	<title>Open Spending | {pageTitle}</title>
-	<meta property="og:title" content="Open Spending | {pageTitle}" />
+	<title>Open Spending | {getPagetitle()}</title>
+	<meta property="og:title" content="Open Spending | {getPagetitle()}" />
 </svelte:head>
 
 <header>
@@ -50,18 +61,14 @@
 			</button>
 			<div class="collapse navbar-collapse" id="navbarSupportedContent">
 				<div class="navbar-nav me-auto mb-2 mb-lg-0">
-					<a
-						class={$page.url.pathname === '/' ? 'nav-link active' : 'nav-link'}
-						aria-current="page"
-						href="/">Home</a
-					>
 					{#each menuItems as menuItem}
 						<a
-							class={$page.url.pathname.startsWith(menuItem[0]) ? 'nav-link active' : 'nav-link'}
-							href={menuItem[0]}
-							aria-current={$page.url.pathname.startsWith(menuItem[0]) ? 'page' : undefined}
+							class="nav-link"
+							class:active={active(menuItem)}
+							href={menuItem.route}
+							aria-current={active(menuItem) ? 'page' : undefined}
 						>
-							{menuItem[1].label}
+							{menuItem.label ?? routeToTitle(menuItem.route)}
 						</a>
 					{/each}
 				</div>

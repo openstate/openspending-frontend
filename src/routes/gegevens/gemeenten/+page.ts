@@ -21,8 +21,17 @@ select ?provincieLabel ?vlag ?gemeenteLabel ?location where {
 } order by ?provincieLabel ?gemeenteLabel
 `;
 
+type Iri = {
+  value: string
+}
+type Binding = {
+  provincieLabel: Iri,
+  vlag?: Iri,
+  gemeenteLabel: Iri,
+  location: Iri
+}
 
-export default async function () {
+export async function load ({fetch}) {
 	return await fetch('https://query.wikidata.org/sparql?query=' + encodeURIComponent(rq), {
 		headers: {
 			Accept: 'application/sparql-results+json'
@@ -33,5 +42,7 @@ export default async function () {
 				return { error: 'Failed to load gemeentes from API: ' + response.statusText };
 			return response.json();
 		})
-		.then((data) => data.results.bindings);
+		.then((data) => {
+      return {bindings: data.results.bindings as Binding[]}
+    });
 }
