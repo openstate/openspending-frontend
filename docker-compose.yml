@@ -4,8 +4,6 @@ services:
     build:
       context: .
     restart: always
-    ports:
-      - "3000:3000"
     networks:
       - internal
       - nginx-load-balancer
