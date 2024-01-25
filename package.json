@@ -38,6 +38,7 @@
 	"type": "module",
 	"dependencies": {
 		"@sendgrid/mail": "^8.1.0",
+		"@types/google.visualization": "^0.0.73",
 		"bootstrap-icons": "^1.11.3",
 		"leaflet": "^1.9.4",
 		"leaflet.markercluster": "^1.5.3"

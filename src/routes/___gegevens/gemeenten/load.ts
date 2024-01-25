@@ -1,3 +1,5 @@
+import L from 'leaflet';
+
 const rq = `
 #Kaart en lijst van gemeenten in Nederland
 #Concise list & map of the 355 Dutch municipalities, their geo coordinates and their provinces, per 1-1-2019
@@ -31,7 +33,9 @@ type Binding = {
   location: Iri
 }
 
-export async function load ({fetch}) {
+
+
+export async function load (map: L.Map) {
 	return await fetch('https://query.wikidata.org/sparql?query=' + encodeURIComponent(rq), {
 		headers: {
 			Accept: 'application/sparql-results+json'
@@ -43,6 +47,31 @@ export async function load ({fetch}) {
 			return response.json();
 		})
 		.then((data) => {
-      return {bindings: data.results.bindings as Binding[]}
-    });
+      return data.results.bindings as Binding[]
+    })
+    .then(bindings => {
+      const markers = L.markerClusterGroup();
+
+      bindings.forEach((binding) => {
+        const point = binding.location.value
+          .replace(/^point\((.+)\)$/i, '$1')
+          .split(' ')
+          .map((el: string) => parseFloat(el))
+          .reverse();
+        const marker = L.marker(new L.LatLng(point[0], point[1]), {
+          title: `${binding.provincieLabel.value} | ${binding.gemeenteLabel.value}`
+        });
+        marker.bindPopup(`
+        ${binding.vlag ? `<img src="${binding.vlag.value}" style="width: 250px;"><br>` : ''}
+        ${binding.gemeenteLabel.value}
+        <br>${binding.provincieLabel.value}
+        <br><a href="/gegevens/provincies/${binding.provincieLabel.value}/gemeenten/${
+          binding.gemeenteLabel.value
+        }">Ga naar gegevens &raquo;</a>
+        `);
+        markers.addLayer(marker);
+      });
+      map?.addLayer(markers);
+
+    })
 }
