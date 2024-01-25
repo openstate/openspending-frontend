@@ -2,7 +2,6 @@
 	import { onMount } from 'svelte';
 	import type { Source } from '../Types';
   import { api } from '../stores.js'
-
   let Entity = 'Provincies'
 
   let sources: Source[] = []
@@ -59,7 +58,6 @@
 <p class="lead">
 	Bekijk en vergelijk de huishoudboekjes van lokale overheden.
 </p>
-
 <ul class="nav nav-underline">
   <li class="nav-item">
     <a class="nav-link" class:active={Entity === 'Provincies'} on:click={setEntity} data-entity="Provincies" href={'#'}>Provincies</a>
