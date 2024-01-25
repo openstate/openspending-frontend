@@ -50,8 +50,8 @@
 </style>
 
 <svelte:head>
-	<title>Open Spending | {Entity}</title>
-	<meta property="og:title" content="Open Spending | {Entity}" />
+	<title>{Entity} | Open Spending</title>
+	<meta property="og:title" content="{Entity} | Open Spending" />
 </svelte:head>
 <nav aria-label="breadcrumb">
 	<ol class="breadcrumb">
