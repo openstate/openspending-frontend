@@ -81,7 +81,7 @@
 <div id="Sources">
   <ul class="list-unstyled mt-3">
   {#each filteredSources as source}
-    <li><a href="/data/{Entity}/{source.Slug}">{source.Title}</a></li>
+    <li><a href="/gegevens/{Entity}/{source.Slug}">{source.Title}</a></li>
   {/each}
   </ul>
 </div>

@@ -114,7 +114,7 @@
   }
     
   onMount(() => {
-    fetch(`http://localhost:3000/sources/${data.Entity}/${data.Slug}`)
+    fetch(`${$api}/sources/${data.Entity}/${data.Slug}`)
       .then(response => {
         if (!response.ok) throw new Error(`Kan de bron ${data.Entity}/${data.Slug} niet laden: ${response.statusText}`)
         return response.json()
