@@ -37,7 +37,7 @@
   })
 </script>
 <h1>Vergelijk de gegevens tussen twee organisaties</h1>
-<p class="lead">Met deze tool kunt u eenvoudig de financiële huishoudengegevens van twee organisaties vergelijken.</p>
+<p class="lead">Met deze tool kunt u eenvoudig de financiële huishouding van twee organisaties vergelijken.</p>
 <div class="row">
   <div class="col-sm-6 col-lg-4">
     <input id="org1" autocomplete="off" data-bind="bron1" class="form-control" type="search" placeholder="Vergelijk Instelling&hellip;" />
