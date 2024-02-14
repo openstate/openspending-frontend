@@ -1,15 +1,16 @@
 <script>
+	import '../app.scss';
 	import Header from '../lib/Header.svelte';
 	import Footer from '../lib/Footer.svelte';
 </script>
 
-<Header />
+<Header></Header>
 <main>
 	<div class="container">
 		<slot />
 	</div>
 </main>
-<Footer />
+<Footer></Footer>
 
 <style lang="css">
 	main {

@@ -14,7 +14,7 @@
     load()
   }
   const load = () => {
-    fetch(`${$api}/sources/${Entity}`)
+    fetch(`${$api}/bronnen/${Entity}`)
       .then(response => {
         if (!response.ok) throw new Error(`Kan de bronnen niet laden: ${response.statusText}`)
         return response.json()

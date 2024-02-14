@@ -1,0 +1,1 @@
+export const ucfirst = (value: string) => value.substring(0, 1).toLocaleUpperCase() + value.substring(1)

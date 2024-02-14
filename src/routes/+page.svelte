@@ -14,9 +14,9 @@
     load()
   }
   const load = () => {
-    fetch(`${$api}/sources/${Entity}`)
+    fetch(`${$api}/bronnen/${Entity}`)
       .then(response => {
-        if (!response.ok) throw new Error(`Kan de bronnen niet laden: ${response.statusText}`)
+        if (!response.ok) throw new Error(`Kan de bronnen niet laden: ${$api}/bronnen/${Entity} ${response.statusText}`)
         return response.json()
       })
       .then($sources => {
@@ -52,7 +52,6 @@
     display: block;
     line-height: 2.5em;
   }
-
 </style>
 <h1>Open Spending</h1>
 <p class="lead">
