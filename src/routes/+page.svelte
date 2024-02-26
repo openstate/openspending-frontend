@@ -1,11 +1,11 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import type { Source } from '../Types';
+	import type { Bron } from '../Types';
   import { api } from '../stores.js'
   let Entity = 'Provincies'
 
-  let sources: Source[] = []
-  let filteredSources: Source[] = []
+  let sources: Bron[] = []
+  let filteredSources: Bron[] = []
   let error: Error | undefined
   let findSourceField: HTMLInputElement
 

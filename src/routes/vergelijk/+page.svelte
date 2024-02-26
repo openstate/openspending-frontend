@@ -23,7 +23,10 @@
       fetch(url)
         .then(res => res.json())
         .then(data => {
-          if(arg.field.dataset.bind === 'bron1') bron1 = data
+          if(arg.field.dataset.bind === 'bron1') {
+            bron1 = data
+            document.getElementById('org2')?.focus()
+          }
           if(arg.field.dataset.bind === 'bron2') bron2 = data
         })
     }

@@ -1,5 +1,5 @@
 import { redirect } from '@sveltejs/kit';
-import type { SourceWithDatasets } from '../../../../Types';
+import type { BronMetDatasets } from '../../../../Types';
 
 const api = import.meta.env.PROD
 		? 'https://data.openspending.nl'
@@ -11,7 +11,7 @@ export async function load({ params }) {
 			if (!res.ok) {
 				throw redirect(307, '/');
 			}
-			const Bron = (await res.json() as unknown as SourceWithDatasets)
+			const Bron = (await res.json() as unknown as BronMetDatasets)
 			const dataset = await (await fetch(Bron.datasets[0].$link)).json()
 			const verslagsoort = (Object.keys(dataset.$links).shift())
 			throw redirect(307, `/gegevens/${params.Entity}/${params.Slug}/${Bron.datasets[0].Period}/${verslagsoort}/per/categorie`);

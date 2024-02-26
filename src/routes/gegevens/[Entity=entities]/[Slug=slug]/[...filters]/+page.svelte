@@ -1,95 +1,41 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
-	import { ucfirst } from '$lib/utils.js'
-	import { onMount } from 'svelte';
-	import Chart from 'chart.js/auto';
-	import DataTable from '$lib/DataTable.svelte';
+	import Currency from '$lib/Currency.svelte';
+	import { ucfirst } from '$lib/utils';
+	import type { BronData } from '../../../../../Types.js';
+	import DataRow from '$lib/DataRow.svelte';
   export let data;
-	let hideZero = true
 
-	const ammount = (eur: number) => eur === 0 || !eur ? '-' : ('€ ' + eur.toLocaleString())
-	const percentage = (eur: number, BL: 'Baten' | 'Lasten') => eur === 0 || !eur ? '-' : (Math.round(10000 * eur / data.Bron.totaal[BL].PL2)/100) + '%'
+	$: baten = data.Bron.data.reduce((a, b) => a + (b.Baten??0), 0)
+	$: lasten = data.Bron.data.reduce((a, b) => a + (b.Lasten??0), 0)
 
-	const getUrl = () => `/gegevens/${data.params.Entity}/${data.params.Slug}/${data.filter.year}/${data.filter.period}/${data.filter.soort}/per/${data.filter.groepering}`
+	let hideZero: boolean = true
+	const getUrl = () => `/gegevens/${data.params.Entity}/${data.params.Slug}/${data.filter.year}/${data.filter.period}/${data.filter.soort}/per/${data.filter.groepering}/${data.open.join('|')}`
 	const filter = (name: keyof typeof data.filter, value: string | number) => {
 		data.filter[name] = value.toString()
+		if(name === 'groepering') {
+			data.open = []
+		}
 		goto(getUrl())
 	}
-	const api = import.meta.env.PROD ? 'https://data.openspending.nl' : 'http://localhost:3000'
-	onMount(async () => {
-		const url = `${api}/bronnen/${data.params.Entity}/${data.params.Slug}/trends`
-		let trends: Array<{Period: number, totaal: number}> = (await fetch(url).then(r => r.json())).trends
-		trends = trends.filter(row => row.totaal !== 0)
-		new Chart(
-			document.getElementById('begroting-per-jaar')! as HTMLCanvasElement,
-			{
-				type: 'bar',
-				options: {
-					backgroundColor: 'rgba(97, 168, 169, 0.7)'
-				},
-				data: {
-					labels: trends.map(row => row.Period),
-					datasets: [
-						{
-							label: 'Begroting per jaar (in €1.000)',
-							data: trends.map(row => row.totaal)
-						},
-						{
-							label: 'Peiljaar (in €1.000)',
-							data: trends.map(_ => data.Bron.totaal.Baten.PL2),
-							backgroundColor: 'rgba(76, 33, 110, 0.7)'
-						}
-					]
-				}
-			}
-		)
-		const peilJaar = data.Bron.dataset.Period
-		const peilBegrotingBedrag = data.Bron.totaal.Baten.PL2
-		const deltas: Array<{Period: number, delta: number}> = trends.map(row => {
-			return {
-				Period: row.Period,
-				delta: Math.round(10000 * ((row.totaal - peilBegrotingBedrag) / peilBegrotingBedrag))/100
-			}
-		})
-		new Chart(
-			document.getElementById('trends')! as HTMLCanvasElement,
-			{
-				type: 'bar',
-				options: {
-					backgroundColor: (bar) => {
-						return (bar.raw as number) > 0 ? 'rgba(97, 168, 169, 0.7)' : 'rgba(76, 33, 110, 0.7)'
-					}
-				},
-				data: {
-					labels: trends.filter(row => row.Period !== peilJaar).map(row => row.Period),
-					datasets: [
-						{
-							label: `Verschil met peiljaar ${peilJaar}`,
-							data: deltas.filter(row => row.Period !== peilJaar).map(row => row.delta)
-						}
-					]
-				}
-			}
-		)
-	})
 
-	const csv = () => {
-		const rows: Array<Array<number| string>> = [['Soort', 'Titel', 'Bedrag', 'Percentage']]
-		data.Bron.Baten.filter(row => row.PL2 || !hideZero).map(row => rows.push(['Baten', row.Title, row.PL2, percentage(row.PL2, 'Baten')]))
-		data.Bron.Lasten.filter(row => row.PL2 || !hideZero).map(row => rows.push(['Lasten', row.Title, row.PL2, percentage(row.PL2, 'Lasten')]))
-		const csvRows = rows.map(row => row.join(',')).join('\n')
-		const blob = new Blob([csvRows], { type: 'text/csv' })
-		const a = document.createElement('a')
-		a.setAttribute('href', window.URL.createObjectURL(blob) ) 
-		a.setAttribute('download', `${data.Bron.Slug}-${data.Bron.dataset.Period}-${data.filter.groepering}.csv`);
-		a.click()
+	const toggleRow = async (row: BronData) => {
+		if (data.open.includes(row.Code)) {
+			data.open = data.open.filter(code => code !== row.Code)
+		} else {
+			data.open.push(row.Code)
+		}
+		goto(getUrl() + `#${row.Code}`)
+		return
 	}
-
 </script>
+<style>
+</style>
 <svelte:head>
 	<title>{data.Bron.Title} | Open Spending</title>
 	<meta property="og:title" content="{data.Bron.Title} | Open Spending" />
 </svelte:head>
+
 <nav aria-label="breadcrumb">
 	<ol class="breadcrumb">
 		<li class="breadcrumb-item"><a href="/">Home</a></li>
@@ -150,45 +96,64 @@
 		</li>
 	</ol>
 </nav>
+
 <h1>{data.Bron.Title}</h1>
-<p class="lead">{data.Bron.dataset.Summary}</p>
+<div class="row">
+	<div class="col-sm-12 col-lg-5">
+		<table class="table">
+			<thead>
+				<tr>
+					<th>Baten</th>
+					<th>Lasten</th>
+					<th>Standen</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr>
+					<td><Currency ammount={data.Bron.dataset.totaal.Baten} multiplier={1000}/></td>
+					<td><Currency ammount={data.Bron.dataset.totaal.Lasten} multiplier={1000}/></td>
+					<td><Currency ammount={data.Bron.dataset.totaal.Standen} multiplier={1000}/></td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+</div>
 <p>
 	<label class="form-check-label">
-		<input class="form-check-input" type="checkbox" bind:checked={hideZero} />
+		<input class="form-check-input" type="checkbox" bind:checked={hideZero}/>
 		verberg lege bedragen
 	</label>
 </p>
+<div>
+	<table class="table caption-top table-bordered">
+  <caption class="fw-bold">
+    {data.Bron.dataset.Summary} <em class="fs-6">(bedragen in <Currency ammount={1000}/>)</em>
+	</caption>
+		<thead>
+			<tr>
+				<th class="togglerow">&nbsp;</th>
+				<th class="code">Code</th>
+				<th>Titel</th>
+				<th class="text-end">Baten</th>
+				<th class="text-end">Lasten</th>
+			</tr>
+		</thead>
+		<tbody>
+		{#each data.Bron.data as row, i}
+		<DataRow row={row} onClick={toggleRow} hideZero={hideZero} lastRow={i+1 === data.Bron.data.length }/>
+		{/each}
+		</tbody>
+		<tfoot>
+			<td></td>
+			<td></td>
+			<td></td>
+			<th class="text-end"><Currency classes="text-white p-1 bg-success" ammount={baten} /></th>
+			<th class="text-end"><Currency classes="text-white p-1 bg-danger" ammount={lasten} /></th>
+		</tfoot>
+	</table>
+</div>
 
-<div class="container p-0 m-0">
-	<div class="row">
-		<div class="col-lg-6 col-sm-12">
-			<DataTable bron={data.Bron} baten={true} hideZero={hideZero} titleLabel={data.filter.groepering === 'hoofdfunctie' ? 'Functie' : 'Categorie'}/>
-		</div>
-		<div class="col-lg-6 col-sm-12">
-			<DataTable bron={data.Bron} baten={false} hideZero={hideZero} titleLabel={data.filter.groepering === 'hoofdfunctie' ? 'Functie' : 'Categorie'}/>
-		</div>
-	</div>
-</div>
-<div class="container p-0 m-0">
-	<h3>Trends</h3>
-	<div class="row">
-		<div class="col-lg-6 col-sm-12">
-			<div style="width: 100%;"><canvas id="begroting-per-jaar"></canvas></div>
-		</div>
-		<div class="col-lg-6 col-sm-12">
-			<div style="width: 100%;"><canvas id="trends"></canvas></div>
-		</div>
-	</div>
-</div>
-<h3>Data gereedschappen</h3>
+<h3>Data hulpmiddelen</h3>
 <ul>
-	<li>
-		<a href="{'#'}'" on:click|preventDefault={csv}>Download de tabeldata als CSV &raquo;</a>
-	</li>
-	<li>
-		<a href="{data.url}" target="_blank">Bekijk de brondata in onze API &raquo;</a>
-	</li>
-	<li>
-		<a href="{data.Bron.dataset.StatLine}" target="_blank">Bekijk de IV3 data in StatLine van CBS &raquo;</a>
-	</li>
+	<li><a href="{data.url}" target="_blank">Data API bron</a></li>
 </ul>

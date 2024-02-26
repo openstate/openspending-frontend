@@ -1,9 +1,42 @@
 <script lang="ts">
 	import LijstenMaker from '$lib/LijstenMaker.svelte';
+	import { ucfirst } from '$lib/utils';
+	import { onMount } from 'svelte';
 	const currentYear = new Date().getFullYear();
 	const years: number[] = [];
-	for (let year = 2009; year <= currentYear; year++) years.push(year);
+	for (let year = currentYear; year >= 2009; year--) years.push(year);
 
+	const api = import.meta.env.PROD
+		? 'https://data.openspending.nl'
+		: 'http://localhost:3000'
+	
+	const getTop = () => {
+		switch (lijsten.aantal.defaultValue) {
+			case 'tien': return 10
+			case 'twintig': return 20
+			case 'vijftig': return 50
+			case 'alle': return 'alles'
+			default: return 10
+		}
+	}
+
+	const getSourceType = () => {
+		return lijsten.kind.defaultValue?.split(' ').map(woord => ucfirst(woord)).join('')
+
+	}
+	const getVerslagsoort = () => {
+		switch (lijsten.aantal.defaultValue) {
+			case 'hele jaar (begroting)': return 'begrote'
+			case 'hele jaar (realisatie)': return 'gerealiseerde'
+			case 'eerste kwartaal (realisatie)': return 'Q1'
+			case 'tweede kwartaal (realisatie)': return 'Q2'
+			case 'derde kwartaal (realisatie)': return 'Q3'
+			case 'vierde kwartaal (realisatie)': return 'Q1'
+			default: return 'begrote'
+		}
+	}
+	$: apiUrl = `${api}/lijstenmaker/top/${getTop()}/${lijsten.order.defaultValue}/${getVerslagsoort()}/bedragen/van/${getSourceType()}/in/${lijsten.year.defaultValue}/`
+// http://localhost:3000/lijstenmaker/top/10/hoogste/begrote/bedragen/van/Gemeenten/in/2022/categorygroup/6
 	const lijsten: Record<string, { defaultValue?: string; choices: string[] }> = {
 		disposition: {
 			choices: ['zien', 'downloaden']
@@ -12,24 +45,22 @@
 			choices: ['tien', 'twintig', 'vijftig', 'alle']
 		},
 		kind: {
-			choices: ['gemeente', 'provincie', 'waterschap', 'gemeenschappelijke regeling', 'stadsdeel']
+			choices: ['gemeenten', 'provincies', 'waterschappen', 'gemeenschappelijke regelingen']
 		},
 		order: {
 			choices: ['hoogste', 'laagste']
-		},
-		plan: {
-			choices: ['begrote', 'gerealiseerde']
 		},
 		direction: {
 			choices: ['inkomsten', 'uitgaven']
 		},
 		periode: {
 			choices: [
-				'hele jaar',
-				'eerste kwartaal',
-				'tweede kwartaal',
-				'derde kwartaal',
-				'vierde kwartaal'
+				'hele jaar (begroting)',
+				'hele jaar (realisatie)',
+				'eerste kwartaal (realisatie)',
+				'tweede kwartaal (realisatie)',
+				'derde kwartaal (realisatie)',
+				'vierde kwartaal (realisatie)'
 			]
 		},
 		year: {
@@ -40,21 +71,32 @@
 			choices: ['aantal inwoners', 'aantal huishoudens', 'oppervlakte', "aantal FTE's"]
 		}
 	};
+
+	let onderwerpen: [] = []
+
+	const loadOnderwerpen = async () => {
+		onderwerpen = await fetch(`${api}/zoek/onderwerpen/${lijsten.year.defaultValue}/alles`).then(res => res.json())
+	}
+
+	onMount(async () => {
+		await loadOnderwerpen()
+		const {Autocomplete} = await import('$lib/autocomplete');
+		const opts = { data: onderwerpen, threshold: 1, maximumItems: 10, onSelectItem: () => {
+
+		}}
+		new Autocomplete(document.getElementById('onderwerpen'), opts)
+	})
 </script>
 
 <h1 id="title">Lijstenmaker</h1>
+<pre>{apiUrl}</pre>
 <p class="lead">
 	Wat Buzzfeed kan, kun jij nu ook. Met de Open Spending Lijstenmaker kun je zelf een lijst maken
 	met de hoogste of laagste uitgaven van verschillende overheden. Gewoon omdat het kan.
 </p>
 
 <h2 class="display-6 fw-bold" id="lijstenmaker">
-	Ik wil een lijst
-	<LijstenMaker
-		choices={lijsten.disposition.choices}
-		bind:value={lijsten.disposition.defaultValue}
-	/>
-	van de
+	Ik wil de
 	<LijstenMaker
 		choices={lijsten.aantal.choices}
 		defaultValue={lijsten.aantal.defaultValue}
@@ -65,21 +107,17 @@
 		defaultValue={lijsten.order.defaultValue}
 		bind:value={lijsten.order.defaultValue}
 	/>
+	bedragen 
 	<LijstenMaker
-		choices={lijsten.plan.choices}
-		defaultValue={lijsten.plan.defaultValue}
-		bind:value={lijsten.plan.defaultValue}
+		choices={lijsten.disposition.choices}
+		bind:value={lijsten.disposition.defaultValue}
 	/>
-	<LijstenMaker
-		choices={lijsten.direction.choices}
-		defaultValue={lijsten.direction.defaultValue}
-		bind:value={lijsten.direction.defaultValue}
-	/>
-	per
+	van
 	<LijstenMaker
 		choices={lijsten.kind.choices}
 		defaultValue={lijsten.kind.defaultValue}
 		bind:value={lijsten.kind.defaultValue}
+		on:change={loadOnderwerpen}
 	/>
 	in het
 	<LijstenMaker
@@ -92,13 +130,17 @@
 		defaultValue={lijsten.year.defaultValue}
 		bind:value={lijsten.year.defaultValue}
 	/>
+	{#if lijsten.kind.defaultValue === 'gemeente' || lijsten.kind.defaultValue === 'provincie'}
 	omgerekend naar
 	<LijstenMaker
 		choices={lijsten.groepering.choices}
 		defaultValue={lijsten.groepering.defaultValue}
 		bind:value={lijsten.groepering.defaultValue}
 	/>
-	over het onderwerp "<a href={'#'}>@TODO</a>" .
+	{/if}
+	over het onderwerp
+	<input id="onderwerpen" autocomplete="off" data-bind="onderwerp" class="form-control w-auto d-inline-flex " type="search"/>
+	 .
 </h2>
 <button class="btn btn-primary btn-lg" type="button"
 	>{lijsten.disposition.defaultValue === 'downloaden' ? 'Download' : 'Toon'} mijn Lijst</button

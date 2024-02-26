@@ -1,4 +1,13 @@
 <script>
+	import { onMount } from "svelte";
+	import "../app.scss";
+	import { browser } from "$app/environment";
+
+	onMount(async () => {
+		if (!browser) return;
+
+		await import("bootstrap");
+	});
 	import '../app.scss';
 	import Header from '../lib/Header.svelte';
 	import Footer from '../lib/Footer.svelte';

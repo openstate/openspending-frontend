@@ -1,11 +1,11 @@
-export interface Source {
-	Key: string
-	Title: string;
-	Slug: string;
-	$link: string;
-};
 export type SourceType = 'Gemeenten' | 'Provincies' | 'GemeenschappelijkeRegelingen' | 'Waterschappen'
 export type Verslagsoort = 'begroting' | 'realisatie' | 'Q1' | 'Q3' | 'Q3' | 'Q4'
+
+export interface Bron {
+	Key: string
+	Title: string
+	Slug: string
+};
 
 export interface DataSet {
 	Identifier: string
@@ -17,11 +17,18 @@ export interface DataSet {
 	$link: string
 }
 
-export interface SingleDataSet extends DataSet {
-	verslagsoorten: Verslagsoort[]
+export interface DatasetTotals {
+  Baten: number | null,
+  Lasten: number | null,
+  Standen: number | null
 }
 
-export interface SourceWithDatasets extends Source {
+export interface SingleDataSet extends DataSet {
+	verslagsoorten: Verslagsoort[]
+	totaal: DatasetTotals
+}
+
+export interface BronMetDatasets extends Bron {
   datasets: DataSet[]
 }
 
@@ -32,28 +39,34 @@ export interface BedragenPerCategorie {
 	Key?: string
 	ID?: number
 }
-export interface BronDetail extends Source {
-	metrics: {
+
+export interface BronData {
+	ID: string
+	Title: string
+	Code: string,
+	Description: string | null
+	$link?: string
+	Lasten?: number | null
+	Baten?: number | null
+	Standen?: number | null,
+	data?: BronData[]
+}
+
+export interface BronDetail extends Bron {
+	metrics?: {
 		Bevolking: number,
 		Oppervlakte: number,
 		Huishouden: number
 	},
+	$links: {
+		realisatie?: string,
+    begroting?: string,
+    Q4?: string,
+    Q3?: string,
+    Q2?: string,
+    Q1?: string
+	},
 	dataset: SingleDataSet,
-	totaal: {
-		Baten: {
-			PL1: number
-			PL2: number
-		},
-		Lasten: {
-			PL1: number
-			PL2: number
-		},
-		Standen?: {
-			PL1: number
-			PL2: number
-		}
-	}
-	Lasten: BedragenPerCategorie[]
-	Baten:  BedragenPerCategorie[]
-	Standen?:  BedragenPerCategorie[]
+	datasets: DataSet[],
+	data: BronData[] 
 }
