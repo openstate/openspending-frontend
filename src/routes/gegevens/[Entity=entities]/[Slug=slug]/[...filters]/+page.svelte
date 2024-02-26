@@ -46,11 +46,11 @@
 			data.slugs.push(Slug)
 			goto(getUrl())
     }
-    fetch(`${$api}/bronnen/alles`)
+    fetch(`${$api}/utils/bronnen/${data.params.Entity}/${data.bronnen[0].dataset.Period}`)
       .then(res => res.json())
 			.then(d => d as Array<{Type: string, Slug: string, label: string, entiteit: string, value: string}>)
       .then((bronnen) => {
-        const opts = { data: bronnen.filter(bron => bron.Type===data.params.Entity && !data.slugs.includes(bron.Slug)), threshold: 1, maximumItems: 10, onSelectItem, showEntity: false}
+        const opts = { data: bronnen.filter(bron => !data.slugs.includes(bron.Slug)), threshold: 1, maximumItems: 10, onSelectItem, showEntity: false}
         new Autocomplete(document.getElementById('find-source'), opts)
       })
   })
