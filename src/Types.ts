@@ -70,3 +70,7 @@ export interface BronDetail extends Bron {
 	datasets: DataSet[],
 	data: BronData[] 
 }
+
+export interface BronDetailVergelijk extends Omit<BronDetail, 'data'> {
+	data: BronData[][]
+}

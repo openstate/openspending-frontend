@@ -9,6 +9,7 @@ const DEFAULTS = {
   highlightClass: 'text-primary',
   label: 'label',
   value: 'value',
+  showEntity: true,
   showValue: false,
   showValueBeforeLabel: false,
 };
@@ -82,7 +83,7 @@ class Autocomplete {
     } else {
       label = item.label;
     }
-    if (label) {
+    if (label && this.options.showEntity) {
       let [Entity] = item.value.split('|')
       switch (Entity) {
         case 'Gemeenten':

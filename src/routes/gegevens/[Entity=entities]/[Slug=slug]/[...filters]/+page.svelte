@@ -4,20 +4,30 @@
 	import { ucfirst } from '$lib/utils';
 	import type { BronData } from '../../../../../Types.js';
 	import DataRow from '$lib/DataRow.svelte';
+	import { XSquareFill } from 'svelte-bootstrap-icons';
+	import { onMount } from 'svelte';
+	import { api } from '../../../../../stores.js'
+	import type { Bron as BronType } from '../../../../../Types.js';
+
+
   export let data;
 
-	$: baten = data.Bron.data.reduce((a, b) => a + (b.Baten??0), 0)
-	$: lasten = data.Bron.data.reduce((a, b) => a + (b.Lasten??0), 0)
+	$: baten = Bron.data.reduce((a, b) => a + (b.Baten??0), 0)
+	$: lasten = Bron.data.reduce((a, b) => a + (b.Lasten??0), 0)
 
 	let hideZero: boolean = true
-	const getUrl = () => `/gegevens/${data.params.Entity}/${data.params.Slug}/${data.filter.year}/${data.filter.period}/${data.filter.soort}/per/${data.filter.groepering}/${data.open.join('|')}`
+	const getUrl = () => data.slugs.length === 0 ? `/gegevens/${data.params.Entity}` : `/gegevens/${data.params.Entity}/${data.slugs.join('|')}/${data.filter.year}/${data.filter.period}/${data.filter.soort}/per/${data.filter.groepering}/${data.open.join('|')}`
 	const filter = (name: keyof typeof data.filter, value: string | number) => {
 		data.filter[name] = value.toString()
 		if(name === 'groepering') {
 			data.open = []
 		}
+		findSource.value=''
 		goto(getUrl())
 	}
+
+	let findSource: HTMLInputElement
+  let filteredSources: BronType[] = []
 
 	const toggleRow = async (row: BronData) => {
 		if (data.open.includes(row.Code)) {
@@ -28,12 +38,31 @@
 		goto(getUrl() + `#${row.Code}`)
 		return
 	}
+
+  onMount(async () => {
+    const {Autocomplete} = await import('$lib/autocomplete');
+    const onSelectItem = async (arg: {label: string, value: string, field: any}) => {
+      let [_, Slug] = (arg.value as string).split('|')
+			data.slugs.push(Slug)
+			goto(getUrl())
+    }
+    fetch(`${$api}/bronnen/alles`)
+      .then(res => res.json())
+			.then(d => d as Array<{Type: string, Slug: string, label: string, entiteit: string, value: string}>)
+      .then((bronnen) => {
+        const opts = { data: bronnen.filter(bron => bron.Type===data.params.Entity && !data.slugs.includes(bron.Slug)), threshold: 1, maximumItems: 10, onSelectItem, showEntity: false}
+        new Autocomplete(document.getElementById('find-source'), opts)
+      })
+  })
+	$: Bron = data.bronnen[0]
+	$: titles = data.bronnen.length === 1 ? data.bronnen[0].Title : data.bronnen.map((bron, i) => ((i+1 === data.bronnen.length ? ' en ' : (i===0?'':', ')) + bron.Title)).join('')
 </script>
 <style>
+	.hidden { display: none;}
 </style>
 <svelte:head>
-	<title>{data.Bron.Title} | Open Spending</title>
-	<meta property="og:title" content="{data.Bron.Title} | Open Spending" />
+	<title>{titles} | Open Spending</title>
+	<meta property="og:title" content="{titles} | Open Spending" />
 </svelte:head>
 
 <nav aria-label="breadcrumb">
@@ -53,33 +82,33 @@
 				</ul>
 			</span>
 		</li>
-		<li class="breadcrumb-item" aria-current="page">{data.Bron.Title}</li>
+		<li class="breadcrumb-item" aria-current="page">{titles}</li>
 		<li class="breadcrumb-item" aria-current="page">
 			<span class="dropdown">
 			  <a href="{'#'}" class="dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-    			{data.Bron.dataset.Period}
+    			{Bron.dataset.Period}
 			  </a>
 				<ul class="dropdown-menu">
-					{#each data.Bron.datasets as dataset}
+					{#each Bron.datasets as dataset}
 						<li><a class="dropdown-item" href="{'#'}" on:click|preventDefault={() => filter('year', dataset.Period)}>{dataset.Period}</a></li>
 					{/each}
 				</ul>
 			</span>
 		</li>
 		<li class="breadcrumb-item" aria-current="page">
-			{#if data.Bron.dataset.verslagsoorten.length > 1}
+			{#if Bron.dataset.verslagsoorten.length > 1}
 			<span class="dropdown">
 			  <a href="{'#'}" class="dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
     			{ucfirst(data.filter.period)}
 			  </a>
 				<ul class="dropdown-menu">
-					{#each data.Bron.dataset.verslagsoorten as verslagsoort}
+					{#each Bron.dataset.verslagsoorten as verslagsoort}
 					<li><a class="dropdown-item" href="{'#'}" on:click|preventDefault={() => filter('period', verslagsoort)}>{ucfirst(verslagsoort)}</a></li>
 					{/each}
 				</ul>
 			</span>
 			{:else}
-				{data.Bron.dataset.verslagsoorten[0]}
+				{Bron.dataset.verslagsoorten[0]}
 			{/if}
 		</li>
 		<li class="breadcrumb-item" aria-current="page">per</li>
@@ -97,63 +126,96 @@
 	</ol>
 </nav>
 
-<h1>{data.Bron.Title}</h1>
-<div class="row">
-	<div class="col-sm-12 col-lg-5">
+<h1>{titles}</h1>
+<h2 class="fs-4 mb-5">{Bron.dataset.Summary} <br><em class="fs-6">(bedragen in € 1.000)</em></h2>
+
+<div class="row mb-5">
+	<div class="col-sm-12 col-m-12 col-lg-6">
 		<table class="table">
 			<thead>
 				<tr>
-					<th>Baten</th>
-					<th>Lasten</th>
-					<th>Standen</th>
+					<td></td>
+					<td></td>
+					<th class="text-end">Baten</th>
+					<th class="text-end">Lasten</th>
+					<th class="text-end">Standen</th>
 				</tr>
 			</thead>
 			<tbody>
+				{#each data.bronnen as bron, i}
 				<tr>
-					<td><Currency ammount={data.Bron.dataset.totaal.Baten} multiplier={1000}/></td>
-					<td><Currency ammount={data.Bron.dataset.totaal.Lasten} multiplier={1000}/></td>
-					<td><Currency ammount={data.Bron.dataset.totaal.Standen} multiplier={1000}/></td>
+					<th scope="row" style="width:1px;">
+						<a href="{'#'}" style="margin-right: 5px" on:click={() => {data.slugs = data.slugs.filter(slug => slug !== bron.Slug); goto(getUrl())}}><XSquareFill/></a>
+					</th>
+					<th scope="row">
+						{bron.Title}
+					</th>
+					<td class="text-end" style="white-space: nowrap;"><Currency ammount={bron.dataset.totaal.Baten} multiplier={1000}/></td>
+					<td class="text-end" style="white-space: nowrap;"><Currency ammount={bron.dataset.totaal.Lasten} multiplier={1000}/></td>
+					<td class="text-end" style="white-space: nowrap;"><Currency ammount={bron.dataset.totaal.Standen} multiplier={1000}/></td>
 				</tr>
+				{/each}
 			</tbody>
 		</table>
+		<div class="input-group mt-2"
+			class:hidden={data.bronnen.length >= 3}
+		>
+			<input id="find-source" bind:this={findSource} aria-label="Zoek" class="form-control" type="text" size="20" placeholder="voeg vergelijkende bron toe &hellip;">
+			<span class="input-group-text"><kbd>/</kbd></span>
+		</div>
 	</div>
 </div>
-<p>
-	<label class="form-check-label">
-		<input class="form-check-input" type="checkbox" bind:checked={hideZero}/>
-		verberg lege bedragen
-	</label>
-</p>
 <div>
 	<table class="table caption-top table-bordered">
-  <caption class="fw-bold">
-    {data.Bron.dataset.Summary} <em class="fs-6">(bedragen in <Currency ammount={1000}/>)</em>
+  <caption>
+	<p>
+		<label class="form-check-label">
+			<input class="form-check-input" type="checkbox" bind:checked={hideZero}/>
+			verberg lege bedragen
+		</label>
+	</p>
 	</caption>
 		<thead>
 			<tr>
 				<th class="togglerow">&nbsp;</th>
 				<th class="code">Code</th>
 				<th>Titel</th>
-				<th class="text-end">Baten</th>
-				<th class="text-end">Lasten</th>
+				<th class="text-center" colspan="{data.bronnen.length}">Baten</th>
+				<th class="text-center" colspan="{data.bronnen.length}">Lasten</th>
 			</tr>
+			{#if data.bronnen.length > 1}
+			<tr>
+				<th class="togglerow">&nbsp;</th>
+				<th class="code">&nbsp;</th>
+				<th>&nbsp;</th>
+				{#each data.bronnen as bron}
+				<th class="text-end" >{bron.Title}</th>
+				{/each}
+				{#each data.bronnen as bron}
+				<th class="text-end" >{bron.Title}</th>
+				{/each}
+			</tr>
+			{/if}
 		</thead>
 		<tbody>
-		{#each data.Bron.data as row, i}
-		<DataRow row={row} onClick={toggleRow} hideZero={hideZero} lastRow={i+1 === data.Bron.data.length }/>
+		{#each Bron.data as row, i}
+		<DataRow 
+			row={row}
+			onClick={toggleRow}
+			hideZero={hideZero}
+			lastRow={i+1 === Bron.data.length }
+			rowNumber_level1={i}
+			bronnen={data.bronnen}/>
 		{/each}
 		</tbody>
 		<tfoot>
 			<td></td>
 			<td></td>
 			<td></td>
-			<th class="text-end"><Currency classes="text-white p-1 bg-success" ammount={baten} /></th>
-			<th class="text-end"><Currency classes="text-white p-1 bg-danger" ammount={lasten} /></th>
+			<th colspan="{data.bronnen.length}" class="text-end"><Currency classes="text-white p-1 bg-success" ammount={baten} /></th>
+			<th colspan="{data.bronnen.length}" class="text-end"><Currency classes="text-white p-1 bg-danger" ammount={lasten} /></th>
 		</tfoot>
 	</table>
 </div>
 
 <h3>Data hulpmiddelen</h3>
-<ul>
-	<li><a href="{data.url}" target="_blank">Data API bron</a></li>
-</ul>
