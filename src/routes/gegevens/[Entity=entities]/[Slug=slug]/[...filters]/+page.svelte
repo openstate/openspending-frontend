@@ -7,8 +7,7 @@
 	import { XSquareFill } from 'svelte-bootstrap-icons';
 	import { onMount } from 'svelte';
 	import { api } from '../../../../../stores.js'
-	import type { Bron as BronType } from '../../../../../Types.js';
-
+	import Chart from 'chart.js/auto';
 
   export let data;
 
@@ -27,7 +26,6 @@
 	}
 
 	let findSource: HTMLInputElement
-  let filteredSources: BronType[] = []
 
 	const toggleRow = async (row: BronData) => {
 		if (data.open.includes(row.Code)) {
@@ -53,6 +51,53 @@
         const opts = { data: bronnen.filter(bron => !data.slugs.includes(bron.Slug)), threshold: 1, maximumItems: 10, onSelectItem, showEntity: false}
         new Autocomplete(document.getElementById('find-source'), opts)
       })
+		
+
+		const peilBegrotingBedrag = data.bronnen[0].dataset.totaal.Baten ?? 1
+		const deltas = (slug: string): Array<{Period: number, delta: number}> => data.trends[slug].
+			map(row => {
+				return {
+					Period: row.Period,
+					delta: Math.round(10000 * ((row.totaal - peilBegrotingBedrag) / peilBegrotingBedrag))/100
+				}
+			})
+		const datasets = []
+
+		for (const slug of data.slugs) {
+			datasets.push(
+				{
+					label: `${data.sourcenames[slug]}`,
+					data: deltas(slug).filter(row => row.Period.toString() !== data.filter.year.toString()).map(row => row.delta)
+				}
+			)
+		}
+		new Chart(
+			document.getElementById('trends')! as HTMLCanvasElement,
+			{ type: 'bar', data: {
+					labels: data.trends[data.slugs[0]].filter(row => row.Period.toString() !== data.filter.year.toString()).map(row => row.Period),
+					datasets
+				}
+			}
+		)
+
+		datasets.length = 0
+		for (const slug of data.slugs) {
+			datasets.push(
+				{
+					label: `${data.sourcenames[slug]}`,
+					data: data.trends[slug].map(r => r.totaal)
+				}
+			)
+		}
+		new Chart(
+			document.getElementById('begroting-per-jaar')! as HTMLCanvasElement,
+			{ type: 'bar', data: {
+					labels: data.trends[data.slugs[0]].map(row => row.Period),
+					datasets
+				}
+			}
+		)
+
   })
 	$: Bron = data.bronnen[0]
 	$: titles = data.bronnen.length === 1 ? data.bronnen[0].Title : data.bronnen.map((bron, i) => ((i+1 === data.bronnen.length ? ' en ' : (i===0?'':', ')) + bron.Title)).join('')
@@ -216,6 +261,16 @@
 			<th colspan="{data.bronnen.length}" class="text-end"><Currency classes="text-white p-1 bg-danger" ammount={lasten} /></th>
 		</tfoot>
 	</table>
+</div>
+<div class="row">
+	<div class="col-sm-12 col-lg-6">
+		<h3 class="fs-4">Begroting per jaar</h3>
+		<div style="width: 100%; height: 500px;"><canvas id="begroting-per-jaar"></canvas></div>
+	</div>
+	<div class="col-sm-12 col-lg-6">
+		<h3 class="fs-4">Verschil met peiljaar {data.filter.year}</h3>
+		<div style="width: 100%; height: 500px;"><canvas id="trends"></canvas></div>
+	</div>
 </div>
 
 <h3>Data hulpmiddelen</h3>

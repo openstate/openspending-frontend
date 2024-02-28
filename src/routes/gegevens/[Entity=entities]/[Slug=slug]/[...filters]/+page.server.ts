@@ -23,6 +23,14 @@ export async function load({ params }) {
     throw redirect(307, `/gegevens/${params.Entity}`)
   }
 
+  const trends: Record<string, Array<{Period: number, totaal: number}>> = {}
+  for (const slug of slugs) {
+    const url = `${api}/bronnen/${params.Entity}/${slug}/trends`
+    trends[slug] = (await fetch(url).then(res => res.json())).trends
+  }
+  const sourcenames: Record<string, string> = {}
+
+
   for (const slug of slugs) {
     const url = `${api}/bronnen/${params.Entity}/${slug}/${filter.year}/${filter.period}/per/${filter.groepering}`
     let Bron: BronDetail
@@ -39,11 +47,12 @@ export async function load({ params }) {
         }
       }
       bronnen.push(Bron)
+      sourcenames[Bron.Slug] = Bron.Title
       $slugs.push(Bron.Slug)
     } catch (e) {
       continue
     }
   }
 
-	return { params, filter, bronnen, open, slugs: $slugs };
+	return { params, filter, bronnen, open, slugs: $slugs, trends, sourcenames };
 }

@@ -1,14 +1,17 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 
-	export let choices: string[] = [];
+	export let choices: Record<string, string | number>
 	export let value: string = '';
+	export let onchange: (key: string, value : string | number) => void = () => {};
 	export var defaultValue: string | undefined = undefined;
 	const kies = (event: Event) => {
 		value = (event.target as HTMLElement).innerText;
+		const realValue = choices[value]
+		onchange(value, realValue)
 	};
 	onMount(() => {
-		value = defaultValue ?? choices[0];
+		value = defaultValue ?? Object.keys(choices)[0];
 	});
 </script>
 
@@ -23,7 +26,7 @@
 		{value}
 	</a>
 	<ul class="dropdown-menu">
-		{#each choices as choice}
+		{#each Object.keys(choices) as choice}
 			<li class="dropdown-item"><a href={'#'} on:click={kies}>{choice}</a></li>
 		{/each}
 	</ul>
