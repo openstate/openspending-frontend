@@ -23,7 +23,7 @@
 		data-bs-toggle="dropdown"
 		aria-expanded="false"
 	>
-		{value}
+		{defaultValue}
 	</a>
 	<ul class="dropdown-menu">
 		{#each Object.keys(choices) as choice}

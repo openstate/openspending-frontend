@@ -1,0 +1,25 @@
+{
+  "name": "Svelte VSCode Remote Container",
+  "image": "mcr.microsoft.com/devcontainers/typescript-node:1-20-bullseye",
+  "appPort": [
+    5000,
+    5173
+  ],
+  "containerEnv": {
+    "API": "http://host.docker.internal:3000"
+  },
+  "runArgs": [
+    "-u",
+    "node"
+  ],
+  "postCreateCommand": "npm install",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "dbaeumer.vscode-eslint",
+        "esbenp.prettier-vscode",
+        "jamesbirtles.svelte-vscode"
+      ]
+    }
+  }
+}

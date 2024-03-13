@@ -1,7 +1,4 @@
-// const api = import.meta.env.PROD
-// 		? 'https://data.openspending.nl'
-// 		: 'http://localhost:3000'
-    
+import { redirect } from '@sveltejs/kit';
 export async function load({ params }) {
-  return { params }
+  throw redirect(307, '/gegevens/Provincies');
 }

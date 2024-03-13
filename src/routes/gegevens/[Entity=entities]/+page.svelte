@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	export let data;
-  let Entity = data.Entity.replace('Regelingen', ' Regelingen')
+  $: Entity = data.Entity.replace('Regelingen', ' Regelingen')
   let q = ''
   let findSourceField: HTMLInputElement
 
@@ -35,18 +35,38 @@
 	<ol class="breadcrumb">
 		<li class="breadcrumb-item"><a href="/">Home</a></li>
 		<li class="breadcrumb-item"><a href="/gegevens">Gegevens</a></li>
-		<li class="breadcrumb-item active" aria-current="page"><a href={`/data/${data.Entity}`}>{Entity}</a></li>
+		<li class="breadcrumb-item active" aria-current="page"><a href={`/gegevens/${data.Entity}`}>{Entity}</a></li>
 	</ol>
 </nav>
 <h1>{Entity}</h1>
+<ul class="nav nav-underline">
+  <li class="nav-item">
+    <a class="nav-link" class:active={Entity === 'Provincies'} href="/gegevens/Provincies">Provincies</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" class:active={Entity === 'Gemeenten'} href="/gegevens/Gemeenten">Gemeenten</a>
+  </li>
+  <!-- <li class="nav-item">
+    <a class="nav-link" class:active={Entity === 'Waterschappen'} href="/gegevens/Waterschappen">Waterschappen</a>
+  </li> -->
+  <li class="nav-item">
+    <a class="nav-link" class:active={Entity === 'Gemeenschappelijke Regelingen'} href="/gegevens/GemeenschappelijkeRegelingen">Gemeenschappelijke regelingen</a>
+  </li>
+</ul>
 <div class="input-group mt-2">
-  <input bind:this={findSourceField} bind:value="{q}" aria-label="Zoek" class="form-control" type="text" size="20" placeholder="zoek {Entity === 'GemeenschappelijkeRegelingen' ? 'Gem. regelingen' : Entity} &hellip;">
+  <input bind:this={findSourceField} bind:value="{q}" aria-label="Zoek" class="form-control" type="text" size="20" placeholder={`zoek ${Entity} …`}>
   <span class="input-group-text"><kbd>/</kbd></span>
 </div>
 <div id="Sources">
-  <ul class="list-unstyled mt-3">
-  {#each bronnen as bron}
-    <li><a href="/gegevens/{data.Entity}/{bron.Slug}">{bron.Title}</a></li>
-  {/each}
-  </ul>
+  <div class="row mt-3">
+    {#if data.Entity === 'GemeenschappelijkeRegelingen'}
+      {#each bronnen as bron}
+        <div class="col-lg-6 col-sm-12 col-m-12"><a href="/gegevens/{data.Entity}/{bron.Slug}">{bron.Description}</a></div>
+      {/each}
+    {:else}
+      {#each bronnen as bron}
+        <div class="col-lg-3 col-sm-12 col-m-6"><a href="/gegevens/{data.Entity}/{bron.Slug}">{bron.Title}</a></div>
+      {/each}
+    {/if}
+  </div>
 </div>

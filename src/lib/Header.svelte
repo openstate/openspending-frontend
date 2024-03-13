@@ -73,13 +73,16 @@
 						</a>
 					{/each}
 				</div>
-				<form class="d-flex" role="search">
+				<form class="d-flex" role="search" action="/zoek">
 					<input
 						class="form-control me-2"
 						type="search"
+            name="q"
+            id="zoekveld"
 						placeholder="Zoek&hellip;"
 						aria-label="Zoek"
 					/>
+          <input type="hidden" name="zoekmethode" value="EN">
 					<button class="btn btn-outline-primary" type="submit">Zoek</button>
 				</form>
 			</div>

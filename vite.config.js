@@ -8,6 +8,14 @@ export default defineConfig({
 		include: ['src/**/*.{test,spec}.{js,ts}']
 	},
 
+	server: {
+		fs: {
+			allow: [
+				'static'
+			]
+		}
+	},
+
 	css: {
 		preprocessorOptions: {
 			scss: {

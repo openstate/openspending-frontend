@@ -12,7 +12,7 @@
     const {Autocomplete} = await import('$lib/autocomplete');
     const api = import.meta.env.PROD
       ? 'https://data.openspending.nl'
-      : 'http://localhost:3000'
+      : 'http://host.docker.internal:3000'
     
     const onSelectItem = async (arg: {label: string, value: string, field: any}) => {
       let [Entity, Slug] = (arg.value as string).split('|')

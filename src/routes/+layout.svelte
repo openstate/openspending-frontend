@@ -1,4 +1,6 @@
 <script>
+// @ts-nocheck
+
 	import { onMount } from "svelte";
 	import "../app.scss";
 	import { browser } from "$app/environment";

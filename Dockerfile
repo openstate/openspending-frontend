@@ -13,3 +13,4 @@ RUN echo '{"type": "module"}' > package.json
 EXPOSE 3000
 ENV NODE_ENV=production
 ENTRYPOINT [ "node", "index.js"]
+# ENTRYPOINT [ "npx", "vite", "preview", "--port", "3000", "--host"]

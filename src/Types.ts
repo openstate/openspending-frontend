@@ -5,6 +5,8 @@ export interface Bron {
 	Key: string
 	Title: string
 	Slug: string
+	Description: string
+	Type: SourceType
 };
 
 export interface DataSet {
@@ -66,11 +68,25 @@ export interface BronDetail extends Bron {
     Q2?: string,
     Q1?: string
 	},
+	Verslagsoort: 'begroting' | 'realisatie' | 'Q1' | 'Q2' | 'Q3' | 'Q4'
 	dataset: SingleDataSet,
 	datasets: DataSet[],
-	data: BronData[] 
+	data: BronData[]
 }
 
 export interface BronDetailVergelijk extends Omit<BronDetail, 'data'> {
 	data: BronData[][]
+}
+
+export type Adres = {
+  Description: string
+  Slug: string
+  lat: number
+  lon: number
+  adres: string,
+  werkgebieden: Array<{
+    Slug: string
+    Title: string 
+    Type: SourceType
+  }>
 }

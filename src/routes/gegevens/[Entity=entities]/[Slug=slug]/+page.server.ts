@@ -3,7 +3,7 @@ import type { BronMetDatasets } from '../../../../Types';
 
 const api = import.meta.env.PROD
 		? 'https://data.openspending.nl'
-		: 'http://localhost:3000'
+		: 'http://host.docker.internal:3000'
 
 export async function load({ params }) {
 	await fetch(`${api}/bronnen/${params.Entity}/${params.Slug}`)
@@ -12,9 +12,7 @@ export async function load({ params }) {
 				throw redirect(307, '/');
 			}
 			const Bron = (await res.json() as unknown as BronMetDatasets)
-			const dataset = await (await fetch(Bron.datasets[0].$link)).json()
-			const verslagsoort = (Object.keys(dataset.$links).shift())
-			throw redirect(307, `/gegevens/${params.Entity}/${params.Slug}/${Bron.datasets[0].Period}/${verslagsoort}/per/categorie`);
+			throw redirect(307, `/gegevens/${params.Entity}/per/hoofdfunctie/${params.Slug}/${Bron.datasets[0].Period}/begroting`);
 		})
 	return { ...params };
 }

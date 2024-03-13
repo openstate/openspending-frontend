@@ -1,8 +1,8 @@
 <script lang="ts">
-  export let ammount: number | null | undefined
+  export let ammount: number | null | undefined 
   export let symbol: string = '€'
   export let classes: string = ''
   export let multiplier: number = 1
-  $: currency = (ammount === 0 || !ammount) ? '-' : (symbol + '&nbsp;' + (ammount * multiplier).toLocaleString('nl-NL'))
+  $: currency = ammount === null || ammount === undefined ? '-' : (symbol + (symbol?'&nbsp;':'') + (ammount * multiplier).toLocaleString('nl-NL'))
 </script>
-<span class="currency {classes}">{@html currency}{#if multiplier===1 && currency !== '-'}<small>k</small>{/if}</span>
+<span class="currency {classes}">{@html currency}</span>
