@@ -42,7 +42,18 @@ export async function load({ fetch, params }) {
 
   const bronnen: BronDetail[] = []
 
-  for (const Slug of Object.values(requested)) {
+  for (const Slug of requested) {
+
+    //test if Bron has Verslagsoort, otherwise use other:
+    const verslagsoorten = await fetch(`${api}/bronnen/${params.Entity}/${Slug.Slug}/${Slug.Period}`)
+      .then(r => r.json())
+      .then(a => a.dataset.verslagsoorten as Verslagsoort[])
+    if (!verslagsoorten.includes(Slug.Verslagsoort)) {
+      Slug.Verslagsoort = verslagsoorten[0]
+    }
+
+    
+
     const url = `${api}/bronnen/${params.Entity}/${Slug.Slug}/${Slug.Period}/${Slug.Verslagsoort}/per/${groepering === 'categorie' ? groepering : 'hoofdfunctie'}`
     let Bron: BronDetail
     try {

@@ -21,36 +21,40 @@
 		const opts = {keepFocus: true, noScroll: true}
 		if (showLoader) {
 			document.getElementById('loading')!.addEventListener('shown.bs.modal', async _ => {
-				await goto(url, opts)
+				return await goto(url, opts)
+          .then(_ => charts())
 					.then(_ => loader.hide())
 			})
 			loader.show()
 		} else {
-			await goto(url, opts)
+			return await goto(url, opts).then(_ => charts())
 		}
 	}
 
 	const verwijderBron = async (bron: BronDetail) => {
 		data.requested = data.requested.filter(b => `${b.Period}/${b.Slug}/${b.Verslagsoort}` !== `${bron.dataset.Period}/${bron.Slug}/${bron.Verslagsoort}`)
 		return await go()
-			.then(_ => charts())
 	}
 
 	const setPeriode = async (bron: BronDetail, periode: string) => {
-		data.requested.filter(b => `${b.Period}/${b.Slug}/${b.Verslagsoort}` === `${bron.dataset.Period}/${bron.Slug}/${bron.Verslagsoort}`)
-			.forEach(b => {
-				b.Period = parseInt(periode)
-				b.Verslagsoort = 'begroting'
-			})
+    const item = data.requested
+      .filter(b => `${b.Period}/${b.Slug}/${b.Verslagsoort}` === `${bron.dataset.Period}/${bron.Slug}/${bron.Verslagsoort}`)
+      .shift()
+    if (item) {
+      item.Period = parseInt(periode)
+      item.Verslagsoort = 'begroting'
+    }
 		return await go()
-			.then(_ => charts())
 	}
 
 	const setVerslagsoort = async (bron: BronDetail, verslagsoort: string) => {
-		data.requested.filter(b => `${b.Period}/${b.Slug}/${b.Verslagsoort}` === `${bron.dataset.Period}/${bron.Slug}/${bron.Verslagsoort}`)
-			.forEach(b => b.Verslagsoort = verslagsoort as Verslagsoort)
+		const item = data.requested
+      .filter(b => `${b.Period}/${b.Slug}/${b.Verslagsoort}` === `${bron.dataset.Period}/${bron.Slug}/${bron.Verslagsoort}`)
+      .shift()
+    if (item) {
+      item.Verslagsoort = verslagsoort as Verslagsoort
+    }
 		return await go()
-			.then(_ => charts())
 	}
 
 	let findSource: HTMLInputElement
@@ -124,6 +128,10 @@
 						dataset2.push({label: bron.Title, data: trend.map(r => r.totaal)})
 						if (labels.length === 0) labels.push(...trend.map(t => t.Period))
 				})
+      .catch(e => {
+        alert('Er ging iets mis bij het maken van de grafiek.')
+        console.log(e)
+      })
 		}
 		new Chart(chart1, { type: 'bar', data: { labels, datasets: dataset1 }})
 		new Chart(chart2, { type: 'bar', data: { labels, datasets: dataset2 }})
@@ -139,13 +147,13 @@
 			data.requested.push({
 				Slug, Title: arg.label, Verslagsoort: data.bronnen[0].Verslagsoort, Period: data.bronnen[0].dataset.Period
 			})
-			return await go().then(_ => charts())
+			return await go()
     }
     fetch(`${$api}/utils/bronnen/${data.params.Entity}/${data.bronnen[0].dataset.Period}`)
       .then(res => res.json())
 			.then(d => d as Array<{Type: string, Slug: string, label: string, entiteit: string, value: string}>)
       .then(bronnen => {
-        const opts = { data: bronnen.filter(bron => !slugs().includes(bron.Slug)), threshold: 1, maximumItems: 10, onSelectItem, showEntity: false}
+        const opts = { data: bronnen.filter(bron => true ||!slugs().includes(bron.Slug)), threshold: 1, maximumItems: 10, onSelectItem, showEntity: false}
         new Autocomplete(document.getElementById('find-source'), opts)
       })
 		await charts()
@@ -211,6 +219,7 @@
 				<tr>
 					<td></td>
 					<td></td>
+					<td></td>
 					<th class="text-end">Baten</th>
 					<th class="text-end">Lasten</th>
 					<th class="text-end">Jaar</th>
@@ -224,7 +233,14 @@
 						<a href="{'#'}" style="margin-right: 5px" on:click={() => verwijderBron(bron)}><XSquareFill/></a>
 					</th>
 					<th scope="row">
-						{bron.Title}
+						{bron.Title} 
+					</th>
+					<th scope="row" style="width:1px;">
+            {#if bron.dataset.StatLine}
+            <a title="Open Link in CBS StatLine" href="{bron.dataset.StatLine}" target="_blank" rel="noreferrer" style="text-decoration: none; border: none;">
+              <img src="/images/CBS-32x32.png" style="width: 24px;" alt="CBS Logo">
+            </a>
+            {/if}
 					</th>
 					<td class="text-end" style="white-space: nowrap;"><Currency ammount={bron.dataset.totaal.Baten}/></td>
 					<td class="text-end" style="white-space: nowrap;"><Currency ammount={bron.dataset.totaal.Lasten}/></td>
@@ -269,7 +285,7 @@
           verberg lege bedragen
         </label>
       </div>
-    {#if Bron.metrics}
+    {#if Bron.metrics && Object.keys(Bron.metrics).length > 0}
       <div class="col-12">
         <label class="form-check-label" for="metric">
           Normaliseer bedragen op basis van:
@@ -346,7 +362,7 @@
 </div>
 <div class="row">
 	<div class="col-sm-12 col-lg-6">
-		<h3 class="fs-4">Begroting per jaar</h3>
+		<h3 class="fs-4">{#if data.bronnen[0].Type === 'GemeenschappelijkeRegelingen'}Realisatie{:else}Begroting{/if} per jaar</h3>
 		<div style="width: 100%; height: 500px;"><canvas id="chart2"></canvas></div>
 	</div>
 	<div class="col-sm-12 col-lg-6">
@@ -354,5 +370,3 @@
 		<div style="width: 100%; height: 500px;"><canvas id="chart1"></canvas></div>
 	</div>
 </div>
-
-<h3>Data hulpmiddelen</h3>

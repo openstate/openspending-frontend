@@ -68,7 +68,7 @@ export interface BronDetail extends Bron {
     Q2?: string,
     Q1?: string
 	},
-	Verslagsoort: 'begroting' | 'realisatie' | 'Q1' | 'Q2' | 'Q3' | 'Q4'
+	Verslagsoort: Verslagsoort
 	dataset: SingleDataSet,
 	datasets: DataSet[],
 	data: BronData[]
