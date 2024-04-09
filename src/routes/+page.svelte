@@ -134,8 +134,8 @@
 
     const factor = 2/3
     const icon = L.icon({
-        iconUrl: '/static/images/markers/marker-icon-2x.png',
-        shadowUrl: '/static/images/markers/marker-shadow.png',
+        iconUrl: '/images/markers/marker-icon-2x.png',
+        shadowUrl: '/images/markers/marker-shadow.png',
         iconSize:     [factor * 25, factor * 41], // size of the icon
         shadowSize:   [factor * 41, factor * 41], // size of the shadow
         shadowAnchor: [factor * 13, factor * 20],  // the same for the shadow
@@ -154,7 +154,7 @@
           const content = `<p class="fs-6"><a href="/gegevens/GemeenschappelijkeRegelingen/${adres.Slug}">${adres.Description}</a></p><p>${adres.adres.split('\n').join('<br>')}</p>`
             + (werkgebieden.length > 0 ? `<p>Werkgebied:<br>${werkgebieden.join('<br>')}</p>`  : '')
           
-          const marker = L.marker([adres.lat, adres.lon], { icon }).bindPopup(content)
+          L.marker([adres.lat, adres.lon], { icon }).bindPopup(content)
             .addTo(LayerGemeenschappelijkeRegelingen)
         }
         
