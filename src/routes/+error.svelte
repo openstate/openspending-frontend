@@ -7,8 +7,8 @@
 <div class="row">
   <div class="col col-sm-12 col-lg-9 col-md-12">
     <p class="lead">
-      Zoals je kunt zien is Open Spending vernieuwt. Het kan daarom zijn dat oude webadressen en/of bookmarks niet meer werken.
-      We raden je aan om via de navigatie in het menu opnieuw  de gevens te vinden die je zoekt en je eventuele bookmarks aan te passen.
+      Zoals je kunt zien is Open Spending vernieuwd. Het kan daarom zijn dat oude webadressen en/of bookmarks niet meer werken.
+      We raden je aan om via de navigatie in het menu opnieuw  de gegevens te vinden die je zoekt en je eventuele bookmarks aan te passen.
     </p>
     <p class="lead">
       Onze excuses voor het ongemak!
