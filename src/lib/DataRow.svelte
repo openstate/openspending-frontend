@@ -133,25 +133,25 @@
   <td class:text-secondary = {(row.Baten ?? 0) === 0 && (row.Lasten ?? 0) === 0}>{row?.Description ?? row?.Title}</td>
   {#if level === 1}
   {#each bronnen as bron}
-  <td class="text-end"><Currency classes="text-success" ammount={normalize(bron.data[rowNumber_level1].Baten, bron)} symbol="" />
+  <td class="text-end"><Currency classes="text-primary" ammount={normalize(bron.data[rowNumber_level1].Baten, bron)} symbol="" />
   </td>
   {/each}
   {#each bronnen as bron}
-  <td class="text-end"><Currency classes="text-danger" ammount={normalize(bron.data[rowNumber_level1].Lasten, bron)} symbol="" /></td>
+  <td class="text-end"><Currency classes="text-info" ammount={normalize(bron.data[rowNumber_level1].Lasten, bron)} symbol="" /></td>
   {/each}
   {:else if level === 2}
   {#each bronnen as bron}
-  <td class="text-end"><Currency classes="text-success" ammount={normalize(getAmmountLevel2(bron, 'Baten'), bron)} symbol="" /></td>
+  <td class="text-end"><Currency classes="text-primary" ammount={normalize(getAmmountLevel2(bron, 'Baten'), bron)} symbol="" /></td>
   {/each}
   {#each bronnen as bron}
-  <td class="text-end"><Currency classes="text-danger" ammount={normalize(getAmmountLevel2(bron, 'Lasten'), bron)} symbol="" /></td>
+  <td class="text-end"><Currency classes="text-info" ammount={normalize(getAmmountLevel2(bron, 'Lasten'), bron)} symbol="" /></td>
   {/each}
   {:else if level === 3}
   {#each bronnen as bron}
-  <td class="text-end"><Currency classes="text-success" ammount={normalize(getAmmountLevel3(bron, 'Baten'), bron)} symbol="" /></td>
+  <td class="text-end"><Currency classes="text-primary" ammount={normalize(getAmmountLevel3(bron, 'Baten'), bron)} symbol="" /></td>
   {/each}
   {#each bronnen as bron}
-  <td class="text-end"><Currency classes="text-danger" ammount={normalize(getAmmountLevel3(bron, 'Lasten'), bron)} symbol="" /></td>
+  <td class="text-end"><Currency classes="text-info" ammount={normalize(getAmmountLevel3(bron, 'Lasten'), bron)} symbol="" /></td>
   {/each}
   {/if}
 </tr>

@@ -23,6 +23,7 @@ export async function load({ fetch, params }) {
     }
     open = open[0].split('|')
   }
+
   if (paths.length === 0 || paths.length % 3 !== 0) throw redirect(307, `/gegevens/${params.Entity}`)
   const requested: Array<{ Slug: string, Title: string, Period: number, Verslagsoort: Verslagsoort}> = []
 

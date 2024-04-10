@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import type { Adres, Bron, SourceType } from '../Types';
-  let Entity: SourceType = 'Provincies'
+  let Entity: SourceType = 'Gemeenten'
   import 'leaflet/dist/leaflet.css';
   import { api } from '../stores.js'
 
@@ -11,7 +11,7 @@
   let findSourceField: HTMLInputElement
 
   const setEntity = (event: Event) => {
-    Entity = ((event.target as HTMLAnchorElement).dataset.entity ?? 'Provincies') as SourceType;
+    Entity = ((event.target as HTMLAnchorElement).dataset.entity ?? 'Gemeenten') as SourceType;
     LayerGemeenten.removeFrom(map)
     LayerProvincies.removeFrom(map)
     LayerGemeenschappelijkeRegelingen.removeFrom(map)
@@ -103,6 +103,7 @@
     }
 
     const onEachFeature = (feature: GeoJSON.Feature<GeoJSON.Geometry, any>, layer: L.Layer) => {
+      layer.bindTooltip(feature.properties.statnaam);
       layer.on({
         click: async (e) => await clickLayer(e, feature, layer),
         mouseover: (e) => {
@@ -120,7 +121,7 @@
         LayerGemeenten = L.geoJSON(gemeenten, {
           style: defaultStyle,
           onEachFeature
-        })
+        }).addTo(map);
       })
     
     fetch('/geojson/Provincies.geojson')
@@ -129,7 +130,7 @@
         LayerProvincies = L.geoJSON(provincies, {
           style: defaultStyle,
           onEachFeature,
-        }).addTo(map);
+        })
       })
 
     const factor = 2/3
@@ -154,7 +155,9 @@
           const content = `<p class="fs-6"><a href="/gegevens/GemeenschappelijkeRegelingen/${adres.Slug}">${adres.Description}</a></p><p>${adres.adres.split('\n').join('<br>')}</p>`
             + (werkgebieden.length > 0 ? `<p>Werkgebied:<br>${werkgebieden.join('<br>')}</p>`  : '')
           
-          L.marker([adres.lat, adres.lon], { icon }).bindPopup(content)
+          L.marker([adres.lat, adres.lon], { icon })
+            .bindPopup(content)
+            .bindTooltip(adres.Description)
             .addTo(LayerGemeenschappelijkeRegelingen)
         }
         
@@ -195,10 +198,10 @@
   <div class="col-12">
     <ul class="nav nav-underline">
       <li class="nav-item">
-        <a class="nav-link" class:active={Entity === 'Provincies'} on:click={setEntity} data-entity="Provincies" href={'#'}>Provincies</a>
+        <a class="nav-link" class:active={Entity === 'Gemeenten'} on:click={setEntity} data-entity="Gemeenten" href={'#'}>Gemeenten</a>
       </li>
       <li class="nav-item">
-        <a class="nav-link" class:active={Entity === 'Gemeenten'} on:click={setEntity} data-entity="Gemeenten" href={'#'}>Gemeenten</a>
+        <a class="nav-link" class:active={Entity === 'Provincies'} on:click={setEntity} data-entity="Provincies" href={'#'}>Provincies</a>
       </li>
       <!-- <li class="nav-item">
         <a class="nav-link" class:active={Entity === 'Waterschappen'} on:click={setEntity} data-entity="Waterschappen" href={'#'}>Waterschappen</a>

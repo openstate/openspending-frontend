@@ -7,8 +7,8 @@
     {route: '/gegevens' },
     // {route: '/vergelijk' },
     {route: '/faq', label: 'FAQ' },
-    {route: '/contact' },
     {route: '/lijstenmaker' },
+    {route: '/contact' },
   ];
 
 	const routeToTitle = (term: string): string => term.replace(/^\//, '').slice(0, 1).toLocaleUpperCase() + term.replace(/^\//, '').slice(1)
