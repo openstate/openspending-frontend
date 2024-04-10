@@ -5,7 +5,7 @@
 	const menuItems:MenuItem[] = [
     {route: '/', label: 'Home' },
     {route: '/gegevens' },
-    // {route: '/vergelijk' },
+    {route: '/over' },
     {route: '/faq', label: 'FAQ' },
     {route: '/lijstenmaker' },
     {route: '/contact' },

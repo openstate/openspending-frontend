@@ -1,4 +1,6 @@
 <h1>Over Open Spending</h1>
+<div class="row">
+  <div class="col col-sm-12 col-md-12 col-lg-9">
 <p class="lead">
 	In samenwerking met het Centraal Bureau voor de Statistiek (CBS) werkt Open State Foundation aan
 	het project Open Spending. Dat doen wij met steun van het ministerie van Binnenlandse Zaken en
@@ -101,3 +103,6 @@
 	van alle decentrale overheden. De vrije beschikbaarheid hiervan versterkt de informatiepositie van
 	volksvertegenwoordigers, journalisten en inwoners.
 </p>
+
+  </div>
+</div>
