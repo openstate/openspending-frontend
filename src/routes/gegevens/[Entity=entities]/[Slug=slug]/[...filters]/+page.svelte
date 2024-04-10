@@ -157,6 +157,12 @@
 			})
 			return await go()
     }
+    document.body.addEventListener('keyup', (ev) => {
+      if(ev.key === '/') {
+        findSource.focus()
+        findSource.select()
+      }
+    })
     fetch(`${$api}/utils/bronnen/${data.params.Entity}/${data.bronnen[0].dataset.Period}`)
       .then(res => res.json())
 			.then(d => d as Array<{Type: string, Slug: string, label: string, entiteit: string, value: string}>)

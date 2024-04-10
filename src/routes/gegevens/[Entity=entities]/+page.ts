@@ -1,9 +1,15 @@
-import { type Bron } from '../../../Types.js';
-const api = import.meta.env.PROD
-		? 'https://data.openspending.nl'
-		: 'http://host.docker.internal:3000'
+import type { SourceType } from '../../../Types.js';
 
-export async function load({ params, fetch }) {
-	const bronnen: Bron[] = await fetch(`${api}/bronnen/${params.Entity}`).then(res => res.json())	
-	return { ...params, bronnen };
+export async function load({ params }) {
+  let entity: SourceType = 'Gemeenten'
+  switch (params.Entity) {
+    case 'Gemeenten':
+    case 'Provincies':
+    case 'GemeenschappelijkeRegelingen':
+    case 'Waterschappen':
+      entity = params.Entity
+      break
+
+  }
+	return {entity};
 }
