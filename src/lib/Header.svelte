@@ -4,8 +4,9 @@
   type MenuItem = { route: string, label?: string }
 	const menuItems:MenuItem[] = [
     {route: '/', label: 'Home' },
-    {route: '/gegevens' },
+    // {route: '/gegevens' },
     {route: '/over' },
+    {route: '/data' },
     {route: '/faq', label: 'FAQ' },
     {route: '/lijstenmaker' },
     {route: '/contact' },

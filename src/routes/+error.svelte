@@ -1,6 +1,17 @@
-<script>
+<script lang="ts">
 	import { page } from '$app/stores';
+  // import { goto } from '$app/navigation';
+
+	import { onMount } from 'svelte';
+  onMount(() => {
+    const path = window.location.pathname.split('/').filter(p => p)
+    if (path[0].startsWith('provincie-')) {
+      // return goto(`/gegevens/Provincies/per/hoofdfunctie/${path[0].replace('provincie-', '')}-pv/2024/begroting`)
+    }
+    
+  })
 </script>
+<!-- <pre>{JSON.stringify($page, null, 2)}</pre> -->
 
 {#if $page.status === 404}
 <h1>Pagina niet gevonden</h1>

@@ -7,6 +7,7 @@ export interface Bron {
 	Slug: string
 	Description: string
 	Type: SourceType
+  hasDetaildata: boolean
 };
 
 export interface DataSet {

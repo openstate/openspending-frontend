@@ -157,7 +157,10 @@
 			})
 			return await go()
     }
-    document.body.addEventListener('keyup', (ev) => {
+    document.body.addEventListener('keydown', (ev) => {
+      // @ts-ignore
+      if (ev.target?.tagName.toUpperCase() == 'INPUT') return
+      ev.preventDefault()
       if(ev.key === '/') {
         findSource.focus()
         findSource.select()
@@ -193,7 +196,7 @@
 <nav aria-label="breadcrumb">
 	<ol class="breadcrumb">
 		<li class="breadcrumb-item"><a href="/">Home</a></li>
-		<li class="breadcrumb-item"><a href="/gegevens">Gegevens</a></li>
+		<!-- <li class="breadcrumb-item"><a href="/gegevens">Gegevens</a></li> -->
 		<li class="breadcrumb-item" aria-current="page">
 			<span class="dropdown">
 			  <a href="{'#'}" class="dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
@@ -228,7 +231,7 @@
 
 <div class="row mb-5">
 	<div class="col-sm-12 col-m-9 col-lg-8">
-		<table class="table summaries">
+		<table class="table summaries ">
 			<thead>
 				<tr>
 					<td></td>
@@ -290,7 +293,7 @@
 </div>
 
 <div>
-	<table class="table caption-top table-bordered">
+	<table class="table table-hover caption-top table-bordered">
   <caption>
     <form class="row row-cols-lg-auto g-3 align-items-center">
       <div class="col-12">
