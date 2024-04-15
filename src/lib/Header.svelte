@@ -19,7 +19,7 @@
 	$: getPagetitle = () => {
 		const menuItem = current
 		return menuItem === undefined 
-			? `Pagina "${$page.route.id}" niet gevonden`
+			? ''// `Pagina "${$page.route.id}" niet gevonden`
 			: menuItem.label ?? routeToTitle(menuItem.route)
 	}
 

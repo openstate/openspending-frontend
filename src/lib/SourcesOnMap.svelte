@@ -1,10 +1,10 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import type { Adres, Bron, SourceType } from '../Types';
-  export let data
-  let Entity: SourceType = data.entity ?? 'Gemeenten'
+  export let Entity: SourceType
   import 'leaflet/dist/leaflet.css';
   import { api } from '../stores.js'
+	import { goto } from '$app/navigation';
 
   let sources: Bron[] = []
   let filteredSources: Bron[] = []
@@ -37,6 +37,7 @@
         break;
     }
     load()
+    goto(`/gegevens/${Entity}`)
   }
   const load = () => {
     fetch(`${$api}/bronnen/${Entity}`)
@@ -198,6 +199,11 @@
   })
 
 </script>
+
+<svelte:head>
+	<title>Open Spending | {Entity}</title>
+	<meta property="og:title" content="Open Spending | {Entity}" />
+</svelte:head>
 <style>
   ul li {
     padding-left: 0px;
@@ -207,10 +213,6 @@
     line-height: 2.5em;
   }
 </style>
-<h1>Open Spending</h1>
-<p class="lead">
-	Bekijk en vergelijk de huishoudboekjes van lokale overheden.
-</p>
 <div class="row">
   <div class="col-12">
     <ul class="nav nav-underline">
