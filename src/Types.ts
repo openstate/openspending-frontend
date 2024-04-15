@@ -18,6 +18,7 @@ export interface DataSet {
 	SourceType: SourceType
 	StatLine: string
 	$link: string
+  hasDetaildata: boolean
 }
 
 export interface DatasetTotals {
@@ -53,6 +54,21 @@ export interface BronData {
 	Baten?: number | null
 	Standen?: number | null,
 	data?: BronData[]
+}
+
+export interface DetailData {
+  ID: number
+  Categorie: string
+  Verslagsoort: string
+  Bedrag: number,
+  BL: "B" | "L"
+  Post: string
+  Grootboek: string
+  GrootboekOmschrijving: string
+  Kostenplaats: string
+  KostenplaatsOmschrijving: string
+  PostOmschrijving: string
+  CategorieOmschrijving: string
 }
 
 export interface BronDetail extends Bron {

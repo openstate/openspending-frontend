@@ -2,14 +2,14 @@
 	import { goto } from '$app/navigation';
 	import Currency from '$lib/Currency.svelte';
 	import { ucfirst } from '$lib/utils';
-	import type { BronData, BronDetail, Verslagsoort } from '../../../../../Types.js';
+	import type { BronData, BronDetail, DataSet, Verslagsoort } from '../../../../../Types.js';
 	import DataRow from '$lib/DataRow.svelte';
-	import { XSquareFill } from 'svelte-bootstrap-icons';
+	import { XSquareFill, FileEarmarkSpreadsheet } from 'svelte-bootstrap-icons';
 	import { onMount } from 'svelte';
 	import { api } from '../../../../../stores.js'
 
   export let data;
-
+  
 	let hideZero: boolean = true
 	const slugs = () => data.requested.map(bron => bron.Slug)
 	const slugsUrl = () => data.requested.map(bron => [bron.Slug, bron.Period, bron.Verslagsoort].join('/')).join('/')
@@ -35,6 +35,10 @@
 		data.requested = data.requested.filter(b => `${b.Period}/${b.Slug}/${b.Verslagsoort}` !== `${bron.dataset.Period}/${bron.Slug}/${bron.Verslagsoort}`)
 		return await go()
 	}
+
+  const showDetails =  async (bron: BronDetail) => {
+    console.log(bron)
+  }
 
 	const setPeriode = async (bron: BronDetail, periode: string) => {
     const item = data.requested
@@ -203,10 +207,9 @@
     			{data.params.Entity.replace('Regelingen', ' Regelingen')}
 			  </a>
 				<ul class="dropdown-menu">
-					<li><a class="dropdown-item" href="{'#'}" on:click|preventDefault={() => goto('/gegevens/Provincies')}>Provincies</a></li>
-					<li><a class="dropdown-item" href="{'#'}" on:click|preventDefault={() => goto('/gegevens/Gemeenten')}>Gemeenten</a></li>
-					<!-- <li><a class="dropdown-item" href="{'#'}" on:click|preventDefault={() => goto('/gegevens/Waterschappen')}>Waterschappen</a></li> -->
-					<li><a class="dropdown-item" href="{'#'}" on:click|preventDefault={() => goto('/gegevens/GemeenschappelijkeRegelingen')}>Gemeenschappelijke regelingen</a></li>
+					<li><a class="dropdown-item" href="/gegevens/Provincies">Provincies</a></li>
+					<li><a class="dropdown-item" href="/gegevens/Gemeenten">Gemeenten</a></li>
+					<li><a class="dropdown-item" href="/gegevens/GemeenschappelijkeRegelingen">Gemeenschappelijke regelingen</a></li>
 				</ul>
 			</span>
 		</li>
@@ -348,6 +351,27 @@
 				{/each}
 				{#each data.bronnen as bron}
 				<td class="text-center" ><small>{@html getMetricsText(bron)}</small></td>
+				{/each}
+			</tr>
+      {/if}
+      {#if Object.keys(data.datasetsWithDetaildata).length > 0}
+			<tr>
+				<th>&nbsp;</th>
+				<th class="code">&nbsp;</th>
+				<th>&nbsp;</th>
+				{#each data.bronnen as bron}
+				<td class="text-center">
+          {#if (data.datasetsWithDetaildata[bron.Slug].length > 0)}
+          <a href="/gegevens/{bron.Type}/details/{bron.Slug}"><FileEarmarkSpreadsheet/> details</a>
+          {/if}
+        </td>
+				{/each}
+				{#each data.bronnen as bron}
+				<td class="text-center">
+          {#if (data.datasetsWithDetaildata[bron.Slug].length > 0)}
+          <a href="/gegevens/{bron.Type}/details/{bron.Slug}"><FileEarmarkSpreadsheet/> details</a>
+          {/if}
+        </td>
 				{/each}
 			</tr>
       {/if}

@@ -37,7 +37,20 @@
         .catch(e => {})
     }
     if (bron) {
-      goto(`/gegevens/${entity}/${slug}`)
+      let url = `/gegevens/${entity}/${slug}`
+      const verslagsoort = path.shift()
+      const periode = path.shift()
+      const groepering = path.pop() === 'categorieen' ? 'categorie' : 'hoofdfunctie'
+      if (periode) {
+        if (periode.match(/^\d{4}$/)) {
+          url = `/gegevens/${entity}/per/${groepering}/${slug}/${periode}/${verslagsoort}`
+        } else if (periode.match(/^\d{4}\-0$/)) {
+          url = `/gegevens/${entity}/per/${groepering}/${slug}/${periode}/begroting`
+        } else if (periode.match(/^\d{4}\-[1-4]$/)) {
+          url = `/gegevens/${entity}/per/${groepering}/${slug}/${periode.replace(/-[1-4]$/, '')}/Q${periode.replace(/^\d{4}\-/, '')}`
+        }
+      }
+      goto(url)
     } else {
       showError = true
     }

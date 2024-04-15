@@ -29,4 +29,4 @@ Je kunt een preview van de productieomgeving starten met `npm run preview`.
   - `cd /home/projects/openspending/production/openspending-frontend`
   - `git checkout main && git pull && git checkout <tag>`
   - `sudo docker compose down`
-  - `sudo docker compose up -- build -d`
+  - `sudo docker compose up --build -d`

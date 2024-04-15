@@ -1,5 +1,5 @@
 import { redirect } from '@sveltejs/kit';
-import type { BronDetail } from '../../../../../Types';
+import type { BronDetail, DataSet } from '../../../../../Types';
 const api = import.meta.env.PROD
 		? 'https://data.openspending.nl'
 		: import.meta.env.API ?? 'http://host.docker.internal:3000'
@@ -75,5 +75,9 @@ export async function load({ fetch, params }) {
       continue
     }
   }
-	return { params, requested, bronnen, open, groepering };
+  const datasetsWithDetaildata: Record<string, DataSet[]> = {}
+  bronnen.forEach(bron => {
+    datasetsWithDetaildata[bron.Slug] = bron.datasets.filter(d => d.hasDetaildata)
+  })
+	return { params, requested, bronnen, open, groepering, datasetsWithDetaildata };
 }

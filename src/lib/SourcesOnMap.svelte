@@ -245,7 +245,7 @@
       <input id="find-source" aria-label="Zoek" class="form-control" type="text" size="20" placeholder="zoek {Entity === 'GemeenschappelijkeRegelingen' ? 'Gem. regelingen' : Entity} &hellip;">
       <span class="input-group-text"><kbd>/</kbd></span>
     </div>
-    {#if Entity === 'Gemeenten' && false}
+    {#if Entity === 'Gemeenten'}
     <div class="input-group mt-2">
     <input class="form-check-input" type="checkbox" on:change={load} id="onlyDetailData" bind:checked={onlyDetailData} />
     <label class="form-check-label" style="padding-left: 10px;" for="onlyDetailData">Alleen instellingen met detaildata.</label>
