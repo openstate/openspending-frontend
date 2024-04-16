@@ -77,7 +77,9 @@ export async function load({ fetch, params }) {
   }
   const datasetsWithDetaildata: Record<string, DataSet[]> = {}
   bronnen.forEach(bron => {
-    datasetsWithDetaildata[bron.Slug] = bron.datasets.filter(d => d.hasDetaildata)
+    datasetsWithDetaildata[bron.Slug] = bron.datasets.filter(d => {
+      return d.hasDetaildata
+    })
   })
 	return { params, requested, bronnen, open, groepering, datasetsWithDetaildata };
 }

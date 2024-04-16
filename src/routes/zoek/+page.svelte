@@ -84,7 +84,7 @@
 </ul>
 <button class="btn btn-primary" on:click={() => data.workspaces = []}><ListTask/> Terug naar zoekresultaat</button>
 {:else}
-  {#if data.q && data.result.length === 0 && data.sources.length === 0 && !data.error}
+  {#if data.q && data.result.length === 0 && data.sources.length === 0  && data.detaildata.length === 0 && !data.error}
   <div class="alert alert-warning" role="alert">
     <InfoCircleFill />
     Er is niets gevonden met de zoekwoorden die je opgaf. Probeer het eventueel nog een keer met andere zoekwoorden.
@@ -96,7 +96,7 @@
     Je zoekdopracht lijkt ongeldig, probeer het nog een keer met een andere zoekopdracht.
   </div>
   {/if}
-  {#if data.result.length > 0 || data.sources.length > 0}
+  {#if data.result.length > 0 || data.sources.length > 0 || data.detaildata.length > 0}
   <h2 class="fs-4">Resultaat van je zoekopdracht:</h2>
   <div class="row">
     <div class="col-6">
@@ -118,6 +118,15 @@
       <ol>
       {#each data.sources as result}
         <li><a href="/gegevens/{result.Type}/{result.Slug}">{getType(result.Type)} {@html result.headline}</a></li>
+      {/each}
+      </ol>
+      <h3 class="fs-6">Detaildata</h3>
+      {#if data.detaildata.length === 0}
+      <em>geen bronnen gevonden</em>
+      {/if}
+      <ol>
+      {#each data.detaildata as result}
+        <li><a href="/gegevens/{result.Type}/details/{result.Slug}/{result.Workspace}/{result.TitleType}#{result.TitleType === 'grootboek' ? 'G' : 'K'}-{result.Code}">{@html result.headline}<br></a><small>{getType(result.Type)} {result.Source} </small></li>
       {/each}
       </ol>
     </div>

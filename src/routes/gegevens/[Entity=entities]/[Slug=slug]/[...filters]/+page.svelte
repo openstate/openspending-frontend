@@ -36,9 +36,22 @@
 		return await go()
 	}
 
-  const showDetails =  async (bron: BronDetail) => {
-    console.log(bron)
-  }
+  const isThereAnyDetaildataAvaliable = () =>  Object.values(data.datasetsWithDetaildata).filter(o => o.length>0).length > 0
+
+  // const datasetHasDetails = (bron: DataSet) => {
+  //   bron.dataset.Period
+  //   bron.Slug
+  //   const detailData = data.datasetsWithDetaildata[bron.Slug]
+  //     .filter(d => {
+  //       console.log(d.Period, bron.dataset.Period)
+  //       return d.Period === bron.dataset.Period
+  //     })
+  //   if (detailData.length > 0) {
+  //     console.log(detailData)
+  //   }
+  //   return true
+  // }
+  
 
 	const setPeriode = async (bron: BronDetail, periode: string) => {
     const item = data.requested
@@ -242,7 +255,11 @@
 					<td></td>
 					<th class="text-end">Baten</th>
 					<th class="text-end">Lasten</th>
-					<th class="text-end">Jaar</th>
+					<th class="text-end">Jaar
+            {#if isThereAnyDetaildataAvaliable()}
+            <small style="font-weight: normal">(* detaildata)</small>
+            {/if}
+          </th>
 					<th class="text-end">Periode</th>
 				</tr>
 			</thead>
@@ -267,7 +284,11 @@
 					<td class="text-end">
 						<select class="form-select" on:change={(ev) => setPeriode(bron, ev.currentTarget.value)}>
 							{#each bron.datasets as dataset}
-							<option selected={bron.dataset.Period === dataset.Period}>{dataset.Period}</option>
+							<option selected={bron.dataset.Period === dataset.Period}>{dataset.Period} 
+              {#if dataset.hasDetaildata}
+              *
+              {/if}
+              </option>
 							{/each}
 						</select>
 					</td>
@@ -330,6 +351,7 @@
 				<th class="text-center" colspan="{data.bronnen.length}">Baten</th>
 				<th class="text-center" colspan="{data.bronnen.length}">Lasten</th>
 			</tr>
+      {#if data.bronnen.length > 1}
 			<tr>
 				<th class="togglerow">&nbsp;</th>
 				<th class="code">&nbsp;</th>
@@ -341,6 +363,7 @@
 				<th class="text-center" >{bron.Title}</th>
 				{/each}
 			</tr>
+      {/if}
       {#if metric}
 			<tr>
 				<th>&nbsp;</th>
@@ -354,21 +377,21 @@
 				{/each}
 			</tr>
       {/if}
-      {#if Object.keys(data.datasetsWithDetaildata).length > 0}
+      {#if isThereAnyDetaildataAvaliable()}
 			<tr>
 				<th>&nbsp;</th>
 				<th class="code">&nbsp;</th>
 				<th>&nbsp;</th>
 				{#each data.bronnen as bron}
 				<td class="text-center">
-          {#if (data.datasetsWithDetaildata[bron.Slug].length > 0)}
+          {#if (bron.dataset.hasDetaildata)}
           <a href="/gegevens/{bron.Type}/details/{bron.Slug}"><FileEarmarkSpreadsheet/> details</a>
           {/if}
         </td>
 				{/each}
 				{#each data.bronnen as bron}
 				<td class="text-center">
-          {#if (data.datasetsWithDetaildata[bron.Slug].length > 0)}
+          {#if (bron.dataset.hasDetaildata)}
           <a href="/gegevens/{bron.Type}/details/{bron.Slug}"><FileEarmarkSpreadsheet/> details</a>
           {/if}
         </td>

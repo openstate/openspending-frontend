@@ -5,7 +5,7 @@ const api = import.meta.env.PROD
 		: import.meta.env.API ?? 'http://host.docker.internal:3000'
 
 let error: string = ''
-export async function load({ url }) {
+export async function load({ url, fetch }) {
   let booleanOperator = '&'
   const q = url.searchParams.get('q')
   switch(url.searchParams.get('zoekmethode')?.toLowerCase()) {
@@ -29,6 +29,18 @@ export async function load({ url }) {
     Slug: string
     Type: SourceType,
     headline: string
+  }> = []
+
+  let detaildata: Array<{
+    Title: string,
+    Slug: string
+    Source: string
+    Code: string
+    Workspace: string
+    TitleType: "grootboek" | "kostenplaats",
+    Type: SourceType,
+    headline: string
+    rank: number
   }> = []
 
   if (q) {
@@ -55,7 +67,15 @@ export async function load({ url }) {
       }
     }))
 
+    detaildata =  await(fetch(`${api}/zoek/detaildata?q=${pgq}`).then(async res => {
+      if (res.ok) {
+        return res.json()
+      } else {
+        return []
+      }
+    }))
+
   }
   
-  return { result, sources, titel, workspaces: workspaces!, q, error, zoekmethode: url.searchParams.get('zoekmethode')};
+  return { result, detaildata, sources, titel, workspaces: workspaces!, q, error, zoekmethode: url.searchParams.get('zoekmethode')};
 }

@@ -2,12 +2,51 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import Currency from '$lib/Currency.svelte';
+	import { onMount } from 'svelte';
 	// import { DashLg, PlusLg } from 'svelte-bootstrap-icons';
   const grootboekRegels = (kostenplaats: string) => data.regels.filter(regel => regel.Kostenplaats === kostenplaats)
   const kostenplaatsRegels = (grootboek: string) => data.regels.filter(regel => regel.Grootboek === grootboek)
   export let data
   const setType = (type: 'grootboek' | 'kostenplaats' | 'regels') => goto(`/gegevens/${data.params.Entity}/details/${data.params.Slug}/${data.params.dataset}/${type}`)
+
+  onMount(() => {
+    if (document.location.hash) {
+      window.scroll()
+      const id = document.location.hash.replace(/^#/, '')
+      const row = id.startsWith('G-')
+        ? document.querySelector(`[data-grootboek="${id}"]`)
+        : document.querySelector(`[data-kostenplaats="${id}"]`)
+      if (row) {
+        row.classList.add('highlight')
+        setTimeout(() => {
+          row.classList.remove('highlight')
+          row.classList.add('no-highlight')
+          row.classList.add('table-active')
+        }, 500)
+
+      }
+    }
+  })
 </script>
+<style>
+
+:global(tr.highlight, tr.highlight td) {
+  transition-property: background-color color;
+  transition-timing-function: ease-in-out;
+  background-color: var(--magenta);
+  color: White;
+  transition-duration: 0.5s;
+}
+
+:global(tr.no-highlight, tr.no-highlight td) {
+  transition-property: background-color color;
+  transition-timing-function: ease-in-out;
+  background-color: inherit;
+  color: inherit;
+  transition-duration: 0.5s;
+}
+
+</style>
 <svelte:head>
 	<title>Detaildata {data.bron.Title} | Open Spending</title>
 	<meta property="og:title" content="Detaildata {data.bron.Title}} | Open Spending" />
@@ -63,13 +102,21 @@
   </thead>
   <tbody>
   {#each data.detaildata as detail}
-    <tr>
+    <tr 
+    data-grootboek="G-{detail.Grootboek}" 
+    data-kostenplaats="K-{detail.Kostenplaats}"
+    >
       {#if data.params.type==='regels' || data.params.type==='grootboek'}
-      <td>{detail.Grootboek}</td>
+      <td>
+        {detail.Grootboek}
+        <div style="position: relative; top: -120px;" id="G-{detail.Grootboek}"></div>
+      </td>
       <td>{detail.GrootboekOmschrijving}</td>
       {/if}
       {#if data.params.type==='regels' || data.params.type==='kostenplaats'}
-      <td>{detail.Kostenplaats}</td>
+      <td>{detail.Kostenplaats} 
+        <div style="position: relative; top: -120px;" id="K-{detail.Kostenplaats}"></div>
+      </td>
       <td>{detail.KostenplaatsOmschrijving}</td>
       {/if}
       <td class="text-end fw-bold"><Currency ammount={detail.Bedrag}/></td>
