@@ -1,5 +1,5 @@
 export type SourceType = 'Gemeenten' | 'Provincies' | 'GemeenschappelijkeRegelingen' | 'Waterschappen'
-export type Verslagsoort = 'begroting' | 'realisatie' | 'Q1' | 'Q3' | 'Q3' | 'Q4'
+export type Verslagsoort = 'begroting' | 'realisatie' | 'Q1' | 'Q2' | 'Q3' | 'Q4'
 
 export interface Bron {
 	Key: string
@@ -28,8 +28,7 @@ export interface DatasetTotals {
 }
 
 export interface SingleDataSet extends DataSet {
-	verslagsoorten: Verslagsoort[]
-	totaal: DatasetTotals
+	verslagsoorten: Record<Verslagsoort, DatasetTotals>
 }
 
 export interface BronMetDatasets extends Bron {
@@ -56,6 +55,7 @@ export interface BronData {
 	data?: BronData[]
 }
 
+export type DetailDataPerCategorie = Record<string, DetailData[]>
 export interface DetailData {
   ID: number
   Categorie: string
@@ -69,6 +69,7 @@ export interface DetailData {
   KostenplaatsOmschrijving: string
   PostOmschrijving: string
   CategorieOmschrijving: string
+  CategorieID: number
 }
 
 export interface BronDetail extends Bron {

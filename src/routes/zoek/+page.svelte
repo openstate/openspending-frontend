@@ -111,9 +111,9 @@
       </ol>
     </div>
     <div class="col-6">
-      <h3 class="fs-6">Bronnen</h3>
+      <h3 class="fs-6">Organisaties</h3>
       {#if data.sources.length === 0}
-      <em>geen bronnen gevonden</em>
+      <em>geen organisaties gevonden</em>
       {/if}
       <ol>
       {#each data.sources as result}
@@ -126,7 +126,7 @@
       {/if}
       <ol>
       {#each data.detaildata as result}
-        <li><a href="/gegevens/{result.Type}/details/{result.Slug}/{result.Workspace}/{result.TitleType}#{result.TitleType === 'grootboek' ? 'G' : 'K'}-{result.Code}">{@html result.headline}<br></a><small>{getType(result.Type)} {result.Source} </small></li>
+        <li><a href="/gegevens/detaildata/redirect-zoekresultaat/resultaat/{JSON.stringify(result)}">{@html result.headline}<br></a><small>{getType(result.Type)} {result.Source} </small></li>
       {/each}
       </ol>
     </div>

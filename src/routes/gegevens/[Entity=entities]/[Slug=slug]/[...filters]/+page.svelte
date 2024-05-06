@@ -2,11 +2,13 @@
 	import { goto } from '$app/navigation';
 	import Currency from '$lib/Currency.svelte';
 	import { ucfirst } from '$lib/utils';
-	import type { BronData, BronDetail, DataSet, Verslagsoort } from '../../../../../Types.js';
+	import type { BronData, BronDetail, DataSet, SingleDataSet, Verslagsoort } from '../../../../../Types.js';
 	import DataRow from '$lib/DataRow.svelte';
 	import { XSquareFill, FileEarmarkSpreadsheet } from 'svelte-bootstrap-icons';
 	import { onMount } from 'svelte';
 	import { api } from '../../../../../stores.js'
+  import { isLive } from '$lib/utils.js';
+  import { page } from '$app/stores';
 
   export let data;
   
@@ -36,7 +38,7 @@
 		return await go()
 	}
 
-  const isThereAnyDetaildataAvaliable = () =>  Object.values(data.datasetsWithDetaildata).filter(o => o.length>0).length > 0
+  const isThereAnyDetaildataAvaliable = () =>  isLive($page.url.hostname) ? false :  Object.values(data.datasetsWithDetaildata).filter(o => o.length>0).length > 0
 
   // const datasetHasDetails = (bron: DataSet) => {
   //   bron.dataset.Period
@@ -132,7 +134,9 @@
 		const {Chart} = await import("chart.js/auto");
 		Chart.getChart('chart1')?.destroy()
 		Chart.getChart('chart2')?.destroy()
+    let i = -1
 		for (const b of data.requested) {
+      i = i + 1
 			const bron = data.bronnen.filter(bron => `${b.Period}/${b.Slug}/${b.Verslagsoort}` === `${bron.dataset.Period}/${bron.Slug}/${bron.Verslagsoort}`).shift()
 			if (bron === undefined) return
 			const url = `${$api}/bronnen/${data.params.Entity}/${bron.Slug}/trends`
@@ -140,7 +144,7 @@
 				.then(r => r.json())
 				.then(r => r.trends as Array<{Period: number, totaal: number}>)
 				.then(trend => {
-					const peilBegrotingBedrag = bron.dataset.totaal.Baten ?? 1
+					const peilBegrotingBedrag = getDatasetTotals(i, bron.dataset).Baten ?? 1
 					const deltas = (): Array<{Period: number, delta: number}> =>
 						trend.map(row => {
 							return {
@@ -192,6 +196,9 @@
       })
 		await charts()
   })
+
+  const getDatasetTotals = (ix: number, dataset: SingleDataSet) => dataset.verslagsoorten[data.requested[ix].Verslagsoort]
+  
 </script>
 <style>
 	.hidden { display: none;}
@@ -243,8 +250,12 @@
 </nav>
 
 <h1>{titles}</h1>
-<h2 class="fs-4 mb-5">{Bron.dataset.Summary} <br><em class="fs-6">({#if !metric}bedragen in € 1.000, {/if}bron: {Bron.dataset.Title})</em></h2>
-
+<div class="mb-5">
+  <h2 class="fs-4">{Bron.dataset.Summary} <br><em class="fs-6">({#if !metric}bedragen in € 1.000, {/if}bron: {Bron.dataset.Title})</em></h2>
+  {#if isThereAnyDetaildataAvaliable()}
+    <small style="font-weight: normal">(een <code>*</code> in de keuze voor Jaar geeft aan dat er detaildata beschikbaar is voor dat jaar)</small>
+  {/if}
+</div>
 <div class="row mb-5">
 	<div class="col-sm-12 col-m-9 col-lg-8">
 		<table class="table summaries ">
@@ -255,16 +266,12 @@
 					<td></td>
 					<th class="text-end">Baten</th>
 					<th class="text-end">Lasten</th>
-					<th class="text-end">Jaar
-            {#if isThereAnyDetaildataAvaliable()}
-            <small style="font-weight: normal">(* detaildata)</small>
-            {/if}
-          </th>
+					<th class="text-end">Jaar</th>
 					<th class="text-end">Periode</th>
 				</tr>
 			</thead>
 			<tbody>
-				{#each data.bronnen as bron}
+				{#each data.bronnen as bron, ix}
 				<tr>
 					<th scope="row" style="width:1px;">
 						<a href="{'#'}" style="margin-right: 5px" on:click={() => verwijderBron(bron)}><XSquareFill/></a>
@@ -279,13 +286,13 @@
             </a>
             {/if}
 					</th>
-					<td class="text-end" style="white-space: nowrap;"><Currency ammount={bron.dataset.totaal.Baten}/></td>
-					<td class="text-end" style="white-space: nowrap;"><Currency ammount={bron.dataset.totaal.Lasten}/></td>
+					<td class="text-end" style="white-space: nowrap;"><Currency ammount={getDatasetTotals(ix, bron.dataset).Baten}/></td>
+					<td class="text-end" style="white-space: nowrap;"><Currency ammount={getDatasetTotals(ix, bron.dataset).Lasten}/></td>
 					<td class="text-end">
 						<select class="form-select" on:change={(ev) => setPeriode(bron, ev.currentTarget.value)}>
 							{#each bron.datasets as dataset}
 							<option selected={bron.dataset.Period === dataset.Period}>{dataset.Period} 
-              {#if dataset.hasDetaildata}
+              {#if dataset.hasDetaildata && !isLive($page.url.hostname)}
               *
               {/if}
               </option>
@@ -293,11 +300,11 @@
 						</select>
 					</td>
 					<td class="text-end">
-						{#if bron.dataset.verslagsoorten.length === 1}
+						{#if Object.keys(bron.dataset.verslagsoorten).length === 1}
 						{bron.Verslagsoort}
 						{:else}
 						<select class="form-select" on:change={(ev) => setVerslagsoort(bron, ev.currentTarget.value)}>
-							{#each bron.dataset.verslagsoorten as verslagsoort}
+							{#each Object.keys(bron.dataset.verslagsoorten) as verslagsoort}
 							<option selected={bron.Verslagsoort === verslagsoort}>{verslagsoort}</option>
 							{/each}
 						</select>
@@ -384,8 +391,8 @@
 				<th>&nbsp;</th>
 				{#each data.bronnen as bron}
 				<td class="text-center">
-          {#if (bron.dataset.hasDetaildata)}
-          <a href="/gegevens/{bron.Type}/details/{bron.Slug}"><FileEarmarkSpreadsheet/> details</a>
+          {#if (bron.dataset.hasDetaildata && !isLive($page.url.hostname))}
+          <a href="/gegevens/{bron.Type}/details/{bron.Slug}/{bron.dataset.Identifier}"><FileEarmarkSpreadsheet/> details</a>
           {/if}
         </td>
 				{/each}
@@ -415,11 +422,11 @@
 			<td></td>
 			<td></td>
 			<td></td>
-			{#each data.bronnen as bron}
-				<th class="text-end"><Currency classes="text-white p-1 bg-primary" ammount={normalize(bron.dataset.totaal.Baten, bron)} /></th>
+			{#each data.bronnen as bron, ix}
+				<th class="text-end"><Currency classes="text-white p-1 bg-primary" ammount={normalize(getDatasetTotals(ix, bron.dataset).Baten, bron)} /></th>
 			{/each}
-			{#each data.bronnen as bron}
-				<th class="text-end"><Currency classes="text-white p-1 bg-info" ammount={normalize(bron.dataset.totaal.Lasten, bron)} /></th>
+			{#each data.bronnen as bron, ix}
+				<th class="text-end"><Currency classes="text-white p-1 bg-info" ammount={normalize(getDatasetTotals(ix, bron.dataset).Lasten, bron)} /></th>
 			{/each}
 		</tfoot>
 	</table>

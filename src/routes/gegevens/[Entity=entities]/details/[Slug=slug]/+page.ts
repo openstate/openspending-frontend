@@ -14,7 +14,7 @@ export async function load({ fetch, params }) {
         if (data.length === 0)
          return redirect(307, `/gegevens/${params.Entity}/${params.Slug}`)
         else
-          return redirect(307, `/gegevens/${params.Entity}/details/${params.Slug}/${data[0].Identifier}/grootboek`)
+          return redirect(307, `/gegevens/${params.Entity}/details/${params.Slug}/${data[0].Identifier}/kostenplaats`)
       }
     })
   

@@ -11,5 +11,5 @@ export async function load({ params }) {
       break
 
   }
-	return {entity};
+	return {entity }
 }

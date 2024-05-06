@@ -11,4 +11,9 @@ declare global {
 	}
 }
 
+declare module "$env/static/public" {
+  export const ENABLE_DETAILDATA: string;
+}
+
+
 export {};

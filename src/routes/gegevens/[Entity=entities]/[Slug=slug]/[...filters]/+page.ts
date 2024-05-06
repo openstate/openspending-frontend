@@ -1,5 +1,6 @@
 import { redirect } from '@sveltejs/kit';
 import type { BronDetail, DataSet } from '../../../../../Types';
+
 const api = import.meta.env.PROD
 		? 'https://data.openspending.nl'
 		: import.meta.env.API ?? 'http://host.docker.internal:3000'
@@ -44,11 +45,12 @@ export async function load({ fetch, params }) {
   const bronnen: BronDetail[] = []
 
   for (const Slug of requested) {
-
     //test if Bron has Verslagsoort, otherwise use other:
     const verslagsoorten = await fetch(`${api}/bronnen/${params.Entity}/${Slug.Slug}/${Slug.Period}`)
       .then(r => r.json())
-      .then(a => a.dataset.verslagsoorten as Verslagsoort[])
+      .then(a => {
+        return Object.keys(a.dataset.verslagsoorten) as Verslagsoort[]
+      })
     if (!verslagsoorten.includes(Slug.Verslagsoort)) {
       Slug.Verslagsoort = verslagsoorten[0]
     }

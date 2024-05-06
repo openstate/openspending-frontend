@@ -3,11 +3,14 @@
 	import { goto } from '$app/navigation';
 	import Currency from '$lib/Currency.svelte';
 	import { onMount } from 'svelte';
-	// import { DashLg, PlusLg } from 'svelte-bootstrap-icons';
-  const grootboekRegels = (kostenplaats: string) => data.regels.filter(regel => regel.Kostenplaats === kostenplaats)
-  const kostenplaatsRegels = (grootboek: string) => data.regels.filter(regel => regel.Grootboek === grootboek)
+	// import { DashSquareFill, PlusSquare, PlusSquareFill, Square } from 'svelte-bootstrap-icons';
+  const grootboekRegels = (categorie: string, kostenplaats: string) => data.regels[categorie].filter(regel => regel.Kostenplaats === kostenplaats)
+  const kostenplaatsRegels = (categorie: string, grootboek: string) => data.regels[categorie].filter(regel => regel.Grootboek === grootboek)
   export let data
-  const setType = (type: 'grootboek' | 'kostenplaats' | 'regels') => goto(`/gegevens/${data.params.Entity}/details/${data.params.Slug}/${data.params.dataset}/${type}`)
+  const setType = (type: 'grootboek' | 'kostenplaats' | 'regels') => goto(`/gegevens/${data.params.Entity}/details/${data.params.Slug}/${data.params.dataset}/${data.params.verslagsoort}/${type}`)
+
+  const categoryID = (category: string) => parseInt(category.split('|')[0])
+  const categoryOmschrijving = (category: string) => category.split('|')[1]
 
   onMount(() => {
     if (document.location.hash) {
@@ -73,7 +76,11 @@
 
 
 <h1>Detaildata {data.bron.Title}</h1>
-<h2 class="fs-4 mb-5">{data.dataset.Summary} <em><br>bron: {data.dataset.Title})</em></h2>
+<div class="mb-5">
+  <h2 class="fs-4">{data.dataset.Summary} <em><br>bron: {data.dataset.Title})</em></h2>
+  <p><small><a href="/gegevens/detaildata">klik hier om meer organisaties met detaildata te bekijken &hellip;</a></small></p>
+</div>
+
 <div class="row">
   <div class="col-12">
     <ul class="nav nav-tabs">
@@ -101,44 +108,56 @@
     </tr>
   </thead>
   <tbody>
-  {#each data.detaildata as detail}
-    <tr 
-    data-grootboek="G-{detail.Grootboek}" 
-    data-kostenplaats="K-{detail.Kostenplaats}"
-    >
-      {#if data.params.type==='regels' || data.params.type==='grootboek'}
-      <td>
-        {detail.Grootboek}
-        <div style="position: relative; top: -120px;" id="G-{detail.Grootboek}"></div>
-      </td>
-      <td>{detail.GrootboekOmschrijving}</td>
-      {/if}
-      {#if data.params.type==='regels' || data.params.type==='kostenplaats'}
-      <td>{detail.Kostenplaats} 
-        <div style="position: relative; top: -120px;" id="K-{detail.Kostenplaats}"></div>
-      </td>
-      <td>{detail.KostenplaatsOmschrijving}</td>
-      {/if}
-      <td class="text-end fw-bold"><Currency ammount={detail.Bedrag}/></td>
-    </tr>
-    {#if data.params.type==='kostenplaats'}
-    {#each grootboekRegels(detail.Kostenplaats) as regel}
-    <tr>
+    {#each Object.keys(data.detaildata) as category}
+    <tr data-category-id="{categoryID(category)}">
       <td></td>
-      <td class="text-secondary">{regel.GrootboekOmschrijving}</td>
-      <td class="text-end text-secondary"><Currency ammount={regel.Bedrag}/></td>
-    </tr>
-    {/each}
-    {/if}
-    {#if data.params.type==='grootboek'}
-    {#each kostenplaatsRegels(detail.Grootboek) as regel}
-    <tr>
+      {#if data.params.type==='regels'}
+      <th colspan="3"><h3 class="fs-5">{categoryOmschrijving(category)}</h3></th>
+      {:else}
+      <th><h3 class="fs-5">{categoryOmschrijving(category)}</h3></th>
+      {/if}
       <td></td>
-      <td class="text-secondary">{regel.KostenplaatsOmschrijving}</td>
-      <td class="text-end text-secondary"><Currency ammount={regel.Bedrag}/></td>
     </tr>
+      {#each data.detaildata[category] as detail}
+        <tr 
+        data-grootboek="G-{detail.Grootboek}" 
+        data-kostenplaats="K-{detail.Kostenplaats}"
+        data-category="{detail.CategorieID}"
+        >
+          {#if data.params.type==='regels' || data.params.type==='grootboek'}
+          <td>
+            {detail.Grootboek}
+            <div style="position: relative; top: -120px;" id="G-{detail.Grootboek}"></div>
+          </td>
+          <td>{detail.GrootboekOmschrijving}</td>
+          {/if}
+          {#if data.params.type==='regels' || data.params.type==='kostenplaats'}
+          <td>{detail.Kostenplaats} 
+            <div style="position: relative; top: -120px;" id="K-{detail.Kostenplaats}"></div>
+          </td>
+          <td>{detail.KostenplaatsOmschrijving}</td>
+          {/if}
+          <td class="text-end fw-bold"><Currency ammount={detail.Bedrag}/></td>
+        </tr>
+        {#if data.params.type==='kostenplaats'}
+        {#each grootboekRegels(category, detail.Kostenplaats) as regel}
+        <tr>
+          <td></td>
+          <td class="text-secondary">{regel.Grootboek} | {regel.GrootboekOmschrijving}</td>
+          <td class="text-end text-secondary"><Currency ammount={regel.Bedrag}/></td>
+        </tr>
+        {/each}
+        {/if}
+        {#if data.params.type==='grootboek'}
+        {#each kostenplaatsRegels(category, detail.Grootboek) as regel}
+        <tr>
+          <td></td>
+          <td class="text-secondary">{regel.Kostenplaats} | {regel.KostenplaatsOmschrijving}</td>
+          <td class="text-end text-secondary"><Currency ammount={regel.Bedrag}/></td>
+        </tr>
+        {/each}
+        {/if}
+      {/each}
     {/each}
-    {/if}
-  {/each}
   </tbody>
 </table>

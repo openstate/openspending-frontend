@@ -25,6 +25,7 @@
 
 	$: active = (menuItem: MenuItem): boolean => 
 		$page.route.id === menuItem.route || ($page.route.id??'-').split('/', 2).join('/') === menuItem.route
+      || (($page.route.id?.startsWith('/gegevens') ?? false) && menuItem.route === '/')
 
 	onMount(() => {
 		const header = document.querySelector('header');

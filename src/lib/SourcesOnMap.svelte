@@ -1,6 +1,10 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import type { Adres, Bron, SourceType } from '../Types';
+  import { page } from '$app/stores';
+	import { isLive } from './utils';
+
+
   export let Entity: SourceType
   import 'leaflet/dist/leaflet.css';
   import { api } from '../stores.js'
@@ -61,11 +65,16 @@
 
   onMount(async () => {
     const L = await import('leaflet')
-    map = L.map('map').setView([52.242111, 5.633167], 7);
+    map = L.map('map').setView([52.242111, 5.633167], 8);
     L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
       attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-    }).addTo(map);
+    })
+      // .addTo(map);
     
+     L.tileLayer("https://service.pdok.nl/brt/achtergrondkaart/wmts/v2_0/standaard/EPSG:3857/{z}/{x}/{y}.png", {
+        id: "brt",
+        attribution: 'Kaartgegevens &copy; <a href="https://www.kadaster.nl/" target="_blank" rel="noopener">Kadaster</a>'
+    }).addTo(map);
 
     type FeatureProperties = {
       statcode: string,
@@ -213,6 +222,7 @@
     line-height: 2.5em;
   }
 </style>
+
 <div class="row">
   <div class="col-12">
     <ul class="nav nav-underline">
@@ -245,10 +255,11 @@
       <input id="find-source" aria-label="Zoek" class="form-control" type="text" size="20" placeholder="zoek {Entity === 'GemeenschappelijkeRegelingen' ? 'Gem. regelingen' : Entity} &hellip;">
       <span class="input-group-text"><kbd>/</kbd></span>
     </div>
-    {#if Entity === 'Gemeenten'}
+    {#if Entity === 'Gemeenten' && !isLive($page.url.hostname)}
     <div class="input-group mt-2">
     <input class="form-check-input" type="checkbox" on:change={load} id="onlyDetailData" bind:checked={onlyDetailData} />
-    <label class="form-check-label" style="padding-left: 10px;" for="onlyDetailData">Alleen instellingen met detaildata.</label>
+    <label class="form-check-label" style="padding-left: 10px;" for="onlyDetailData">Alleen instellingen met <a href="/gegevens/detaildata">detaildata</a>.</label>
+    
     </div>
     {/if}
     <div id="Sources">

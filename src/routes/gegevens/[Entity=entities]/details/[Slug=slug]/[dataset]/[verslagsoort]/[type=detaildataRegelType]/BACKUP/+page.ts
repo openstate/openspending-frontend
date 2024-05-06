@@ -1,5 +1,5 @@
 import { error } from '@sveltejs/kit';
-import type { BronDetail, DataSet, DetailData, SourceType } from '../../../../../../../Types';
+import type { BronDetail, DataSet, DetailDataPerCategorie, SourceType } from '../../../../../../../../../Types';
 
 const api = import.meta.env.PROD
 		? 'https://data.openspending.nl'
@@ -22,21 +22,21 @@ export async function load({ params, fetch}) {
     })
     .then(bron => bron as BronDetail)
 
-  const detaildata = await fetch(`${api}/detaildata/${params.Entity}/${bron.Key}/${params.dataset}/${params.type}`)
+  const detaildata = await fetch(`${api}/detaildata/${params.Entity}/${bron.Key}/${params.dataset}/${params.verslagsoort}/${params.type}`)
     .then(res => {
       if (!res.ok) throw error(404)
       return res.json()
     })
-    .then(bron => bron as DetailData[])
+    .then(bron => bron as DetailDataPerCategorie)
   
   let regels = detaildata
   if (params.type !== 'regels') {
-    regels = await fetch(`${api}/detaildata/${params.Entity}/${bron.Key}/${params.dataset}/regels`)
+    regels = await fetch(`${api}/detaildata/${params.Entity}/${bron.Key}/${params.dataset}/${params.verslagsoort}/regels`)
     .then(res => {
       if (!res.ok) throw error(404)
       return res.json()
     })
-    .then(bron => bron as DetailData[])
+    .then(bron => bron as DetailDataPerCategorie)
   }
 
   const dataset = await fetch(`${api}/datasets/${params.dataset}`)
