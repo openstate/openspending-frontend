@@ -1,12 +1,11 @@
 import { redirect } from '@sveltejs/kit';
 import type { BronMetDatasets } from '../../../../Types';
+import { api } from '../../../../stores';
+import { get } from 'svelte/store'
 
-const api = import.meta.env.PROD
-		? 'https://data.openspending.nl'
-		: 'http://host.docker.internal:3000'
 
 export async function load({ params, fetch }) {
-	await fetch(`${api}/bronnen/${params.Entity}/${params.Slug}`)
+	await fetch(`${get(api)}/bronnen/${params.Entity}/${params.Slug}`)
 		.then(async res => {
 			if (!res.ok) {
 				throw redirect(307, '/');

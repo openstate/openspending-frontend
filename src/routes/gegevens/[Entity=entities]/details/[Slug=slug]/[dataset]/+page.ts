@@ -1,19 +1,17 @@
 import { error, redirect } from '@sveltejs/kit'
 import type { BronDetail } from '../../../../../../Types'
+import { api } from '../../../../../../stores'
+import { get } from 'svelte/store'
 
-const api = import.meta.env.PROD
-		? 'https://data.openspending.nl'
-		: import.meta.env.API ?? 'http://host.docker.internal:3000'
-    
 export async function load({ params, fetch}) {
-  const bron = await fetch(`${api}/bronnen/${params.Entity}/${params.Slug}`)
+  const bron = await fetch(`${get(api)}/bronnen/${params.Entity}/${params.Slug}`)
     .then(res => {
       if (!res.ok) throw error(404)
       return res.json()
     })
     .then(bron => bron as BronDetail)
 
-  const periodes = await fetch(`${api}/detaildata/${params.Entity}/${bron.Key}/${params.dataset}/periodes`)
+  const periodes = await fetch(`${get(api)}/detaildata/${params.Entity}/${bron.Key}/${params.dataset}/periodes`)
     .then(res => {
       if (!res.ok) throw error(404)
       return res.json()

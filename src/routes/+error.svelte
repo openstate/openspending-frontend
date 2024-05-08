@@ -1,10 +1,6 @@
 <script lang="ts">
 	import { page } from '$app/stores';
 
-  const api = import.meta.env.PROD
-		? 'https://data.openspending.nl'
-		: 'http://host.docker.internal:3000'
-    
   const url = new URL($page.url)
   const path = url.pathname.split('/').filter(p => p)
   let bron: Bron | undefined
@@ -13,6 +9,9 @@
 	import { onMount } from 'svelte';
 	import type { Bron } from '../Types';
 	import { goto } from '$app/navigation';
+	import { api } from '../stores';
+  import { get } from 'svelte/store'
+
   let showError = false
   onMount(async () => {
     let slug = path.shift()
@@ -21,11 +20,11 @@
         entity = 'Provincies'
         slug = slug.replace('provincie-', '') + '-pv'
       }
-      bron = await  fetch(`${api}/bronnen/${entity}/${slug}`)
+      bron = await  fetch(`${get(api)}/bronnen/${entity}/${slug}`)
         .then(async res => {
           if (res.status === 404 && entity === 'Gemeenten') {
             entity = 'GemeenschappelijkeRegelingen'
-            return await fetch(`${api}/bronnen/${entity}/${slug}`)
+            return await fetch(`${get(api)}/bronnen/${entity}/${slug}`)
               .then(async res => {
                 if (res.ok) return await res.json()
               })

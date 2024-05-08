@@ -1,8 +1,6 @@
 import { redirect } from '@sveltejs/kit'
-
-const api = import.meta.env.PROD
-		? 'https://data.openspending.nl'
-		: import.meta.env.API ?? 'http://host.docker.internal:3000'
+import { api } from '../../../../../stores'
+import { get } from 'svelte/store'
 
 type Resultaat = {
   Title: string
@@ -20,7 +18,7 @@ export async function load({ params, fetch }) {
   
   try {
     const resultaat = JSON.parse(params.filters.replace(/^resultaat\//, '')) as Resultaat
-    const url = `${api}/detaildata/redirect-zoekresultaat/Gemeenten/${resultaat.Slug}/${resultaat.Workspace}/${resultaat.TitleType}/${resultaat.Code}`
+    const url = `${get(api)}/detaildata/redirect-zoekresultaat/Gemeenten/${resultaat.Slug}/${resultaat.Workspace}/${resultaat.TitleType}/${resultaat.Code}`
     const path = await fetch(url)
       .then(async res => {
         if (!res.ok) redirect(302, '/')

@@ -1,9 +1,7 @@
 import { error } from '@sveltejs/kit';
 import type { SourceType, BronDetail } from '../../../../../../../../../Types';
-
-const api = import.meta.env.PROD
-		? 'https://data.openspending.nl'
-		: import.meta.env.API ?? 'http://host.docker.internal:3000'
+import { api } from '../../../../../../../../../stores';
+import { get } from 'svelte/store';
 
 type DataRow = {
   Code: string | number,
@@ -23,14 +21,14 @@ export async function load({ params, fetch}) {
       entity = params.Entity
       break
   }
-  const bron = await fetch(`${api}/bronnen/${entity}/${params.Slug}`)
+  const bron = await fetch(`${get(api)}/bronnen/${entity}/${params.Slug}`)
     .then(res => {
       if (!res.ok) throw error(404)
       return res.json()
     })
     .then(bron => bron as BronDetail)
   const dataset = bron.datasets.filter(dataset => dataset.Identifier === params.dataset).shift()!
-  const rows: DataRow[] = (await fetch(`${api}/detaildata/${entity}/${bron.Key}/${dataset.Identifier}/${params.verslagsoort}/per/categorie`)
+  const rows: DataRow[] = (await fetch(`${get(api)}/detaildata/${entity}/${bron.Key}/${dataset.Identifier}/${params.verslagsoort}/per/categorie`)
     .then(res => {
       if (!res.ok) throw error(404)
       return res.json()
@@ -59,7 +57,7 @@ export async function load({ params, fetch}) {
 
   }
   if ((params.type === 'grootboek' || params.type === 'kostenplaats') && filters.categorie.length > 0) {
-    const url = `${api}/detaildata/${entity}/${bron.Key}/${dataset.Identifier}/${params.verslagsoort}/per/categorie/${filters.categorie.join(',')}/${params.type}`
+    const url = `${get(api)}/detaildata/${entity}/${bron.Key}/${dataset.Identifier}/${params.verslagsoort}/per/categorie/${filters.categorie.join(',')}/${params.type}`
     await fetch(url)
       .then(async res => {
         if (!res.ok) return []
@@ -88,7 +86,7 @@ export async function load({ params, fetch}) {
       }
       for (const key of Object.keys(idsPerCategory)) {
         const $key = parseInt(key) as keyof typeof idsPerCategory
-        const url = `${api}/detaildata/${entity}/${bron.Key}/${dataset.Identifier}/${params.verslagsoort}/per/categorie/${key}/${params.type}/${idsPerCategory[$key].join(',')}/${params.type === 'grootboek' ? 'kostenplaats' : 'grootboek'}`
+        const url = `${get(api)}/detaildata/${entity}/${bron.Key}/${dataset.Identifier}/${params.verslagsoort}/per/categorie/${key}/${params.type}/${idsPerCategory[$key].join(',')}/${params.type === 'grootboek' ? 'kostenplaats' : 'grootboek'}`
         await fetch(url)
           .then(async res => {
             if (!res.ok) return

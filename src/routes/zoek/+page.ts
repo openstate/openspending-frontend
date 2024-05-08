@@ -1,8 +1,6 @@
+import { get } from 'svelte/store';
 import type { DataSet, SourceType } from '../../Types';
-
-const api = import.meta.env.PROD
-		? 'https://data.openspending.nl'
-		: import.meta.env.API ?? 'http://host.docker.internal:3000'
+import { api } from '../../stores';
 
 let error: string = ''
 export async function load({ url, fetch }) {
@@ -46,10 +44,10 @@ export async function load({ url, fetch }) {
   if (q) {
     if (url.searchParams.get('titel')) {
       titel = url.searchParams.get('titel')!
-      workspaces = await(fetch(`${api}/zoek/titel?q=${titel}`)).then(res => res.json())
+      workspaces = await(fetch(`${get(api)}/zoek/titel?q=${titel}`)).then(res => res.json())
     }
     const pgq = encodeURIComponent(booleanOperator === 'raw' ? q : q.split(' ').join(booleanOperator))
-    result = await(fetch(`${api}/zoek?q=${pgq}`).then(async res => {
+    result = await(fetch(`${get(api)}/zoek?q=${pgq}`).then(async res => {
       if (res.ok) {
         error = ''
         return res.json()
@@ -59,7 +57,7 @@ export async function load({ url, fetch }) {
       }
     }))
 
-    sources =  await(fetch(`${api}/zoek/bron?q=${pgq}`).then(async res => {
+    sources =  await(fetch(`${get(api)}/zoek/bron?q=${pgq}`).then(async res => {
       if (res.ok) {
         return res.json()
       } else {
@@ -67,7 +65,7 @@ export async function load({ url, fetch }) {
       }
     }))
 
-    detaildata =  await(fetch(`${api}/zoek/detaildata?q=${pgq}`).then(async res => {
+    detaildata =  await(fetch(`${get(api)}/zoek/detaildata?q=${pgq}`).then(async res => {
       if (res.ok) {
         return res.json()
       } else {

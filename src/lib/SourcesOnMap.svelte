@@ -2,11 +2,12 @@
 	import { onMount } from 'svelte';
 	import type { Adres, Bron, SourceType } from '../Types';
   import { page } from '$app/stores';
-	import { isLive } from './utils';
+	import { isLive, ucfirst } from './utils';
 
 
   export let Entity: SourceType
   import 'leaflet/dist/leaflet.css';
+  import { get } from 'svelte/store'
   import { api } from '../stores.js'
 	import { goto } from '$app/navigation';
 
@@ -15,6 +16,22 @@
   let error: Error | undefined
   let findSourceField: HTMLInputElement
   let onlyDetailData: boolean = false
+
+  const defaultStyle: L.PathOptions = {
+    fillColor: 'rgb(97, 168, 169)',
+    color: 'rgb(97, 168, 169)',
+    fillOpacity: 0.2
+  }
+  const hoverStyle: L.PathOptions = {
+    fillColor: 'rgb(200, 46, 148)',
+    fillOpacity: 0.8
+  }
+
+  const hasDetaildataFillColor = 'rgb(108, 202, 209)'
+  const hasDetailStyle: L.PathOptions = {
+    fillColor: hasDetaildataFillColor,
+    fillOpacity: 0.8
+  }
 
   const toggleOnlyDetaildata = () => {
     if (Entity === 'Gemeenten' && onlyDetailData === true) {
@@ -32,21 +49,24 @@
     switch (Entity) {
       case 'Provincies':
         LayerProvincies.addTo(map)
+        ActiveLayer = LayerProvincies
         break;
       case 'Gemeenten':
         LayerGemeenten.addTo(map)
+        ActiveLayer = LayerGemeenten
         break;
       case 'GemeenschappelijkeRegelingen':
         LayerGemeenschappelijkeRegelingen.addTo(map)
+        ActiveLayer = LayerGemeenschappelijkeRegelingen
         break;
     }
     load()
     goto(`/gegevens/${Entity}`)
   }
   const load = () => {
-    fetch(`${$api}/bronnen/${Entity}`)
+    fetch(`${get(api)}/bronnen/${Entity}`)
       .then(response => {
-        if (!response.ok) throw new Error(`Kan de bronnen niet laden: ${$api}/bronnen/${Entity} ${response.statusText}`)
+        if (!response.ok) throw new Error(`Kan de bronnen niet laden: ${get(api)}/bronnen/${Entity} ${response.statusText}`)
         return response.json()
       })
       .then($sources => {
@@ -58,10 +78,32 @@
         error = e
       })
 	};
+
+  const highlight = (entity: SourceType, key: string, highlight: boolean = true) => {
+    if (entity !== 'GemeenschappelijkeRegelingen') {
+      // @ts-ignore
+      const layer = ActiveLayer.getLayers().filter(l => l.feature.id === key).shift()
+      // @ts-ignore
+      layer.setStyle(highlight ? hoverStyle : layer.options.hasDetailData ? hasDetailStyle : defaultStyle)
+    }
+  }
+
+  const highlightGemeentesWithDetailData = () => {
+    // event is triggered before change:
+    const checked = !onlyDetailData
+    const keys = sources.filter(s => s.hasDetaildata).map(s => s.Key)
+    // @ts-ignore
+    const layers = LayerGemeenten.getLayers().filter(l => keys.includes(l.feature.id))
+    // @ts-ignore
+    layers.map(l => l.setStyle(checked ? hasDetailStyle: defaultStyle))
+    // @ts-ignore
+    layers.map(l => l.options.hasDetailData = checked)
+  }
   let map: L.Map
   let LayerGemeenten: L.GeoJSON
   let LayerProvincies:L.GeoJSON
   let LayerGemeenschappelijkeRegelingen:L.LayerGroup
+  let ActiveLayer:L.GeoJSON | L.LayerGroup
 
   onMount(async () => {
     const L = await import('leaflet')
@@ -86,7 +128,7 @@
 
     const clickLayer = async (ev: L.LeafletMouseEvent, feature: GeoJSON.Feature<GeoJSON.Geometry, any>, layer: L.Layer) => {
       const props = feature.properties as FeatureProperties
-      await fetch(`${$api}/bronnen/Key/${props.statcode}`)
+      await fetch(`${get(api)}/bronnen/Key/${props.statcode}`)
         .then(async res => {
           if (res.ok) {
             const Brontype = feature.properties.rubriek === 'gemeente' ? 'Gemeenten' : 'Provincies'
@@ -97,11 +139,9 @@
             clickmarker = L.marker(ev.latlng)
             let content = `
 				    <p class="fs-6">${source.Title}</p>
+            <p>${ucfirst(source.verslagsoort)} ${source.dataset.Period}:<br>Baten: € ${(1000 * source.totaal.Baten).toLocaleString()}<br>Lasten: € ${(source.totaal.Lasten * 1000).toLocaleString()}</p>
 				    <p><a href="/gegevens/${Brontype}/${source.Slug}">Ga naar gegevens &raquo;</a></p>
 				    `
-            const a = 1
-
-            content += `<p>Laatste gegevens (${source.dataset.Period}):<br>Baten: € ${(1000 * source.totals.Baten).toLocaleString()}<br>Lasten: € ${(source.totals.Lasten * 1000).toLocaleString()}</p>`
       			clickmarker.bindPopup(content);
             clickmarker.addTo(map)
             clickmarker.openPopup()
@@ -113,15 +153,6 @@
         })
     }
 
-    const defaultStyle: L.PathOptions = {
-      fillColor: 'rgb(97, 168, 169)',
-      color: 'rgb(97, 168, 169)',
-      fillOpacity: 0.2
-    }
-    const hoverStyle: L.PathOptions = {
-      fillColor: 'rgb(200, 46, 148)',
-      fillOpacity: 0.8
-    }
 
     const onEachFeature = (feature: GeoJSON.Feature<GeoJSON.Geometry, any>, layer: L.Layer) => {
       layer.bindTooltip(feature.properties.statnaam);
@@ -131,7 +162,7 @@
           e.target.setStyle(hoverStyle);
         },
         mouseout: (e) => {
-          e.target.setStyle(defaultStyle);
+          e.target.setStyle(e.target.options.hasDetailData ? hasDetailStyle : defaultStyle);
         }
       })
     }
@@ -143,7 +174,10 @@
           style: defaultStyle,
           onEachFeature
         })
-        if (Entity === 'Gemeenten') LayerGemeenten.addTo(map);
+        if (Entity === 'Gemeenten') {
+          LayerGemeenten.addTo(map);
+          ActiveLayer = LayerGemeenten
+        }
       })
     
     fetch('/geojson/Provincies.geojson')
@@ -153,7 +187,10 @@
           style: defaultStyle,
           onEachFeature,
         })
-        if (Entity === 'Provincies') LayerProvincies.addTo(map);
+        if (Entity === 'Provincies') {
+          LayerProvincies.addTo(map);
+          ActiveLayer = LayerProvincies
+        }
       })
 
     const factor = 2/3
@@ -166,7 +203,7 @@
         popupAnchor:  [factor * 0, factor * 20] // point from which the popup should open relative to the iconAnchor
     });
 
-    fetch(`${$api}/gemeenschappelijkeregeling/adres`)
+    fetch(`${get(api)}/gemeenschappelijkeregeling/adres`)
       .then(res => res.json() as Promise<Array<Adres>>)
       .then(adressen => {
         LayerGemeenschappelijkeRegelingen = new L.LayerGroup([])
@@ -183,7 +220,10 @@
             .bindTooltip(adres.Description)
             .addTo(LayerGemeenschappelijkeRegelingen)
         }
-        if (Entity === 'GemeenschappelijkeRegelingen') LayerGemeenschappelijkeRegelingen.addTo(map);
+        if (Entity === 'GemeenschappelijkeRegelingen') {
+          LayerGemeenschappelijkeRegelingen.addTo(map);
+          ActiveLayer = LayerGemeenschappelijkeRegelingen
+        }
         
       })
     
@@ -201,7 +241,15 @@
     })
     findSourceField.addEventListener('keyup', (ev) => {
       const q = findSourceField.value
-      if (q!=='') filteredSources = sources.filter(source => source.Title.toLowerCase().includes(q.toLowerCase()))
+      if (q!=='') filteredSources = sources
+        .filter(source => source.Title.toLowerCase().includes(q.toLowerCase()))
+        .filter(source => {
+          if (Entity === 'Gemeenten' && onlyDetailData === true) {
+            return source.hasDetaildata
+          } else {
+            return true
+          }
+        })
       else filteredSources = [...sources]
     })
     load()
@@ -257,15 +305,21 @@
     </div>
     {#if Entity === 'Gemeenten' && !isLive($page.url.hostname)}
     <div class="input-group mt-2">
-    <input class="form-check-input" type="checkbox" on:change={load} id="onlyDetailData" bind:checked={onlyDetailData} />
-    <label class="form-check-label" style="padding-left: 10px;" for="onlyDetailData">Alleen instellingen met <a href="/gegevens/detaildata">detaildata</a>.</label>
+    <input class="form-check-input" type="checkbox" on:change={() => {load(); highlightGemeentesWithDetailData();}} id="onlyDetailData" bind:checked={onlyDetailData} />
+    <label class="form-check-label" style="padding-left: 10px;" for="onlyDetailData">Alleen organisaties met <a href="/gegevens/detaildata">detaildata</a>.</label>
     
     </div>
     {/if}
     <div id="Sources">
       <ul class="list-unstyled mt-3" style="height: 640px; overflow: scroll;">
       {#each filteredSources as source}
-        <li><a href="/gegevens/{Entity}/{source.Slug}">{Entity === 'GemeenschappelijkeRegelingen' ? source.Description : source.Title}</a></li>
+        <li><a 
+          on:mouseover={() => highlight(Entity, source.Key)} 
+          on:mouseout={() => highlight(Entity, source.Key, false)} 
+          on:focus={() => {}}
+          on:blur={() => {}}
+          href="/gegevens/{Entity}/{source.Slug}">{Entity === 'GemeenschappelijkeRegelingen' ? source.Description : source.Title}
+          </a></li>
       {/each}
       </ul>
     </div>

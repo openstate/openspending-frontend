@@ -4,6 +4,8 @@
 	import { ucfirst } from '$lib/utils';
 	import { onMount } from 'svelte';
 	import { Download, ListUl, Record, XSquareFill } from 'svelte-bootstrap-icons';
+	import { api } from '../../stores';
+	import { get } from 'svelte/store';
 
   let loader: bootstrap.Modal;
   type Lijst = {
@@ -16,15 +18,12 @@
     }
   } 
   let lijst: Lijst| undefined
-	const api = import.meta.env.PROD
-		? 'https://data.openspending.nl'
-		: 'http://host.docker.internal:3000'
 	
 	const getUrl = () => `/lijstenmaker/${filter.volgorde.value}/${filter.aantal.value}/${filter.BL.value}/${filter.bron.value}/${filter.periode.value}X${filter.verslagsoort.value}/${filter.onderwerp.value}`
 
   const toonLijst = async () => {
     loader.show()
-    fetch(`${api}${getUrl()}`)
+    fetch(`${get(api)}${getUrl()}`)
       .then(async res => {
         if (res.ok) {
           lijst = await res.json()
@@ -48,7 +47,7 @@
     Object.values(lijst.lijst).map(row => data.push([
       `"${row.Title}"`,
       filter.BL.value === 'Baten' ? 1000 * row.Baten : 1000 * row.Lasten,
-      `https://test.openspending.nl/gegevens/${filter.bron.value}/per/hoofdfunctie/${row.Slug}/${filter.periode.value}/${getVerslagSoortVoorFrontendRoute(filter.verslagsoort.value.toString())}`
+      `/gegevens/${filter.bron.value}/per/hoofdfunctie/${row.Slug}/${filter.periode.value}/${getVerslagSoortVoorFrontendRoute(filter.verslagsoort.value.toString())}`
     ]))
     const csvContent = "data:text/csv;charset=utf-8," + data.map(row => row.join(",")).join("\n");
     const encodedUri = encodeURI(csvContent);
@@ -90,7 +89,7 @@
 
   }
 
-	// $: apiUrl = `${api}/lijstenmaker/top/${getTop()}/${lijsten.order.defaultValue}/${getVerslagsoort()}/bedragen/van/${getSourceType()}/in/${lijsten.year.defaultValue}/`
+	// $: apiUrl = `${get(api)}/lijstenmaker/top/${getTop()}/${lijsten.order.defaultValue}/${getVerslagsoort()}/bedragen/van/${getSourceType()}/in/${lijsten.year.defaultValue}/`
 	const periode: Record<string, number> = {}
 	for (let year = new Date().getFullYear(); year >= 2016; year--)  periode[year.toString()] = year
 	const lijsten: Record<string, Record<string, string | number>> = {
@@ -135,7 +134,7 @@
 	filter.periode = {label: new Date().getFullYear().toString(), value: new Date().getFullYear()}
 
 	const makeAutocomplete = async () => {
-		const data = await fetch(`${api}/zoek/onderwerpen/${filter.periode.value}/alles`).then(res => res.json())
+		const data = await fetch(`${get(api)}/zoek/onderwerpen/${filter.periode.value}/alles`).then(res => res.json())
 		const {Autocomplete} = await import('$lib/autocomplete');
 		const opts = { data, threshold: 1, maximumItems: 10, onSelectItem: (picked: {value: string, label: string}) => {
 			filter.onderwerp = picked
@@ -163,7 +162,7 @@
 	const updateRoute = async (filterName: keyof typeof filter, label: string, value: string | number) => {
 		filter[filterName] = {label, value}
 		if (filterName === 'periode') {
-			await fetch(`${api}/lijstenmaker/hoogste/10/${filter.bron.value}/${filter.periode.value}`)
+			await fetch(`${get(api)}/lijstenmaker/hoogste/10/${filter.bron.value}/${filter.periode.value}`)
 				.then(res => res.json())
 				.then(res =>  res as {$links: string[]})
 				.then(links => {
