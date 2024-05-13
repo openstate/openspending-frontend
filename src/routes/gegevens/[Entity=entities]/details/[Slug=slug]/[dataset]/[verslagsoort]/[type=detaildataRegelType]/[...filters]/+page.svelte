@@ -3,9 +3,11 @@
 	import Currency from '$lib/Currency.svelte';
 	import { isLive, ucfirst } from '$lib/utils.js';
 	import { onMount } from 'svelte';
-  import { DashSquareFill, PlusSquareFill } from 'svelte-bootstrap-icons';
+  import { DashSquareFill, PlusSquareFill, Download } from 'svelte-bootstrap-icons';
   export let data
   import { page } from '$app/stores';
+	import { api } from '../../../../../../../../../stores';
+  import { get } from 'svelte/store'
 
   $: idPrefix = data.params.type.substring(0, 1).toUpperCase()
 
@@ -29,6 +31,15 @@
         .sort((a, b) => a > b ? 1 : -1)
       goto(`/gegevens/Gemeenten/details/${data.params.Slug}/${data.params.dataset}/${data.params.verslagsoort}/${data.params.type}/categorie=${data.filters.categorie.join(',')}/grootboek=${data.filters.grootboek.join(',')}/kostenplaats=${data.filters.kostenplaats.join(',')}/#${row.id}`)
     }
+  }
+
+  const verslagsoortMod = (raw: string) => {
+    if (raw.endsWith('0')) return 'begroting'
+    if (raw.endsWith('1')) return 'Q1'
+    if (raw.endsWith('2')) return 'Q2'
+    if (raw.endsWith('3')) return 'Q3'
+    if (raw.endsWith('4')) return 'Q4'
+    if (raw.endsWith('5')) return 'realisatie'
   }
 
   onMount(() => {
@@ -95,11 +106,40 @@
     			{ucfirst(data.params.type)}
 			  </a>
 				<ul class="dropdown-menu">
-					<li><a class="dropdown-item" href="/gegevens/Gemeenten/details/{data.params.Slug}/{data.params.dataset}/{data.params.verslagsoort}/grootboek">Grootboek</a></li>
-					<li><a class="dropdown-item" href="/gegevens/Gemeenten/details/{data.params.Slug}/{data.params.dataset}/{data.params.verslagsoort}/kostenplaats">Kostenplaats</a></li>
+					<li><a class="dropdown-item" href="/gegevens/{data.params.Entity}/details/{data.params.Slug}/{data.params.dataset}/{data.params.verslagsoort}/grootboek/categorie/*">Grootboek</a></li>
+					<li><a class="dropdown-item" href="/gegevens/{data.params.Entity}/details/{data.params.Slug}/{data.params.dataset}/{data.params.verslagsoort}/kostenplaats/categorie/*">Kostenplaats</a></li>
 				</ul>
 			</span>
 		</li>
+    {#if data.periodes.length > 1}
+		<li class="breadcrumb-item" aria-current="page">periode</li>
+		<li class="breadcrumb-item" aria-current="page">
+			<span class="dropdown">
+			  <a href="{'#'}" class="dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+    			{data.dataset.Period}
+			  </a>
+				<ul class="dropdown-menu">
+          {#each data.periodes as periode}
+  					<li><a class="dropdown-item" href="/gegevens/{data.params.Entity}/details/{data.params.Slug}/{periode.Identifier}/{data.params.verslagsoort}/{data.params.type}/categorie/*">{periode.Period}</a></li>
+          {/each}
+				</ul>
+			</span>
+		</li>
+    {/if}
+    {#if data.verslagsoorten.length > 1}
+		<li class="breadcrumb-item" aria-current="page">
+			<span class="dropdown">
+			  <a href="{'#'}" class="dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+    			{verslagsoortMod(data.params.verslagsoort)}
+			  </a>
+				<ul class="dropdown-menu">
+          {#each data.verslagsoorten as verslagsoort}
+  					<li><a class="dropdown-item" href="/gegevens/{data.params.Entity}/details/{data.params.Slug}/{data.params.dataset}/{verslagsoort}/{data.params.type}/categorie/*">{verslagsoortMod(verslagsoort)}</a></li>
+          {/each}
+				</ul>
+			</span>
+		</li>
+    {/if}
 	</ol>
 </nav>
 
@@ -183,5 +223,5 @@ De detaildata van {data.dataset.Title} is helaas nog niet beschikbaar, probeer h
     {/each}
   </tbody>
 </table>
+<p class="mt-5"><a href="{get(api)}/detaildata/{data.params.Entity}/{data.bron.Key}/{data.dataset.Identifier}/{data.params.verslagsoort}.json"><button class="btn btn-primary"><Download/> download brondata</button></a></p>
 {/if}
-

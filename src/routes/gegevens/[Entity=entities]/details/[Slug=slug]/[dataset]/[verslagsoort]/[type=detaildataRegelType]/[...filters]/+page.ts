@@ -1,4 +1,4 @@
-import { error } from '@sveltejs/kit';
+import { error, redirect } from '@sveltejs/kit';
 import type { SourceType, BronDetail } from '../../../../../../../../../Types';
 import { api } from '../../../../../../../../../stores';
 import { get } from 'svelte/store';
@@ -28,6 +28,12 @@ export async function load({ params, fetch}) {
     })
     .then(bron => bron as BronDetail)
   const dataset = bron.datasets.filter(dataset => dataset.Identifier === params.dataset).shift()!
+  const verslagsoorten = (await fetch(`${get(api)}/detaildata/${entity}/${bron.Key}/${dataset.Identifier}/verslagsoorten`)
+    .then(r => r.json())) as string[]
+
+  if (params.verslagsoort === 'onbekend' || !verslagsoorten.includes(params.verslagsoort)) {
+    redirect(302, `/gegevens/${entity}/details/${bron.Slug}/${dataset.Identifier}/${verslagsoorten[0]}/kostenplaats/categorie/*`)
+  }
   const rows: DataRow[] = (await fetch(`${get(api)}/detaildata/${entity}/${bron.Key}/${dataset.Identifier}/${params.verslagsoort}/per/categorie`)
     .then(res => {
       if (!res.ok) throw error(404)
@@ -110,7 +116,11 @@ export async function load({ params, fetch}) {
     }
 
   }
-  
 
-  return { bron, dataset, params, rows, filters, grootboeken }
+  const periodes = await fetch(`${get(api)}/detaildata/${entity}/${bron.Key}`)
+    .then(res => res.json() )
+    .then(res => (res as Array<{Period: number, Identifier: string}>).sort((a, b) => a.Period>b.Period ? -1 : 1)
+      .map(row => {return {Period: row.Period, Identifier: row.Identifier}}))
+
+  return { bron, dataset, params, rows, filters, grootboeken, periodes, verslagsoorten }
 }

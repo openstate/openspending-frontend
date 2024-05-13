@@ -21,7 +21,7 @@ export async function load({ params, fetch}) {
       throw error(404)
     }
   const periode = periodes.pop()!.Verslagsoort
-   throw redirect(307, `/gegevens/${params.Entity}/details/${params.Slug}/${params.dataset}/${periode}/${params.type}/categorie/*`);
+  throw redirect(307, `/gegevens/${params.Entity}/details/${params.Slug}/${params.dataset}/${periode}/${params.type}/categorie/*`);
 
 }
 

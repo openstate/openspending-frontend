@@ -7,7 +7,6 @@
 
 	onMount(async () => {
 		if (!browser) return;
-
 		await import("bootstrap");
 	});
 	import '../app.scss';

@@ -11,16 +11,16 @@ export async function load({ params, fetch}) {
     })
     .then(bron => bron as BronDetail)
 
-  const periodes = await fetch(`${get(api)}/detaildata/${params.Entity}/${bron.Key}/${params.dataset}/periodes`)
+  const verslagsoorten = await fetch(`${get(api)}/detaildata/${params.Entity}/${bron.Key}/${params.dataset}/verslagsoorten`)
     .then(res => {
       if (!res.ok) throw error(404)
       return res.json()
     })
-    .then(periodes => periodes as Array<{ Verslagsoort: string }>)
-    if (periodes.length === 0) {
+    .then(verslagsoorten => verslagsoorten as Array<{ Verslagsoort: string }>)
+    if (verslagsoorten.length === 0) {
       throw error(404)
     }
-  const periode = periodes.pop()!.Verslagsoort
+  const periode = verslagsoorten.pop()!.Verslagsoort
    throw redirect(307, `/gegevens/${params.Entity}/details/${params.Slug}/${params.dataset}/${periode}/kostenplaats/categorie/*`);
 
 }
