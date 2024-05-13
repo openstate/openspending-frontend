@@ -183,8 +183,8 @@
     document.body.addEventListener('keydown', (ev) => {
       // @ts-ignore
       if (ev.target?.tagName.toUpperCase() == 'INPUT') return
-      ev.preventDefault()
       if(ev.key === '/') {
+        ev.preventDefault()
         findSource.focus()
         findSource.select()
       }

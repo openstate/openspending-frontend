@@ -2,14 +2,37 @@
 	import { goto } from '$app/navigation';
 	import Currency from '$lib/Currency.svelte';
 	import { isLive, ucfirst } from '$lib/utils.js';
-	import { onMount } from 'svelte';
-  import { DashSquareFill, PlusSquareFill, Download } from 'svelte-bootstrap-icons';
+	import { onMount, afterUpdate } from 'svelte';
+  import { DashSquareFill, PlusSquareFill, Download, SortNumericDownAlt, SortNumericUp } from 'svelte-bootstrap-icons';
   export let data
   import { page } from '$app/stores';
 	import { api } from '../../../../../../../../../stores';
   import { get } from 'svelte/store'
 
   $: idPrefix = data.params.type.substring(0, 1).toUpperCase()
+  $: hasFilters = (data.filters.categorie.length + data.filters.grootboek.length + data.filters.kostenplaats.length) > 0
+
+  const sort = (ev: Event | null) => {
+    if (ev) {
+      const button = ev.currentTarget as HTMLButtonElement
+      if (button.classList.contains('btn-primary')) {
+        data.sortering = undefined
+      } else {
+        if (data.sortering !== undefined) {
+          data.sortering.BL = button.dataset.bl  as keyof typeof button.dataset.BL
+          data.sortering.volgorde = button.dataset.volgorde as keyof typeof button.dataset.volgorde
+        } else {
+          data.sortering = {
+            BL: button.dataset.bl  as keyof typeof button.dataset.BL,
+            volgorde: button.dataset.volgorde as keyof typeof button.dataset.volgorde
+          }
+        }
+      }
+    } else {
+      data.sortering = undefined
+    }
+    goto(`/gegevens/Gemeenten/details/${data.params.Slug}/${data.params.dataset}/${data.params.verslagsoort}/${data.params.type}/categorie=${data.filters.categorie.join(',')}/grootboek=${data.filters.grootboek.join(',')}/kostenplaats=${data.filters.kostenplaats.join(',')}${getSortering()}`)
+  }
 
   const toggleRow = (ev: Event) => {
     const row = ev.currentTarget as HTMLTableRowElement
@@ -29,8 +52,14 @@
       data.filters[key as keyof typeof data.filters] = filter
         .filter(v => v.trim()!=='')
         .sort((a, b) => a > b ? 1 : -1)
-      goto(`/gegevens/Gemeenten/details/${data.params.Slug}/${data.params.dataset}/${data.params.verslagsoort}/${data.params.type}/categorie=${data.filters.categorie.join(',')}/grootboek=${data.filters.grootboek.join(',')}/kostenplaats=${data.filters.kostenplaats.join(',')}/#${row.id}`)
+      goto(`/gegevens/Gemeenten/details/${data.params.Slug}/${data.params.dataset}/${data.params.verslagsoort}/${data.params.type}/categorie=${data.filters.categorie.join(',')}/grootboek=${data.filters.grootboek.join(',')}/kostenplaats=${data.filters.kostenplaats.join(',')}${getSortering()}/#${row.id}`)
     }
+  }
+
+  const getSortering = () => {
+    if (data.sortering !== undefined)
+      return `/sorteer/${data.sortering.BL}/${data.sortering.volgorde}`
+    else return ''
   }
 
   const verslagsoortMod = (raw: string) => {
@@ -42,10 +71,11 @@
     if (raw.endsWith('5')) return 'realisatie'
   }
 
-  onMount(() => {
+  afterUpdate(() => {
     if (document.location.hash) {
       const id = document.location.hash.replace(/^#/, '')
       const row = document.querySelector(`[id="${id}"]`)
+      setTimeout(() => window.scrollBy(0, -80), 100)
       if (row) {
         row.classList.add('highlight')
         setTimeout(() => {
@@ -53,9 +83,18 @@
           row.classList.add('no-highlight')
           row.classList.add('table-active')
         }, 500)
-
       }
     }
+
+    document.querySelectorAll('.btn-sort').forEach(btn =>  btn.classList.remove('btn-primary'))
+
+    if (data.sortering) {
+      const btn = document.querySelector(`[data-bl="${data.sortering.BL}"][data-volgorde="${data.sortering.volgorde}"]`)
+      btn?.classList.remove('btn-light')
+      btn?.classList.add('btn-primary')
+    }
+  })
+  onMount(() => {
   })
   </script>
 <svelte:head>
@@ -66,6 +105,7 @@
   .togglerow {width: 1px}
   .l2 {padding-left: 36px}
   tbody > tr { cursor: pointer;}
+  thead > tr.sort { cursor: inherit;}
 
 :global(tr.highlight, tr.highlight td) {
   transition-property: background-color color;
@@ -163,6 +203,21 @@ De detaildata van {data.dataset.Title} is helaas nog niet beschikbaar, probeer h
       <th class="text-end">Baten</th>
       <th class="text-end">Lasten</th>
     </tr>
+    {#if hasFilters}
+    <tr class="sort">
+      <td></td>
+      <td></td>
+      <td></td>
+      <th class="text-end">
+        <button data-bl="Baten" data-volgorde="aflopend" class="btn-sort btn btn-light" on:click={sort}><SortNumericDownAlt /></button>
+        <button data-bl="Baten" data-volgorde="oplopend" class="btn-sort btn btn-light"on:click={sort}><SortNumericUp /></button>
+      </th>
+      <th class="text-end">
+        <button data-bl="Lasten" data-volgorde="aflopend" class="btn-sort btn btn-light" on:click={sort}><SortNumericDownAlt /></button>
+        <button data-bl="Lasten" data-volgorde="oplopend" class="btn-sort btn btn-light"on:click={sort}><SortNumericUp /></button>
+      </th>
+    </tr>
+    {/if}
   </thead>
   <tbody>
     {#each data.rows as row}

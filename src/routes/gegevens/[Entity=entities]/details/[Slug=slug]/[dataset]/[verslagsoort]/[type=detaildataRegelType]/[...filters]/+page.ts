@@ -3,7 +3,7 @@ import type { SourceType, BronDetail } from '../../../../../../../../../Types';
 import { api } from '../../../../../../../../../stores';
 import { get } from 'svelte/store';
 
-type DataRow = {
+export type DataRow = {
   Code: string | number,
   Titel: string,
   Baten: number,
@@ -42,6 +42,13 @@ export async function load({ params, fetch}) {
 
   const rawFilters = params.filters.split('/')
     .filter(entry => entry.match(/^(categorie|grootboek|kostenplaats)=/))
+
+  let sortering: {BL: 'Baten' | 'Lasten', volgorde: 'aflopend'|'oplopend'} | undefined
+  const re = /.+sorteer\/(Baten|Lasten)\/(aflopend|oplopend).*/
+  if (params.filters.match(re)) {
+    const [BL, volgorde] = params.filters.replace(re, '$1|$2').split('|')
+    sortering = {BL, volgorde} as  {BL: 'Baten' | 'Lasten', volgorde: 'aflopend'|'oplopend'}
+  }
   
   const filters: {
     categorie: string[],
@@ -70,6 +77,12 @@ export async function load({ params, fetch}) {
         return await res.json()
       })
       .then(subrows => {
+        if (sortering !== undefined ) {
+          const zeros = subrows.filter((row: DataRow) => row[sortering.BL] === 0)
+          const nonzeros: DataRow[] = (subrows.filter((row: DataRow) => row[sortering.BL] !== 0) as DataRow[])
+            .sort((row1, row2) => row1[sortering.BL] > row2[sortering.BL] ? (sortering.volgorde === 'aflopend' ? -1 : 1) : (sortering.volgorde === 'aflopend' ? 1 : -1))
+            subrows = [...nonzeros, ...zeros]
+        }
         for (const subrow of subrows) {
           const row = rows.filter(row => row.Code === parseInt(subrow.Category)).shift()
           if (row !== undefined) {
@@ -96,12 +109,20 @@ export async function load({ params, fetch}) {
         await fetch(url)
           .then(async res => {
             if (!res.ok) return
-            const subSubrows = await res.json()
+            let subSubrows: DataRow[] = await res.json()
             const row = rows.filter(row => row.Code === $key).shift()
             if (row && row.rows) {
+              if (sortering !== undefined ) {
+                const zeros = subSubrows.filter((row: DataRow) => row[sortering.BL] === 0)
+                const nonzeros: DataRow[] = (subSubrows.filter((row: DataRow) => row[sortering.BL] !== 0) as DataRow[])
+                  .sort((row1, row2) => row1[sortering.BL] > row2[sortering.BL] ? (sortering.volgorde === 'aflopend' ? -1 : 1) : (sortering.volgorde === 'aflopend' ? 1 : -1))
+                subSubrows = [...nonzeros, ...zeros]
+              }
               for (const subSubrow of subSubrows) {
+                // @ts-expect-error no typing available
                 const id = subSubrow[params.type === 'kostenplaats' ? 'Kostenplaats' : 'Grootboek'].toString()
-                const subRow = row.rows.filter(subRow => subRow.Code.toString() === id).shift()
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                const subRow = row.rows.filter((subRow: any) => subRow.Code.toString() === id).shift()
                 if (subRow !== undefined) {
                   if (!Object.hasOwn(subRow, 'rows')) subRow.rows = []
                   subRow.rows?.push(subSubrow)
@@ -122,5 +143,5 @@ export async function load({ params, fetch}) {
     .then(res => (res as Array<{Period: number, Identifier: string}>).sort((a, b) => a.Period>b.Period ? -1 : 1)
       .map(row => {return {Period: row.Period, Identifier: row.Identifier}}))
 
-  return { bron, dataset, params, rows, filters, grootboeken, periodes, verslagsoorten }
+  return { sortering, bron, dataset, params, rows, filters, grootboeken, periodes, verslagsoorten }
 }
