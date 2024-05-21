@@ -110,7 +110,7 @@
 :global(tr.highlight, tr.highlight td) {
   transition-property: background-color color;
   transition-timing-function: ease-in-out;
-  background-color: var(--magenta);
+  background-color: var(--primary-color);
   color: White;
   transition-duration: 0.5s;
 }

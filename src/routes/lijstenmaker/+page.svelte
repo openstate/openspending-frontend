@@ -328,9 +328,9 @@
 		color: var(--purple);
 	}
  #onderwerp {
-		color: var(--magenta);
+		color: var(--secondary-color);
 	}
 	:global(#onderwerpen input) {
-		border: solid 3px var(--magenta) !important;
+		border: solid 3px var(--secondary-color) !important;
 	}
 </style>

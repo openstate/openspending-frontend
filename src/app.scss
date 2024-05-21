@@ -1,8 +1,11 @@
-/* Write your global styles here, in SCSS syntax. Variables and mixins from the src/variables.scss file are available here without importing */ /* Import only what you need from Bootstrap */
+/* Write your global styles here, in SCSS syntax. 
+   Variables and mixins from the src/variables.scss file are available here without importing */ /* 
+   Import only what you need from Bootstrap 
+  */
 @import 'bootstrap/scss/root';
 @import 'bootstrap/scss/reboot';
 @import 'bootstrap/scss/type';
-@import 'bootstrap/scss/images';
+// @import 'bootstrap/scss/images';
 @import 'bootstrap/scss/containers';
 @import 'bootstrap/scss/grid';
 @import 'bootstrap/scss/tables';
@@ -16,17 +19,17 @@
 @import 'bootstrap/scss/card';
 @import 'bootstrap/scss/accordion';
 @import 'bootstrap/scss/breadcrumb';
-@import 'bootstrap/scss/pagination';
-@import 'bootstrap/scss/badge';
+// @import 'bootstrap/scss/pagination';
+// @import 'bootstrap/scss/badge';
 @import 'bootstrap/scss/alert';
-@import 'bootstrap/scss/progress';
+// @import 'bootstrap/scss/progress';
 @import 'bootstrap/scss/list-group';
 @import 'bootstrap/scss/close';
-@import 'bootstrap/scss/toasts';
+// @import 'bootstrap/scss/toasts';
 @import 'bootstrap/scss/modal';
 @import 'bootstrap/scss/tooltip';
 @import 'bootstrap/scss/popover';
-@import 'bootstrap/scss/carousel';
+// @import 'bootstrap/scss/carousel';
 @import 'bootstrap/scss/spinners';
 @import 'bootstrap/scss/offcanvas';
 @import 'bootstrap/scss/placeholders';
@@ -37,34 +40,69 @@
 	--purple: rgb(76, 33, 110);
 	--purple-darker: rgb(50, 8, 84);
 	--magenta: rgb(200, 46, 148);
+  // --magenta: #015C6E;
 	--teak: rgb(97, 168, 169);
 	--teak-darker: rgb(68, 119, 120);
 	--cyan: rgb(108, 202, 209);
+  --white: #fff;
+  --border-radius: 20px;
+
+    /* kleuren */
+    --primary-color: #015C6E;
+    --primary-hover: #58B8D0;
+    --secondary-color: #A62789;
+    --secondary-hover: #CC43B2;
+    --third-color: #A0D0E1;
+    --white: #fff;
+    --black: #000;
+    --bs-btn-active-bg: #015c6e;
+    --bs-btn-hover-color: #015c6e;
+
+    /*Algemeen*/
+    --text-decoration: none;
+    --box-shadow: 0px 0px 10px 2px rgba(0, 0, 0, 0.1); 
+
+    /* tekst */
+    --font-family-headings: "ibm-plex-sans", sans-serif;
+    --font-weight-headings: 700;
+    --font-style-headings: normal;
+    --font-family-body: "ibm-plex-sans", sans-serif;
+    --font-weight-body: 400;
+    --font-style-body: normal;
+
+    /*Buttons*/
+    --button-font-size: 16px;
+    --border-radius: 20px;
+    --border-text-transform: capitalize;
+    --button-padding: 10px 20px 10px 20px;
+    --primary-hover: #58B8D0;
+    --secondary-hover: #CC43B2;
+    --hover-transition: 0.3s background-color
 
 	--bs-body-color: rgb(61, 74, 46);
 	--bs-accordion-active-bg: var(--teak);
 	--bs-accordion-active-color: #fff;
 	--bs-link-color-rgb: var(--purple);
-	--bs-link-hover-color-rgb: var(--magenta);
+	--bs-link-hover-color-rgb: var(--primary-color);
 	--bs-primary: var(--purple);
 	--bs-btn-color: var(--purple);
 	--form-label-color: var(--purple);
 }
 
 .btn-primary {
-	--bs-btn-bg: var(--purple);
-	--bs-btn-border-color: var(--purple);
-	--bs-btn-hover-bg: var(--purple-darker);
-	--bs-btn-hover-border-color: var(--purple-darker);
+	--bs-btn-bg: var(--secondary-color);
+	--bs-btn-border-color: var(--secondary-color);
+	--bs-btn-hover-bg: var(--secondary-hover);
+	--bs-btn-hover-border-color: var(--secondary-hover);
 }
 
 .btn-outline-primary {
-	--bs-btn-color: var(--purple);
-	--bs-btn-border-color: var(--purple);
-	--bs-btn-hover-bg: var(--purple);
-	--bs-btn-hover-border-color: var(--purple);
-	--bs-btn-active-bg: var(--purple);
-	--bs-btn-disabled-border-color: var(--purple);
+	--bs-btn-color: var(--secondary-color);
+	--bs-btn-border-color: var(--secondary-color);
+	--bs-btn-hover-bg: var(--secondary-color);
+	--bs-btn-hover-border-color: var(--secondary-color);
+	--bs-btn-active-bg: var(--secondary-color);
+	--bs-btn-disabled-border-color: var(--secondary-color);
 }
 
 .btn-primary:disabled {
@@ -87,20 +125,27 @@ div.alert-success img {
 }
 
 main a {
-	color: var(--purple);
+	color: var(--secondary-color);
 	text-decoration: none;
-	border-bottom: rgba(76, 33, 110, 0.3) solid 1px;
+	border-bottom: var(--secondary-color) solid 1px;
 }
 
 main a:hover {
 	color: var(--magenta);
-	border-bottom: rgba(76, 33, 110, 1) solid 1px;
+	border-bottom: var(--secondary-hover) solid 1px;
 }
-h1,
-h2,
-h3 {
-	color: var(--magenta);
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-family-headings);
+    font-weight: var(--font-weight-headings);
+    font-style: var(--font-style-headings);
 }
+h2, h3, h4, h5, h6 {
+	color: var(--primary-color);
+}
+
+h1 {color: var(--magenta);}
+
 h1 img {
 	width: 320px;
 }

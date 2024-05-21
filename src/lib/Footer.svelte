@@ -1,18 +1,34 @@
 <script lang="ts">
-	import mastodon from 'bootstrap-icons/icons/mastodon.svg';
-	import x from 'bootstrap-icons/icons/twitter-x.svg';
-	import linkedin from 'bootstrap-icons/icons/linkedin.svg';
-	import github from 'bootstrap-icons/icons/github.svg';
-	import email from 'bootstrap-icons/icons/envelope-fill.svg';
-	import { onMount } from 'svelte';
-
-	onMount(() => {
-		Array.from(document.querySelectorAll('div.socials a img'))
-			.forEach((img) => ((img as HTMLImageElement).title = (img as HTMLImageElement).alt));
-	});
+  import { Mastodon, TwitterX, Linkedin, Github, EnvelopeFill } from 'svelte-bootstrap-icons';
+  import OSFLogo from '$lib/assets/logo-openstate.png';
+  import OSLogo from '$lib/assets/openspending-logo.svg';
 </script>
 
-<footer class="bg-light">
+<!-- Footer -->
+<footer class="fixed-bottom footer mt-auto py-3 bg-body-tertiary text-body-tertiary">
+  <div class="container">
+    <div class="row align-items-center">
+      <div class="col-lg-4 col-md-4 col-sm-12">
+        Deze website is onderdeel van<br>
+        <a href="https://openstate.eu"><img src="{OSFLogo}" alt="Logo Open State Foundation" width="120"></a>
+      </div>
+      <div class="col-lg-4 col-md-4 col-sm-12 text-center socials">
+				<a href="https://mastodon.nl/@OpenState" title="Open State Foundation | Mastodon" ><Mastodon/></a>
+				<a href="https://twitter.com/OpenStateEU" title="Open State Foundation | X/Twitter" ><TwitterX/></a>
+				<a href="https://www.linkedin.com/company/open-state-foundation/" title="Open State Foundation | LinkedIn" ><Linkedin/></a>
+				<a href="https://github.com/OpenState" title="Open State Foundation | Github" ><Github/></a>
+				<a href="https://openstate.eu/nl/contact/" title="Open State Foundation | Email" ><EnvelopeFill/></a>
+      </div>
+      <div class="col-lg-4 col-md-4 col-sm-12 text-end">
+        <img src="{OSLogo}" alt="Logo Open Spending" style="height:36px;">
+      </div>
+    </div>
+  </div>
+</footer>
+
+
+
+<!-- <footer class="bg-light">
 	<div class="container">
 		<div class="row">
 			<div class="col">
@@ -25,21 +41,11 @@
 				>
 			</div>
 			<div class="col socials">
-				<a href="https://mastodon.nl/@OpenState"
-					><img src={mastodon} alt="Open State Foundation | Mastodon" /></a
-				>
-				<a href="https://twitter.com/OpenStateEU"
-					><img src={x} alt="Open State Foundation | X/Twitter" /></a
-				>
-				<a href="https://www.linkedin.com/company/open-state-foundation/"
-					><img src={linkedin} alt="Open State Foundation | LinkedIn" /></a
-				>
-				<a href="https://github.com/OpenState"
-					><img src={github} alt="Open State Foundation | Github" /></a
-				>
-				<a href="https://openstate.eu/nl/contact/"
-					><img src={email} alt="Open State Foundation | Email" /></a
-				>
+				<a href="https://mastodon.nl/@OpenState"><img src={mastodon} alt="Open State Foundation | Mastodon" /></a>
+				<a href="https://twitter.com/OpenStateEU"><img src={x} alt="Open State Foundation | X/Twitter" /></a>
+				<a href="https://www.linkedin.com/company/open-state-foundation/"><img src={linkedin} alt="Open State Foundation | LinkedIn" /></a>
+				<a href="https://github.com/OpenState"><img src={github} alt="Open State Foundation | Github" /></a>
+				<a href="https://openstate.eu/nl/contact/"><img src={email} alt="Open State Foundation | Email" /></a>
 			</div>
 			<div class="col">
 				<a href="https://openstate.eu" class="float-end"
@@ -53,25 +59,18 @@
 		</div>
 	</div>
 </footer>
-
+ -->
+ 
 <style>
-	div.col {
-		margin: auto 0px;
+	div.socials a {
+    padding: 0 3px 0 3px;
 	}
-	div.socials a img {
-		height: 24px;
-		margin: 8px;
-		/* https://codepen.io/sosuke/pen/Pjoqqp */
-		filter: invert(49%) sepia(0%) saturate(905%) hue-rotate(233deg) brightness(102%) contrast(99%);
-	}
-	div.socials a img:hover {
-		height: 24px;
-		margin: 8px;
-		filter: invert(37%) sepia(96%) saturate(5031%) hue-rotate(302deg) brightness(84%) contrast(85%);
+	div.socials a:hover {
+    color: var(--purple);
 	}
 
 	footer {
-		margin-top: 20px;
+		/* margin-top: 20px; */
 		border-top: solid var(--purple) 1px;
 	}
 </style>

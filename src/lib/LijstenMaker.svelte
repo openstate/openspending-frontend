@@ -35,7 +35,7 @@
 <style>
 	a,
 	a:hover {
-		color: var(--magenta);
+		color: var(--secondary-color);
 		border: none;
 		margin: 0;
 		padding-bottom: 0.2em;

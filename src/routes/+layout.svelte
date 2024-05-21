@@ -9,12 +9,13 @@
 		if (!browser) return;
 		await import("bootstrap");
 	});
-	import '../app.scss';
 	import Header from '../lib/Header.svelte';
 	import Footer from '../lib/Footer.svelte';
+	import OpenstateBar from '$lib/OpenstateBar.svelte';
 </script>
 
-<Header></Header>
+<OpenstateBar />
+<Header />
 <main>
 	<div class="container">
 		<slot />
@@ -24,7 +25,7 @@
 
 <style lang="css">
 	main {
-		margin-top: 120px;
-		margin-bottom: 50px;
+		margin-top: 160px;
+		margin-bottom: 100px;
 	}
 </style>

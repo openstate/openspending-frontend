@@ -262,16 +262,22 @@
 	<meta property="og:title" content="Open Spending | {Entity}" />
 </svelte:head>
 <style>
+  a.nav-link {
+    color: var(--primary-color);
+  }
+  a.nav-link.active {
+    font-weight: normal;
+  }
   ul li {
     padding-left: 0px;
   }
-  ul li a {
+  #Sources ul li a {
     display: block;
     line-height: 2.5em;
   }
 </style>
 
-<div class="row">
+<div class="row mb-1">
   <div class="col-12">
     <ul class="nav nav-underline">
       <li class="nav-item">
