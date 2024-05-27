@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { page } from '$app/stores';
-  import OpenSpendingLogo from '$lib/assets/openspending-logo.svg';
+  import OpenSpendingLogo from '$lib/assets/open-spending.svg';
 
   type MenuItem = { route: string, label?: string }
 	const menuItems:MenuItem[] = [
@@ -37,7 +37,7 @@
 
 <header>
   <nav class="navbar navbar-expand-lg fixed-top">
-    <div class="container-fluid">
+    <div class="container">
       <a class="navbar-brand me-auto" href="/">
         <img src="{OpenSpendingLogo}" width="120" alt="Logo Open Spending?">
       </a>

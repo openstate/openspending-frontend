@@ -1,7 +1,7 @@
 <script lang="ts">
   import { Mastodon, TwitterX, Linkedin, Github, EnvelopeFill } from 'svelte-bootstrap-icons';
   import OSFLogo from '$lib/assets/logo-openstate.png';
-  import OSLogo from '$lib/assets/openspending-logo.svg';
+  import OSLogo from '$lib/assets/open-spending.svg';
 </script>
 
 <!-- Footer -->
