@@ -3,3 +3,4 @@ export const currency = (ammount: number | null | undefined, code: string = '€
 
 export const isLive = (hostname: string) => hostname === 'openspending.nl' || hostname === 'www.openspending.nl'
   // || '127.0.0.1'
+

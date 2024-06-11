@@ -185,7 +185,7 @@
 
 <h1>Detaildata {data.bron.Title}</h1>
 <div class="mb-5">
-  <h2 class="fs-4">{data.dataset.Summary} <em><br>bron: {data.dataset.Title})</em></h2>
+  <h2 class="fs-6"><em>bron: Gemeenten {data.dataset.Period}</em></h2>
   <p><small><a href="/gegevens/detaildata">klik hier om meer organisaties met detaildata te bekijken &hellip;</a></small></p>
 </div>
 
@@ -277,6 +277,13 @@ De detaildata van {data.dataset.Title} is helaas nog niet beschikbaar, probeer h
       {/if}
     {/each}
   </tbody>
+  <tfoot>
+    <tr>
+      <td colspan="3"></td>
+      <th class="text-end"><Currency classes="text-white p-1 bg-primary" ammount={data.rows.reduce((total, row2) => total + row2.Baten, 0)} /></th>
+      <th class="text-end"><Currency classes="text-white p-1 bg-info" ammount={data.rows.reduce((total, row2) => total + row2.Lasten, 0)} /></th>
+    </tr>
+  </tfoot>
 </table>
 <p class="mt-5"><a href="{get(api)}/detaildata/{data.params.Entity}/{data.bron.Key}/{data.dataset.Identifier}/{data.params.verslagsoort}.json"><button class="btn btn-primary"><Download/> download brondata</button></a></p>
 {/if}

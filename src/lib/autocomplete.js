@@ -83,6 +83,10 @@ class Autocomplete {
     } else {
       label = item.label;
     }
+
+    if (this.options.replace) {
+      label = this.options.replace(label)
+    }
     if (label && this.options.showEntity) {
       let [Entity] = item.value.split('|')
       switch (Entity) {

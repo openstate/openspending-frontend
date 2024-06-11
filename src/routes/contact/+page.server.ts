@@ -1,6 +1,6 @@
 import { fail } from '@sveltejs/kit';
 import mail from '@sendgrid/mail';
-// @ts-ignore
+// @ts-expect-error module bestaat niet
 import { SENDGRID_API_KEY, EMAIL_SEND_TO } from '$env/static/private';
 
 type Message = {
@@ -53,7 +53,7 @@ export const actions = {
 			});
 		} else {
 			return sendMail(data)
-				.then((_a) => {
+				.then(() => {
 					return { success: true, data };
 				})
 				.catch((e) => {

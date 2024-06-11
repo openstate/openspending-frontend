@@ -12,7 +12,7 @@ services:
       - HOST_HEADER=x-forwarded-host
       - PORT=3000
       # Needed for CORS on server side requests
-      - ORIGIN=${CORS_ORIGIN}
+      - ORIGIN=${CORS_ORIGIN:-*}
 networks:
   internal:
   # On a local machine, create this network befor running the container

@@ -10,6 +10,8 @@
   import { get } from 'svelte/store'
   import { api } from '../stores.js'
 	import { goto } from '$app/navigation';
+	import { CartCheck } from 'svelte-bootstrap-icons';
+	import type { TileLayer, WMSOptions } from 'leaflet';
 
   let sources: Bron[] = []
   let filteredSources: Bron[] = []
@@ -44,6 +46,7 @@
   const setEntity = (event: Event) => {
     Entity = ((event.target as HTMLAnchorElement).dataset.entity ?? 'Gemeenten') as SourceType;
     LayerGemeenten.removeFrom(map)
+    LayerWaterschappen.removeFrom(map)
     LayerProvincies.removeFrom(map)
     LayerGemeenschappelijkeRegelingen.removeFrom(map)
     switch (Entity) {
@@ -55,6 +58,10 @@
         LayerGemeenten.addTo(map)
         ActiveLayer = LayerGemeenten
         break;
+      case 'Waterschappen':
+        LayerWaterschappen.addTo(map)
+        ActiveLayer = LayerWaterschappen
+        break;
       case 'GemeenschappelijkeRegelingen':
         LayerGemeenschappelijkeRegelingen.addTo(map)
         ActiveLayer = LayerGemeenschappelijkeRegelingen
@@ -64,6 +71,8 @@
     goto(`/gegevens/${Entity}`)
   }
   const load = () => {
+    if (clickmarker) clickmarker.removeFrom(map)
+
     fetch(`${get(api)}/bronnen/${Entity}`)
       .then(response => {
         if (!response.ok) throw new Error(`Kan de bronnen niet laden: ${get(api)}/bronnen/${Entity} ${response.statusText}`)
@@ -82,9 +91,11 @@
   const highlight = (entity: SourceType, key: string, highlight: boolean = true) => {
     if (entity !== 'GemeenschappelijkeRegelingen') {
       // @ts-ignore
-      const layer = ActiveLayer.getLayers().filter(l => l.feature.id === key).shift()
+      const layer = ActiveLayer.getLayers().filter(l => l.feature.id === key || l.feature.properties.code === key).shift()
+      try {
       // @ts-ignore
-      layer.setStyle(highlight ? hoverStyle : layer.options.hasDetailData ? hasDetailStyle : defaultStyle)
+        layer.setStyle(highlight ? hoverStyle : layer.options.hasDetailData ? hasDetailStyle : defaultStyle)
+      } catch(e) {}
     }
   }
 
@@ -102,8 +113,10 @@
   let map: L.Map
   let LayerGemeenten: L.GeoJSON
   let LayerProvincies:L.GeoJSON
+  let LayerWaterschappen:L.GeoJSON
   let LayerGemeenschappelijkeRegelingen:L.LayerGroup
   let ActiveLayer:L.GeoJSON | L.LayerGroup
+  let clickmarker: L.Marker
 
   onMount(async () => {
     const L = await import('leaflet')
@@ -118,30 +131,52 @@
         attribution: 'Kaartgegevens &copy; <a href="https://www.kadaster.nl/" target="_blank" rel="noopener">Kadaster</a>'
     }).addTo(map);
 
+    // https://service.pdok.nl/hwh/waterschapsgrenzenimso/wms/v1_0?QUERY_LAYERS=waterschap&INFO_FORMAT=application%2Fjson&REQUEST=GetFeatureInfo&SERVICE=WMS&VERSION=1.3.0&FORMAT=image%2Fpng&STYLES=&TRANSPARENT=true&layers=waterschap&DPI=180&MAP_RESOLUTION=180&FEATURE_COUNT=8&I=50&J=50&WIDTH=101&HEIGHT=101&CRS=EPSG%3A28992&BBOX=142859.07278883766%2C374140.9144965779%2C288632.9530851135%2C519914.79479285376
+
+    // const wmsOptions: WMSOptions = {
+    //   layers: 'waterschap',
+    //   version: '1.3.0',
+    //   transparent: true,
+    //   detectRetina: true,
+    //   format: 'image/png',
+    //   attribution: 'Waterschappen Administratieve eenheden (INSPIRE geharmoniseerd) WMS'
+    // }
+    // L.tileLayer.wms('https://service.pdok.nl/hwh/waterschapsgrenzenimso/wms/v1_0?', wmsOptions).addTo(map);
+
     type FeatureProperties = {
       statcode: string,
       statnaam: string,
-      rubriek: 'gemeente' | 'provincie'
+      rubriek: 'gemeente' | 'provincie' | 'waterschappen'
     }
 
-    let clickmarker: L.Marker
 
     const clickLayer = async (ev: L.LeafletMouseEvent, feature: GeoJSON.Feature<GeoJSON.Geometry, any>, layer: L.Layer) => {
       const props = feature.properties as FeatureProperties
       await fetch(`${get(api)}/bronnen/Key/${props.statcode}`)
         .then(async res => {
           if (res.ok) {
-            const Brontype = feature.properties.rubriek === 'gemeente' ? 'Gemeenten' : 'Provincies'
+            const Brontype = feature.properties.rubriek === 'provincie' ? 'Provincies' : (feature.properties.rubriek === 'waterschappen' ? 'Waterschappen' : 'Gemeenten')
             const source = await res.json()
             if (clickmarker !== undefined) {
               clickmarker.removeFrom(map)
             }
             clickmarker = L.marker(ev.latlng)
-            let content = `
-				    <p class="fs-6">${source.Title}</p>
-            <p>${ucfirst(source.verslagsoort)} ${source.dataset.Period}:<br>Baten: € ${(1000 * source.totaal.Baten).toLocaleString()}<br>Lasten: € ${(source.totaal.Lasten * 1000).toLocaleString()}</p>
-				    <p><a href="/gegevens/${Brontype}/${source.Slug}">Ga naar gegevens &raquo;</a></p>
-				    `
+            let content = ''
+            if (Brontype === 'Waterschappen') {
+              content = `
+              <p class="fs-6">${source.Title}</p>
+              <p>${ucfirst(source.verslagsoort)} ${source.dataset.Period}</p>
+              <p><a href="/gegevens/${Brontype}/${source.Slug}">Ga naar gegevens &raquo;</a></p>
+              `
+            } else {
+              content = `
+              <p class="fs-6">${source.Title}</p>
+              <p>${ucfirst(source.verslagsoort)} ${source.dataset.Period}:<br>
+              Baten: € ${(1000 * source.totaal.Baten).toLocaleString()}<br>Lasten: € ${(source.totaal.Lasten * 1000).toLocaleString()}
+              </p>
+              <p><a href="/gegevens/${Brontype}/${source.Slug}">Ga naar gegevens &raquo;</a></p>
+              `
+            }
       			clickmarker.bindPopup(content);
             clickmarker.addTo(map)
             clickmarker.openPopup()
@@ -190,6 +225,18 @@
         if (Entity === 'Provincies') {
           LayerProvincies.addTo(map);
           ActiveLayer = LayerProvincies
+        }
+      })
+    fetch('/geojson/Waterschappen.geojson')
+      .then(res => res.json())
+      .then(waterschappen => {
+        LayerWaterschappen = L.geoJSON(waterschappen, {
+          style: defaultStyle,
+          onEachFeature,
+        })
+        if (Entity === 'Waterschappen') {
+          LayerWaterschappen.addTo(map);
+          ActiveLayer = LayerWaterschappen
         }
       })
 
@@ -286,9 +333,9 @@
       <li class="nav-item">
         <a class="nav-link" class:active={Entity === 'Provincies'} on:click={setEntity} data-entity="Provincies" href={'#'}>Provincies</a>
       </li>
-      <!-- <li class="nav-item">
+      <li class="nav-item">
         <a class="nav-link" class:active={Entity === 'Waterschappen'} on:click={setEntity} data-entity="Waterschappen" href={'#'}>Waterschappen</a>
-      </li> -->
+      </li>
       <li class="nav-item">
         <a class="nav-link" class:active={Entity === 'GemeenschappelijkeRegelingen'} on:click={setEntity} data-entity="GemeenschappelijkeRegelingen" href={'#'}>Gemeenschappelijke regelingen</a>
       </li>
@@ -298,9 +345,9 @@
 <div class="row">
   <div class="col-sm-12 col-lg-8">
     <div id="map" style="width: 100%; height: 640px;"></div>
-    {#if Entity === 'GemeenschappelijkeRegelingen'}
+    {#if Entity === 'GemeenschappelijkeRegelingen' || Entity === 'Waterschappen'}
       <div class="alert alert-warning" role="alert" style="opacity: 0.7; position: relative; top: -100px; z-index: 10000; height: 60px; overflow: hidden; margin: 20px;">
-        <strong>Let op: </strong>niet alle gemeenschappelijke regelingen staan op de kaart, zie de lijst voor een compleet overzicht.
+        <strong>Let op: </strong>niet alle {Entity === 'GemeenschappelijkeRegelingen' ? 'gemeenschappelijke regelingen' : 'waterschappen'} staan op de kaart, zie de lijst voor een compleet overzicht.
       </div>
     {/if}
   </div>
@@ -324,7 +371,7 @@
           on:mouseout={() => highlight(Entity, source.Key, false)} 
           on:focus={() => {}}
           on:blur={() => {}}
-          href="/gegevens/{Entity}/{source.Slug}">{Entity === 'GemeenschappelijkeRegelingen' ? source.Description : source.Title}
+          href="/gegevens/{Entity}/{source.Slug}">{Entity === 'GemeenschappelijkeRegelingen' ? source.Description : source.Title.replace(' (PV)', '')}
           </a></li>
       {/each}
       </ul>

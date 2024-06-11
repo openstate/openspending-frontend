@@ -4,7 +4,7 @@
 	import { ucfirst } from '$lib/utils';
 	import type { BronData, BronDetail, DataSet, SingleDataSet, Verslagsoort } from '../../../../../Types.js';
 	import DataRow from '$lib/DataRow.svelte';
-	import { XSquareFill, FileEarmarkSpreadsheet } from 'svelte-bootstrap-icons';
+	import { XSquareFill, FileEarmarkSpreadsheet, Info, InfoCircleFill } from 'svelte-bootstrap-icons';
 	import { onMount } from 'svelte';
 	import { api } from '../../../../../stores.js'
   import { get } from 'svelte/store'
@@ -13,11 +13,11 @@
   import { page } from '$app/stores';
 
   export let data;
-  
+
 	let hideZero: boolean = true
 	const slugs = () => data.requested.map(bron => bron.Slug)
 	const slugsUrl = () => data.requested.map(bron => [bron.Slug, bron.Period, bron.Verslagsoort].join('/')).join('/')
-	$: titles = data.bronnen.length === 1 ? (data.params.Entity === 'GemeenschappelijkeRegelingen' ? data.bronnen[0].Description : data.bronnen[0].Title) : data.bronnen.map((bron, i) => ((i+1 === data.bronnen.length ? ' en ' : (i===0?'':', ')) + (data.params.Entity === 'GemeenschappelijkeRegelingen' ? bron.Description :bron.Title))).join('')
+	$: titles = data.bronnen.length === 1 ? (data.params.Entity === 'GemeenschappelijkeRegelingen' ? data.bronnen[0].Description : data.bronnen[0].Title.replace(' (PV)', '')) : data.bronnen.map((bron, i) => ((i+1 === data.bronnen.length ? ' en ' : (i===0?'':', ')) + (data.params.Entity === 'GemeenschappelijkeRegelingen' ? bron.Description :bron.Title.replace(' (PV)', '')))).join('')
 	$: Bron = data.bronnen[0]
 	let loader: bootstrap.Modal;
 	const go = async (showLoader: boolean = true, updateCharts: boolean = true) => {
@@ -171,6 +171,8 @@
   onMount(async () => {
 		const {Autocomplete} = await import('$lib/autocomplete');
 		const bootstrap = await import('bootstrap');
+    
+    [...document.querySelectorAll('[data-bs-toggle="tooltip"]')].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
 		loader = new bootstrap.Modal(document.getElementById('loading')!)
     const onSelectItem = async (arg: {label: string, value: string, field: any}) => {
       let [_, Slug] = (arg.value as string).split('|')
@@ -193,7 +195,14 @@
       .then(res => res.json())
 			.then(d => d as Array<{Type: string, Slug: string, label: string, entiteit: string, value: string}>)
       .then(bronnen => {
-        const opts = { data: bronnen.filter(bron => true ||!slugs().includes(bron.Slug)), threshold: 1, maximumItems: 10, onSelectItem, showEntity: false}
+        const opts = { 
+          data: bronnen.filter(bron => true ||!slugs().includes(bron.Slug)), 
+          threshold: 1, 
+          maximumItems: 10, 
+          onSelectItem, 
+          showEntity: false,
+          replace: (label: string) => label.replace(' (PV)', '')
+        }
         new Autocomplete(document.getElementById('find-source'), opts)
       })
 		await charts()
@@ -231,6 +240,7 @@
 				<ul class="dropdown-menu">
 					<li><a class="dropdown-item" href="/gegevens/Provincies">Provincies</a></li>
 					<li><a class="dropdown-item" href="/gegevens/Gemeenten">Gemeenten</a></li>
+					<li><a class="dropdown-item" href="/gegevens/Waterschappen">Waterschappen</a></li>
 					<li><a class="dropdown-item" href="/gegevens/GemeenschappelijkeRegelingen">Gemeenschappelijke regelingen</a></li>
 				</ul>
 			</span>
@@ -251,9 +261,9 @@
 	</ol>
 </nav>
 
-<h1>{titles}</h1>
+<h1>{titles} <InfoCircleFill data-bs-toggle="tooltip" data-bs-title="{Bron.dataset.Summary}"/></h1>
 <div class="mb-5">
-  <h2 class="fs-4">{Bron.dataset.Summary} <br><em class="fs-6">({#if !metric}bedragen in € 1.000, {/if}bron: {Bron.dataset.Title})</em></h2>
+  <h2 class="fs-6"><em class="fs-6">({#if !metric}bedragen in € 1.000, {/if}bron: {Bron.dataset.Title})</em></h2>
   {#if isThereAnyDetaildataAvaliable()}
     <small style="font-weight: normal">(een <code>*</code> in de keuze voor Jaar geeft aan dat er detaildata beschikbaar is voor dat jaar)</small>
   {/if}
@@ -279,7 +289,7 @@
 						<a href="{'#'}" style="margin-right: 5px" on:click={() => verwijderBron(bron)}><XSquareFill/></a>
 					</th>
 					<th scope="row">
-						{bron.Title} 
+						{bron.Title.replace(' (PV)', '')} 
 					</th>
 					<th scope="row" style="width:1px;">
             {#if bron.dataset.StatLine}

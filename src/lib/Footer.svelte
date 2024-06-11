@@ -5,7 +5,7 @@
 </script>
 
 <!-- Footer -->
-<footer class="fixed-bottom footer mt-auto py-3 bg-body-tertiary text-body-tertiary">
+<footer class="footer mt-auto py-3 bg-body-tertiary text-body-tertiary">
   <div class="container">
     <div class="row align-items-center">
       <div class="col-lg-4 col-md-4 col-sm-12">
