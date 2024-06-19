@@ -31,13 +31,13 @@
 			})
 			loader.show()
 		} else {
-			return await goto(url, opts).then(_ => {if (updateCharts) charts()})
+			return await goto(url, opts).then(_ => {if (slugs().length !== 0 && updateCharts) charts()})
 		}
 	}
 
 	const verwijderBron = async (bron: BronDetail) => {
 		data.requested = data.requested.filter(b => `${b.Period}/${b.Slug}/${b.Verslagsoort}` !== `${bron.dataset.Period}/${bron.Slug}/${bron.Verslagsoort}`)
-		return await go()
+		return await go(false)
 	}
 
   const isThereAnyDetaildataAvaliable = () =>  isLive($page.url.hostname) ? false :  Object.values(data.datasetsWithDetaildata).filter(o => o.length>0).length > 0
@@ -128,44 +128,53 @@
 	$: brontype = bronTypes.get(data.bronnen[0].Type) ?? 'bron'
 
 	const charts = async() => {
-		const dataset1: any = []
+		const dataset_delta_baten: any = []
+		const dataset_lasten: any = []
+		const dataset_baten: any = []
+		const dataset_delta_lasten: any = []
 		const labels: number[] = []
-		const dataset2: any = []
-		const chart1 = document.getElementById('chart1')! as HTMLCanvasElement
-		const chart2 = document.getElementById('chart2')! as HTMLCanvasElement
+		const chart_delta_baten = document.getElementById('chart_delta_baten')! as HTMLCanvasElement
+		const chart_lasten = document.getElementById('chart_lasten')! as HTMLCanvasElement
+		const chart_baten = document.getElementById('chart_baten')! as HTMLCanvasElement
+		const chart_delta_lasten = document.getElementById('chart_delta_lasten')! as HTMLCanvasElement
 		const {Chart} = await import("chart.js/auto");
-		Chart.getChart('chart1')?.destroy()
-		Chart.getChart('chart2')?.destroy()
+		Chart.getChart('chart_delta_baten')?.destroy()
+		Chart.getChart('chart_lasten')?.destroy()
+		Chart.getChart('chart_baten')?.destroy()
+		Chart.getChart('chart_delta_lasten')?.destroy()
     let i = -1
 		for (const b of data.requested) {
       i = i + 1
 			const bron = data.bronnen.filter(bron => `${b.Period}/${b.Slug}/${b.Verslagsoort}` === `${bron.dataset.Period}/${bron.Slug}/${bron.Verslagsoort}`).shift()
 			if (bron === undefined) return
-			const url = `${get(api)}/bronnen/${data.params.Entity}/${bron.Slug}/trends`
+			const url = `${get(api)}/bronnen/${data.params.Entity}/${bron.Slug}/${b.Verslagsoort}/trends`
 			await fetch(url)
 				.then(r => r.json())
-				.then(r => r.trends as Array<{Period: number, totaal: number}>)
+				.then(r => r.trends as Record<number, {Baten: number, Lasten: number}>)
 				.then(trend => {
-					const peilBegrotingBedrag = getDatasetTotals(i, bron.dataset).Baten ?? 1
-					const deltas = (): Array<{Period: number, delta: number}> =>
-						trend.map(row => {
-							return {
-								Period: row.Period,
-								delta: Math.round(10000 * ((row.totaal - peilBegrotingBedrag) / peilBegrotingBedrag))/100
-							}
-						})
-            const label = (bron.Title + ' ' + (metric ? getMetricsText(bron, false) : '')).trim()
-						dataset1.push({label, data: deltas().map(row => normalize(row.delta, bron))})
-						dataset2.push({label, data: trend.map(r => normalize(r.totaal, bron))})
-						if (labels.length === 0) labels.push(...trend.map(t => t.Period))
+					const peilBegrotingBedrag = (type: 'Lasten' | 'Baten') => {
+            const totals = getDatasetTotals(i, bron.dataset)
+            if (totals) return totals[type] ?? 1
+            else return 1
+          }
+					const deltas = (type: 'Lasten' | 'Baten'): Array<{Period: number, delta: number}> =>
+            Object.keys(trend).map(p => { return {Period: parseInt(p), delta: Math.round(10000 * ((trend[parseInt(p)][type] - peilBegrotingBedrag(type)) / peilBegrotingBedrag(type)))/100} })
+          const label = (`${bron.Title} (${b.Verslagsoort} ${b.Period})` + (metric ? getMetricsText(bron, false) : '')).trim()
+          dataset_delta_baten.push({label, data: deltas('Baten').map(row => normalize(row.delta, bron))})
+          dataset_delta_lasten.push({label, data: deltas('Lasten').map(row => normalize(row.delta, bron))})
+          dataset_lasten.push({label, data: Object.keys(trend).map(p => normalize(trend[parseInt(p)].Lasten, bron))})
+          dataset_baten.push({label, data: Object.keys(trend).map(p => normalize(trend[parseInt(p)].Baten, bron))})
+          if (labels.length === 0) labels.push(...Object.keys(trend).map(p => parseInt(p)))
 				})
       .catch(e => {
         alert('Er ging iets mis bij het maken van de grafiek.')
         console.log(e)
       })
 		}
-		new Chart(chart1, { type: 'bar', data: { labels, datasets: dataset1 }})
-		new Chart(chart2, { type: 'bar', data: { labels, datasets: dataset2 }})
+		new Chart(chart_delta_baten, { type: 'bar', data: { labels, datasets: dataset_delta_baten }})
+		new Chart(chart_lasten, { type: 'bar', data: { labels, datasets: dataset_lasten }})
+		new Chart(chart_baten, { type: 'bar', data: { labels, datasets: dataset_baten }})
+		new Chart(chart_delta_lasten, { type: 'bar', data: { labels, datasets: dataset_delta_lasten }})
 	}
 
   onMount(async () => {
@@ -208,7 +217,7 @@
 		await charts()
   })
 
-  const getDatasetTotals = (ix: number, dataset: SingleDataSet) => dataset.verslagsoorten[data.requested[ix].Verslagsoort]
+  const getDatasetTotals = (ix: number, dataset: SingleDataSet) => data.requested[ix] ? dataset.verslagsoorten[data.requested[ix].Verslagsoort] : undefined
   
 </script>
 <style>
@@ -298,8 +307,8 @@
             </a>
             {/if}
 					</th>
-					<td class="text-end" style="white-space: nowrap;"><Currency ammount={getDatasetTotals(ix, bron.dataset).Baten}/></td>
-					<td class="text-end" style="white-space: nowrap;"><Currency ammount={getDatasetTotals(ix, bron.dataset).Lasten}/></td>
+					<td class="text-end" style="white-space: nowrap;"><Currency ammount={getDatasetTotals(ix, bron.dataset)?.Baten}/></td>
+					<td class="text-end" style="white-space: nowrap;"><Currency ammount={getDatasetTotals(ix, bron.dataset)?.Lasten}/></td>
 					<td class="text-end">
 						<select class="form-select" on:change={(ev) => setPeriode(bron, ev.currentTarget.value)}>
 							{#each bron.datasets as dataset}
@@ -435,21 +444,33 @@
 			<td></td>
 			<td></td>
 			{#each data.bronnen as bron, ix}
-				<th class="text-end"><Currency classes="text-white p-1 bg-primary" ammount={normalize(getDatasetTotals(ix, bron.dataset).Baten, bron)} /></th>
+				<th class="text-end"><Currency classes="text-white p-1 bg-primary" ammount={normalize(getDatasetTotals(ix, bron.dataset)?.Baten, bron)} /></th>
 			{/each}
 			{#each data.bronnen as bron, ix}
-				<th class="text-end"><Currency classes="text-white p-1 bg-info" ammount={normalize(getDatasetTotals(ix, bron.dataset).Lasten, bron)} /></th>
+				<th class="text-end"><Currency classes="text-white p-1 bg-info" ammount={normalize(getDatasetTotals(ix, bron.dataset)?.Lasten, bron)} /></th>
 			{/each}
 		</tfoot>
 	</table>
 </div>
 <div class="row">
-	<div class="col-sm-12 col-lg-6">
-		<h3 class="fs-4">{#if data.bronnen[0].Type === 'GemeenschappelijkeRegelingen'}Realisatie{:else}Begroting{/if} per jaar {#if metric}(normalisatie <em>{metric}</em>){/if}</h3>
-		<div style="width: 100%; height: 500px;"><canvas id="chart2"></canvas></div>
+	<div class="col-sm-12 col-m-6 col-lg-6">
+		<h3 class="fs-6 mt-5">Lasten per periode {#if metric}(normalisatie <em>{metric}</em>){/if}</h3>
+    <hr>
+		<div style="width: 100%;"><canvas id="chart_lasten"></canvas></div>
 	</div>
-	<div class="col-sm-12 col-lg-6">
-		<h3 class="fs-4">Verschillen met gekozen jaar {#if metric}(normalisatie <em>{metric}</em>){/if}</h3>
-		<div style="width: 100%; height: 500px;"><canvas id="chart1"></canvas></div>
+	<div class="col-sm-12 col-m-6 col-lg-6">
+		<h3 class="fs-6 mt-5">Baten per periode {#if metric}(normalisatie <em>{metric}</em>){/if}</h3>
+    <hr>
+		<div style="width: 100%;"><canvas id="chart_baten"></canvas></div>
+	</div>
+	<div class="col-sm-12 col-m-6 col-lg-6">
+		<h3 class="fs-6 mt-5">Verschillen lasten per periode {#if metric}(normalisatie <em>{metric}</em>){/if}</h3>
+    <hr>
+		<div style="width: 100%;"><canvas id="chart_delta_lasten"></canvas></div>
+	</div>
+	<div class="col-sm-12 col-m-6 col-lg-6">
+		<h3 class="fs-6 mt-5">Verschillen baten per periode {#if metric}(normalisatie <em>{metric}</em>){/if}</h3>
+    <hr>
+		<div style="width: 100%;"><canvas id="chart_delta_baten"></canvas></div>
 	</div>
 </div>

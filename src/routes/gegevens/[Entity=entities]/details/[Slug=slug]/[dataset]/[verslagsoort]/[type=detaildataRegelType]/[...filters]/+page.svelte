@@ -81,7 +81,7 @@
         setTimeout(() => {
           row.classList.remove('highlight')
           row.classList.add('no-highlight')
-          row.classList.add('table-active')
+          // row.classList.add('table-active')
         }, 500)
       }
     }

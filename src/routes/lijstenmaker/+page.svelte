@@ -318,7 +318,7 @@
 </table>
 <p>
   <button class="btn btn-primary" on:click={() => download()}><Download /> Download lijst</button>
-  <button class="btn btn-secondary" on:click={() => goto('/lijstenmaker')}><ListUl /> Maak nieuwe lijst</button>
+  <button class="btn btn-secondary" on:click={() => {lijst = undefined; makeAutocomplete();}}><ListUl /> Maak nieuwe lijst</button>
 </p>
 {/if}
 

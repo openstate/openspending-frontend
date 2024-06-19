@@ -89,6 +89,13 @@
 	--form-label-color: var(--purple);
 }
 
+body {
+  display: flex;
+  min-height: 100vh;
+  flex-direction: column;
+}
+
+
 .btn-primary {
 	--bs-btn-bg: var(--secondary-color);
 	--bs-btn-border-color: var(--secondary-color);
