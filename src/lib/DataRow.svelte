@@ -1,10 +1,11 @@
 <script lang="ts">
-	import { DashSquareFill, PlusSquare, PlusSquareFill, Square } from 'svelte-bootstrap-icons';
+	import { DashSquareFill, GraphUp, PlusSquareFill, Square } from 'svelte-bootstrap-icons';
 	import Currency from '$lib/Currency.svelte';
   import type { BronData, BronDetail } from '../Types';
   import DataRow from '$lib/DataRow.svelte';
   export let row: BronData
   export let onClick: (event: MouseEvent, row: BronData) => Promise<any>
+  export let trendsPerHoofdfunctie: ((event: MouseEvent, row: BronData) => Promise<any>) | undefined = undefined
   export let level = 1
   export let hideZero: boolean = true
   export let lastRow: boolean = false
@@ -15,6 +16,9 @@
   export let metric: 'Bevolking' | 'Huishouden' | 'Oppervlakte' | undefined = undefined
 
   const _onClick = async  (event: MouseEvent, row: BronData) => {
+    if((event.target as HTMLElement).classList.contains('trendsPerHoofdfunctie')) {
+      return
+    }
     if (row?.$link && (row.Baten ?? 0) + (row.Lasten ?? 0) !== 0) {
       const tr = (event.currentTarget as HTMLElement);
       tr.classList.add('opening');
@@ -109,6 +113,7 @@
 </style>
 <tr 
   id={row.Code}
+  data-id={row.ID}
   data-link={row.$link} 
   data-loaded=""
   class:opened = {row.data?.length??0 > 0}
@@ -130,7 +135,20 @@
     {/if}
   </td>
   <td class="code" class:text-secondary = {(row.Baten ?? 0) === 0 && (row.Lasten ?? 0) === 0}>{row.Code}</td>
-  <td class:text-secondary = {(row.Baten ?? 0) === 0 && (row.Lasten ?? 0) === 0}>{row?.Description ?? row?.Title}</td>
+  <td class:text-secondary = {(row.Baten ?? 0) === 0 && (row.Lasten ?? 0) === 0}>
+    {#if trendsPerHoofdfunctie}
+    <div class="row">
+      <div class="col-11">
+        {row?.Description ?? row?.Title}
+      </div>
+      <div class="col-1 text-end">
+        <a href="{'#'}" on:click|preventDefault={(ev) => trendsPerHoofdfunctie(ev, row)}><GraphUp  class="trendsPerHoofdfunctie"/></a>
+      </div>
+    </div>
+    {:else}
+     {row?.Description ?? row?.Title}
+    {/if}
+  </td>
   {#if level === 1}
   {#each bronnen as bron}
   <td class="text-end"><Currency classes="text-primary" ammount={normalize(bron.data[rowNumber_level1].Baten, bron)} symbol="" />

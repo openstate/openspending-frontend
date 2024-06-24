@@ -344,12 +344,14 @@
 </div>
 <div class="row">
   <div class="col-sm-12 col-lg-8">
-    <div id="map" style="width: 100%; height: 640px;"></div>
-    {#if Entity === 'GemeenschappelijkeRegelingen' || Entity === 'Waterschappen'}
-      <div class="alert alert-warning" role="alert" style="opacity: 0.7; position: relative; top: -100px; z-index: 10000; height: 60px; overflow: hidden; margin: 20px;">
-        <strong>Let op: </strong>niet alle {Entity === 'GemeenschappelijkeRegelingen' ? 'gemeenschappelijke regelingen' : 'waterschappen'} staan op de kaart, zie de lijst voor een compleet overzicht.
-      </div>
-    {/if}
+    <div class="container">
+      <div id="map" style="width: 100%; height: 640px;"></div>
+      {#if Entity === 'GemeenschappelijkeRegelingen' || Entity === 'Waterschappen'}
+        <div class="position-relative bottom-0 end-0 alert alert-warning" role="alert" style="opacity: 0.7;">
+          <strong>Let op: </strong>niet alle {Entity === 'GemeenschappelijkeRegelingen' ? 'gemeenschappelijke regelingen' : 'waterschappen'} staan op de kaart, zie de lijst voor een compleet overzicht.
+        </div>
+      {/if}
+    </div>
   </div>
   <div class="col-sm-12 col-lg-4">
     <div class="input-group mt-2">

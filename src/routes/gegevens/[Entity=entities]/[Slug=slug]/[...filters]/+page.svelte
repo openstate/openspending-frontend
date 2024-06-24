@@ -2,9 +2,9 @@
 	import { goto } from '$app/navigation';
 	import Currency from '$lib/Currency.svelte';
 	import { ucfirst } from '$lib/utils';
-	import type { BronData, BronDetail, DataSet, SingleDataSet, Verslagsoort } from '../../../../../Types.js';
+	import type { BronData, BronDetail, SingleDataSet, Verslagsoort } from '../../../../../Types.js';
 	import DataRow from '$lib/DataRow.svelte';
-	import { XSquareFill, FileEarmarkSpreadsheet, Info, InfoCircleFill } from 'svelte-bootstrap-icons';
+	import { XSquareFill, FileEarmarkSpreadsheet, InfoCircleFill } from 'svelte-bootstrap-icons';
 	import { onMount } from 'svelte';
 	import { api } from '../../../../../stores.js'
   import { get } from 'svelte/store'
@@ -20,6 +20,7 @@
 	$: titles = data.bronnen.length === 1 ? (data.params.Entity === 'GemeenschappelijkeRegelingen' ? data.bronnen[0].Description : data.bronnen[0].Title.replace(' (PV)', '')) : data.bronnen.map((bron, i) => ((i+1 === data.bronnen.length ? ' en ' : (i===0?'':', ')) + (data.params.Entity === 'GemeenschappelijkeRegelingen' ? bron.Description :bron.Title.replace(' (PV)', '')))).join('')
 	$: Bron = data.bronnen[0]
 	let loader: bootstrap.Modal;
+  let detailgrafiekContainer: bootstrap.Modal
 	const go = async (showLoader: boolean = true, updateCharts: boolean = true) => {
 		const url = slugs().length === 0 ? `/gegevens/${data.params.Entity}` : `/gegevens/${data.params.Entity}/per/${data.groepering}/${slugsUrl()}${data.open.length === 0 ? '' : `/open/${data.open.join('|')}`}`
 		const opts = {keepFocus: true, noScroll: true}
@@ -34,6 +35,65 @@
 			return await goto(url, opts).then(_ => {if (slugs().length !== 0 && updateCharts) charts()})
 		}
 	}
+
+  const trendsPerHoofdfunctie = async (ev: Event, row: BronData) => {
+    const promises = []
+    document.querySelector('#detailgrafiekContainer .modal-title')!.innerHTML = `Hoofdrubriek ${row.Code}: ${row.Title}`
+    for (const b of data.requested) {
+			const bron = data.bronnen.filter(bron => `${b.Period}/${b.Slug}/${b.Verslagsoort}` === `${bron.dataset.Period}/${bron.Slug}/${bron.Verslagsoort}`).shift()
+			if (bron === undefined) return
+			const url = `${get(api)}/bronnen/${data.params.Entity}/${bron.Slug}/${b.Verslagsoort}/trends/hoofdfunctie/${row.ID}`
+      promises.push(fetch(url).then(res => res.json()))
+    }
+    const {Chart} = await import("chart.js/auto");
+    Chart.getChart('detailgrafiek_lasten')?.destroy()
+    Chart.getChart('detailgrafiek_baten')?.destroy()
+    const chart_lasten = document.getElementById('detailgrafiek_lasten')! as HTMLCanvasElement
+    const chart_baten = document.getElementById('detailgrafiek_baten')! as HTMLCanvasElement
+
+    const grafiekdata_lasten: {labels: string[], datasets: Array<{label: string, data: any[]}>} = {
+      labels: [],
+      datasets: []
+    }
+    const grafiekdata_baten: {labels: string[], datasets: Array<{label: string, data: any[]}>} = {
+      labels: [],
+      datasets: []
+    }
+    Promise.all(promises)
+      .then(trends => {
+        Chart.getChart('detailgrafiek')?.destroy()
+        for (const trend of trends) {
+          const dataset_lasten: {label: string, data: any[]} = {
+            label: trend.Title,
+            data: []
+          }
+          const dataset_baten: {label: string, data: any[]} = {
+            label: trend.Title,
+            data: []
+          }
+          if (grafiekdata_lasten.labels.length === 0) {
+            grafiekdata_lasten.labels = Object.keys(trend.trends)
+            grafiekdata_baten.labels = grafiekdata_lasten.labels
+          }
+          for (const Period of grafiekdata_lasten.labels) {
+            dataset_lasten.data.push(trend.trends[Period].Lasten)
+            dataset_baten.data.push(trend.trends[Period].Baten)
+          }
+          grafiekdata_lasten.datasets.push(dataset_lasten)
+          grafiekdata_baten.datasets.push(dataset_baten)
+        }
+        const options = (text: string) => ({plugins: {title: {display: true,text}}})
+        new Chart(chart_lasten, { type: 'bar', data: grafiekdata_lasten, options: options('Lasten')})
+        new Chart(chart_baten, { type: 'bar', data: grafiekdata_baten, options: options('Baten')})
+        detailgrafiekContainer.show()
+      })
+      .catch(e => {
+        console.log(e)
+        alert('Kan de grafieken niet maken, probeer het later nogmaals.')
+      })
+    // const url = `${get(api)}/bronnen/${data.params.Entity}/${bron.Slug}/${b.Verslagsoort}/trends`
+    // document.getElementById('detailgrafiek')!.innerHTML = `<pre>${JSON.stringify(urls, null, 2)}</pre>`
+  }
 
 	const verwijderBron = async (bron: BronDetail) => {
 		data.requested = data.requested.filter(b => `${b.Period}/${b.Slug}/${b.Verslagsoort}` !== `${bron.dataset.Period}/${bron.Slug}/${bron.Verslagsoort}`)
@@ -183,6 +243,7 @@
     
     [...document.querySelectorAll('[data-bs-toggle="tooltip"]')].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
 		loader = new bootstrap.Modal(document.getElementById('loading')!)
+    detailgrafiekContainer = new bootstrap.Modal(document.getElementById('detailgrafiekContainer')!)
     const onSelectItem = async (arg: {label: string, value: string, field: any}) => {
       let [_, Slug] = (arg.value as string).split('|')
 			arg.field.value = ''
@@ -237,6 +298,28 @@
 		</div>
 	</div>
 </div>
+
+<!-- Detailgrafiek als modal: -->
+<div class="modal" tabindex="-1" id="detailgrafiekContainer">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Trends per hoofdfunctie</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Sluit"></button>
+      </div>
+      <div class="modal-body">
+        <div style="width: 100%;">
+          <canvas id="detailgrafiek_lasten"></canvas>
+          <canvas id="detailgrafiek_baten"></canvas>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Sluit</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <nav aria-label="breadcrumb">
 	<ol class="breadcrumb">
 		<li class="breadcrumb-item"><a href="/">Home</a></li>
@@ -431,6 +514,7 @@
 		{#each Bron.data as row, i}
   	<DataRow 
 			row={row}
+      trendsPerHoofdfunctie={trendsPerHoofdfunctie}
 			onClick={toggleRow}
 			hideZero={hideZero}
 			lastRow={i+1 === Bron.data.length }
