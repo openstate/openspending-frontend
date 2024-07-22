@@ -38,11 +38,17 @@
 
   const trendsPerHoofdfunctie = async (ev: Event, row: BronData) => {
     const promises = []
-    document.querySelector('#detailgrafiekContainer .modal-title')!.innerHTML = `Hoofdrubriek ${row.Code}: ${row.Title}`
+    if (row.$link === undefined ) {
+      alert('Kan geen grafiek maken voor deze data.')
+      return;
+    }
+    const path = row.$link!.replace(/.+(\/(hoofdfunctie|categorie)\/.+)/, '$1')
+
+    document.querySelector('#detailgrafiekContainer .modal-title')!.innerHTML = `${row.Code}: ${row.Title}`
     for (const b of data.requested) {
 			const bron = data.bronnen.filter(bron => `${b.Period}/${b.Slug}/${b.Verslagsoort}` === `${bron.dataset.Period}/${bron.Slug}/${bron.Verslagsoort}`).shift()
 			if (bron === undefined) return
-			const url = `${get(api)}/bronnen/${data.params.Entity}/${bron.Slug}/${b.Verslagsoort}/trends/hoofdfunctie/${row.ID}`
+			const url = `${get(api)}/bronnen/${data.params.Entity}/${bron.Slug}/${b.Verslagsoort}/trends${path}`
       promises.push(fetch(url).then(res => res.json()))
     }
     const {Chart} = await import("chart.js/auto");
@@ -538,23 +544,23 @@
 </div>
 <div class="row">
 	<div class="col-sm-12 col-m-6 col-lg-6">
-		<h3 class="fs-6 mt-5">Lasten per periode {#if metric}(normalisatie <em>{metric}</em>){/if}</h3>
-    <hr>
-		<div style="width: 100%;"><canvas id="chart_lasten"></canvas></div>
-	</div>
-	<div class="col-sm-12 col-m-6 col-lg-6">
 		<h3 class="fs-6 mt-5">Baten per periode {#if metric}(normalisatie <em>{metric}</em>){/if}</h3>
     <hr>
 		<div style="width: 100%;"><canvas id="chart_baten"></canvas></div>
 	</div>
 	<div class="col-sm-12 col-m-6 col-lg-6">
-		<h3 class="fs-6 mt-5">Verschillen lasten per periode {#if metric}(normalisatie <em>{metric}</em>){/if}</h3>
-    <hr>
-		<div style="width: 100%;"><canvas id="chart_delta_lasten"></canvas></div>
-	</div>
-	<div class="col-sm-12 col-m-6 col-lg-6">
-		<h3 class="fs-6 mt-5">Verschillen baten per periode {#if metric}(normalisatie <em>{metric}</em>){/if}</h3>
+		<h3 class="fs-6 mt-5">Verschillen baten (in %) per periode {#if metric}(normalisatie <em>{metric}</em>){/if}</h3>
     <hr>
 		<div style="width: 100%;"><canvas id="chart_delta_baten"></canvas></div>
+	</div>
+	<div class="col-sm-12 col-m-6 col-lg-6">
+		<h3 class="fs-6 mt-5">Lasten per periode {#if metric}(normalisatie <em>{metric}</em>){/if}</h3>
+    <hr>
+		<div style="width: 100%;"><canvas id="chart_lasten"></canvas></div>
+	</div>
+	<div class="col-sm-12 col-m-6 col-lg-6">
+		<h3 class="fs-6 mt-5">Verschillen lasten (in %) per periode {#if metric}(normalisatie <em>{metric}</em>){/if}</h3>
+    <hr>
+		<div style="width: 100%;"><canvas id="chart_delta_lasten"></canvas></div>
 	</div>
 </div>
