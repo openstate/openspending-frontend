@@ -185,7 +185,7 @@
       rowNumber_level2={level === 1 ? i : rowNumber_level2}
       rowNumber_level3={level === 2 ? i : 0}
       bronnen={bronnen}
-      trendsPerHoofdfunctie={level === -1 ? trendsPerHoofdfunctie: undefined}
+      trendsPerHoofdfunctie={trendsPerHoofdfunctie}
       lastRow={i+1 === row.data.filter(d => !hideZero || (d.Baten??0) + (d.Lasten??0) !== 0).length}/>
   {/each}
 {/if}

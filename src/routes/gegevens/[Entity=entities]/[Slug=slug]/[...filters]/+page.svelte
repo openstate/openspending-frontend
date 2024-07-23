@@ -42,13 +42,14 @@
       alert('Kan geen grafiek maken voor deze data.')
       return;
     }
-    const path = row.$link!.replace(/.+(\/(hoofdfunctie|categorie)\/.+)/, '$1')
+    const path = row.$link.replace(/.+(\/(hoofdfunctie|categorie)\/.+)/, '$1')
 
     document.querySelector('#detailgrafiekContainer .modal-title')!.innerHTML = `${row.Code}: ${row.Title}`
     for (const b of data.requested) {
 			const bron = data.bronnen.filter(bron => `${b.Period}/${b.Slug}/${b.Verslagsoort}` === `${bron.dataset.Period}/${bron.Slug}/${bron.Verslagsoort}`).shift()
 			if (bron === undefined) return
 			const url = `${get(api)}/bronnen/${data.params.Entity}/${bron.Slug}/${b.Verslagsoort}/trends${path}`
+      console.log(url)
       promises.push(fetch(url).then(res => res.json()))
     }
     const {Chart} = await import("chart.js/auto");
@@ -89,8 +90,25 @@
           grafiekdata_baten.datasets.push(dataset_baten)
         }
         const options = (text: string) => ({plugins: {title: {display: true,text}}})
-        new Chart(chart_lasten, { type: 'bar', data: grafiekdata_lasten, options: options('Lasten')})
-        new Chart(chart_baten, { type: 'bar', data: grafiekdata_baten, options: options('Baten')})
+        let heeftLasten = 0
+        let heeftBaten = 0
+        for (const dataset of grafiekdata_lasten.datasets) {
+          heeftLasten += dataset.data.filter(value => value !== null).length
+        }
+        for (const dataset of grafiekdata_baten.datasets) {
+          heeftBaten += dataset.data.filter(value => value !== null).length
+        }
+        document.getElementById('detailgrafiek_baten')?.classList.add('d-none')
+        document.getElementById('detailgrafiek_lasten')?.classList.add('d-none')
+        if (heeftLasten > 0) {
+          document.getElementById('detailgrafiek_lasten')?.classList.remove('d-none')
+          new Chart(chart_lasten, { type: 'bar', data: grafiekdata_lasten, options: options('Lasten')})
+        }
+        if (heeftBaten > 0) {
+          document.getElementById('detailgrafiek_baten')?.classList.remove('d-none')
+          new Chart(chart_baten, { type: 'bar', data: grafiekdata_baten, options: options('Baten')})
+        }
+
         detailgrafiekContainer.show()
       })
       .catch(e => {
@@ -315,8 +333,8 @@
       </div>
       <div class="modal-body">
         <div style="width: 100%;">
-          <canvas id="detailgrafiek_lasten"></canvas>
           <canvas id="detailgrafiek_baten"></canvas>
+          <canvas id="detailgrafiek_lasten"></canvas>
         </div>
       </div>
       <div class="modal-footer">
