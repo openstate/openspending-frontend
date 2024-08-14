@@ -18,9 +18,10 @@
       Omdat niet alle organisaties nog detaildata aanleveren, kun je op deze pagina zien welke organisaties dat wel al doen.
     </p>
   </div>
-  {#if isLive($page.url.hostname)}
+  {#if data.bronnen.length === 0}
   <div class="alert alert-info">
-    Er is momenteel geen detaildata beschikbaar gesteld. Dat kan binnenkort veranderen, houd deze pagina dus in de gaten.
+    Er is momenteel geen detaildata beschikbaar gesteld. Dat kan binnenkort veranderen, houd deze pagina dus in de gaten. 
+    <br>Je kunt jouw gemeente natuurlijk altijd vragen of ze hun Iv3 detaildata aan OpenSpending.nl kunnen aanleveren zodat we die hier ook kunnen publiceren.
   </div>
   {:else}
   <div class="com-sm-12 col-md-12 col-lg-9">

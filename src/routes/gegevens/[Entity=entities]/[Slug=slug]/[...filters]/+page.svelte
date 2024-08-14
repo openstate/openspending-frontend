@@ -89,7 +89,7 @@
           grafiekdata_lasten.datasets.push(dataset_lasten)
           grafiekdata_baten.datasets.push(dataset_baten)
         }
-        const options = (text: string) => ({plugins: {title: {display: true,text}}})
+        const options = (text: string) => ({plugins: {title: {display: true,text: `${text} (bedragen in € 1.000)`}}})
         let heeftLasten = 0
         let heeftBaten = 0
         for (const dataset of grafiekdata_lasten.datasets) {
@@ -119,32 +119,15 @@
     // document.getElementById('detailgrafiek')!.innerHTML = `<pre>${JSON.stringify(urls, null, 2)}</pre>`
   }
 
-	const verwijderBron = async (bron: BronDetail) => {
-		data.requested = data.requested.filter(b => `${b.Period}/${b.Slug}/${b.Verslagsoort}` !== `${bron.dataset.Period}/${bron.Slug}/${bron.Verslagsoort}`)
+	const verwijderBron = async (ix: number) => {
+    data.requested = [...data.requested.slice(0, ix), ...data.requested.slice(ix+1)]
 		return await go(false)
 	}
 
-  const isThereAnyDetaildataAvaliable = () =>  isLive($page.url.hostname) ? false :  Object.values(data.datasetsWithDetaildata).filter(o => o.length>0).length > 0
+  const isThereAnyDetaildataAvaliable = () =>  Object.values(data.datasetsWithDetaildata).filter(o => o.length>0).length > 0
 
-  // const datasetHasDetails = (bron: DataSet) => {
-  //   bron.dataset.Period
-  //   bron.Slug
-  //   const detailData = data.datasetsWithDetaildata[bron.Slug]
-  //     .filter(d => {
-  //       console.log(d.Period, bron.dataset.Period)
-  //       return d.Period === bron.dataset.Period
-  //     })
-  //   if (detailData.length > 0) {
-  //     console.log(detailData)
-  //   }
-  //   return true
-  // }
-  
-
-	const setPeriode = async (bron: BronDetail, periode: string) => {
-    const item = data.requested
-      .filter(b => `${b.Period}/${b.Slug}/${b.Verslagsoort}` === `${bron.dataset.Period}/${bron.Slug}/${bron.Verslagsoort}`)
-      .shift()
+	const setPeriode = async (ix: number, periode: string) => {
+    const item = data.requested[ix]
     if (item) {
       item.Period = parseInt(periode)
       item.Verslagsoort = 'begroting'
@@ -152,10 +135,8 @@
 		return await go()
 	}
 
-	const setVerslagsoort = async (bron: BronDetail, verslagsoort: string) => {
-		const item = data.requested
-      .filter(b => `${b.Period}/${b.Slug}/${b.Verslagsoort}` === `${bron.dataset.Period}/${bron.Slug}/${bron.Verslagsoort}`)
-      .shift()
+	const setVerslagsoort = async (ix: number, verslagsoort: string) => {
+		const item = data.requested[ix]
     if (item) {
       item.Verslagsoort = verslagsoort as Verslagsoort
     }
@@ -402,7 +383,7 @@
 				{#each data.bronnen as bron, ix}
 				<tr>
 					<th scope="row" style="width:1px;">
-						<a href="{'#'}" style="margin-right: 5px" on:click={() => verwijderBron(bron)}><XSquareFill/></a>
+						<a href="{'#'}" style="margin-right: 5px" on:click={() => verwijderBron(ix)}><XSquareFill/></a>
 					</th>
 					<th scope="row">
 						{bron.Title.replace(' (PV)', '')} 
@@ -417,7 +398,7 @@
 					<td class="text-end" style="white-space: nowrap;"><Currency ammount={getDatasetTotals(ix, bron.dataset)?.Baten}/></td>
 					<td class="text-end" style="white-space: nowrap;"><Currency ammount={getDatasetTotals(ix, bron.dataset)?.Lasten}/></td>
 					<td class="text-end">
-						<select class="form-select" on:change={(ev) => setPeriode(bron, ev.currentTarget.value)}>
+						<select class="form-select" on:change={(ev) => setPeriode(ix, ev.currentTarget.value)}>
 							{#each bron.datasets as dataset}
 							<option selected={bron.dataset.Period === dataset.Period}>{dataset.Period} 
               {#if dataset.hasDetaildata && !isLive($page.url.hostname)}
@@ -431,7 +412,7 @@
 						{#if Object.keys(bron.dataset.verslagsoorten).length === 1}
 						{bron.Verslagsoort}
 						{:else}
-						<select class="form-select" on:change={(ev) => setVerslagsoort(bron, ev.currentTarget.value)}>
+						<select class="form-select" on:change={(ev) => setVerslagsoort(ix, ev.currentTarget.value)}>
 							{#each Object.keys(bron.dataset.verslagsoorten) as verslagsoort}
 							<option selected={bron.Verslagsoort === verslagsoort}>{verslagsoort}</option>
 							{/each}
@@ -581,4 +562,28 @@
     <hr>
 		<div style="width: 100%;"><canvas id="chart_delta_lasten"></canvas></div>
 	</div>
+</div>
+<div class="row">
+  <div class="col-sm-12 col-m-6 col-lg-6">
+   <h3 class="fs-6 mt-5">Downloads</h3>
+   <table class="table">
+    <thead>
+      <tr>
+        <th>Bron</th>
+        <th>Periode</th>
+        <th>Downloads</th>
+      </tr>
+      {#each data.requested as bron, ix}
+      <tr>
+        <td>{bron.Title}</td>
+        <td>{bron.Period}</td>
+        <td>
+          <a target="_blank" href="{$api}/spreadsheet/{data.bronnen[0].Type}/{bron.Period}/{bron.Slug}">Spreadsheet</a> <InfoCircleFill data-bs-toggle="tooltip" data-bs-title="Download deze gegevens als Spreadsheet."/>
+          <a target="_blank" href="{$api}/fiscaldatapackage/{data.bronnen[0].Type}/{bron.Period}/{bron.Slug}/datapackage.json"> Fiscal Data Package</a> <InfoCircleFill data-bs-toggle="tooltip" data-bs-title="Het Fiscal Data Package is een lichtgewicht en gebruikersgericht formaat voor het publiceren en gebruiken van fiscale gegevens, zie fiscal.datapackage.org."/>
+        </td>
+      </tr>
+      {/each}
+    </thead>
+   </table>
+  </div>
 </div>

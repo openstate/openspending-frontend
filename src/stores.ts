@@ -1,11 +1,7 @@
 import { readable } from 'svelte/store';
 
 export const api = readable('', function start(set) {
-    const url = import.meta.env.PROD
-		? 'https://data.openspending.nl'
-		// : 'https://data.openspending.nl'
-		: 'http://localhost:3000'
-  set(url)
+  set(import.meta.env.VITE_DATA_API ?? 'http://localhost:3000')
 	return function stop() {
 	};
 });

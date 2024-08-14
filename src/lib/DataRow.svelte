@@ -116,7 +116,7 @@
   data-id={row.ID}
   data-link={row.$link} 
   data-loaded=""
-  class:opened = {row.data?.length??0 > 0}
+  class:opened = {(row.data??[]).length > 0}
   class:hide-zero = {hideZero}
   class:level-1={level ===1}
   class:level-2={level ===2}

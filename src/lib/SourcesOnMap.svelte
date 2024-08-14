@@ -358,7 +358,7 @@
       <input id="find-source" aria-label="Zoek" class="form-control" type="text" size="20" placeholder="zoek {Entity === 'GemeenschappelijkeRegelingen' ? 'Gem. regelingen' : Entity} &hellip;">
       <span class="input-group-text"><kbd>/</kbd></span>
     </div>
-    {#if Entity === 'Gemeenten' && !isLive($page.url.hostname)}
+    {#if Entity === 'Gemeenten' && sources.some(source => source.hasDetaildata)}
     <div class="input-group mt-2">
     <input class="form-check-input" type="checkbox" on:change={() => {load(); highlightGemeentesWithDetailData();}} id="onlyDetailData" bind:checked={onlyDetailData} />
     <label class="form-check-label" style="padding-left: 10px;" for="onlyDetailData">Alleen organisaties met <a href="/gegevens/detaildata">detaildata</a>.</label>
