@@ -1,14 +1,24 @@
 <script>
+  import { page } from '$app/stores';
+  import { get } from 'svelte/store';
+	import { loginEnabled } from '../stores';
+  $: session = $page.data.session;
   import logo_openstate_wit from '$lib/assets/logo-openstate-wit.png';
+	import { PersonCircle } from 'svelte-bootstrap-icons';
 </script>
 
   <section class="topbar d-flex flex-row justify-content-start fixed-top">
-    <div class="row d-flex container-fluid align-items-center">
-      <div class="col-md-6 d-flex align-items-center">
+    <div class="d-flex container-fluid align-items-center">
+      <div class="d-flex align-items-center">
         <img src="{logo_openstate_wit}" alt="Logo Open State Foundation" width="100"/>
         <div class="line"></div>
         <a href="https://openstate.eu/nl/doneren/" class="btn button-help-mee">Help mee</a>
       </div>
+    </div>
+    <div class="d-flex float-end p-1 align-items-center">
+      {#if get(loginEnabled) === 'true' && session.Token}
+      <a href="/uitloggen" class="btn btn-primary btn-sm" style="width: 110px;"><PersonCircle/> Uitloggen</a>
+      {/if}
     </div>
   </section>
 <div class="topbar-container d-flex flex-row fixed-top">

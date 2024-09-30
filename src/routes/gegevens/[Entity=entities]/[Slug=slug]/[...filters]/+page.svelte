@@ -49,7 +49,6 @@
 			const bron = data.bronnen.filter(bron => `${b.Period}/${b.Slug}/${b.Verslagsoort}` === `${bron.dataset.Period}/${bron.Slug}/${bron.Verslagsoort}`).shift()
 			if (bron === undefined) return
 			const url = `${get(api)}/bronnen/${data.params.Entity}/${bron.Slug}/${b.Verslagsoort}/trends${path}`
-      console.log(url)
       promises.push(fetch(url).then(res => res.json()))
     }
     const {Chart} = await import("chart.js/auto");
@@ -112,7 +111,7 @@
         detailgrafiekContainer.show()
       })
       .catch(e => {
-        console.log(e)
+        console.error(e)
         alert('Kan de grafieken niet maken, probeer het later nogmaals.')
       })
     // const url = `${get(api)}/bronnen/${data.params.Entity}/${bron.Slug}/${b.Verslagsoort}/trends`
@@ -233,7 +232,7 @@
 				})
       .catch(e => {
         alert('Er ging iets mis bij het maken van de grafiek.')
-        console.log(e)
+        console.error(e)
       })
 		}
 		new Chart(chart_delta_baten, { type: 'bar', data: { labels, datasets: dataset_delta_baten }})

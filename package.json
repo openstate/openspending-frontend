@@ -19,6 +19,7 @@
 		"@sveltejs/kit": "^2.0.0",
 		"@sveltejs/vite-plugin-svelte": "^3.0.1",
 		"@sveltestrap/sveltestrap": "^6.2.1",
+		"@types/bcrypt": "^5.0.2",
 		"@types/bootstrap": "^5.2.10",
 		"@types/chart.js": "^2.9.41",
 		"@types/eslint": "8.56.0",
@@ -44,11 +45,14 @@
 	"type": "module",
 	"dependencies": {
 		"@sendgrid/mail": "^8.1.0",
+		"bcrypt": "^5.1.1",
 		"bootstrap-icons": "^1.11.3",
 		"chart.js": "^4.4.1",
 		"geojson": "^0.5.0",
 		"human-readable-numbers": "^0.9.5",
 		"leaflet": "^1.9.4",
-		"leaflet.markercluster": "^1.5.3"
+		"leaflet.markercluster": "^1.5.3",
+		"marked": "^14.1.0",
+		"svelte-kit-cookie-session": "^4.0.0"
 	}
 }

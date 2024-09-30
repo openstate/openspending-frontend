@@ -1,6 +1,5 @@
 import { fail } from '@sveltejs/kit';
 import mail from '@sendgrid/mail';
-// @ts-expect-error module bestaat niet
 import { SENDGRID_API_KEY, EMAIL_SEND_TO } from '$env/static/private';
 
 type Message = {

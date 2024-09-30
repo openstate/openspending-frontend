@@ -108,3 +108,10 @@ export type Adres = {
     Type: SourceType
   }>
 }
+
+export type SessionData = {
+  Bron?: Bron
+  Token: string
+  Age: number
+  Role: 'admin' | 'user' | 'guest'
+};

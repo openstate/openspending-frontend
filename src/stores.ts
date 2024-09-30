@@ -5,3 +5,9 @@ export const api = readable('', function start(set) {
 	return function stop() {
 	};
 });
+
+export const loginEnabled = readable('', function start(set) {
+  set(import.meta.env.VITE_AUTH_ENABLED)
+	return function stop() {
+	};
+});
