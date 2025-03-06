@@ -8,8 +8,13 @@ Open Spending is gebouwd met [Svelte Kit](https://kit.svelte.dev/). De onderstaa
 
 Wanneer je dit project hebt ge-cloned/ge-forkt installeer je de dependencies met `npm install` (or `pnpm install` or `yarn`), en kun je een onwikkel-omgeving starten:
 
+
 ```bash
-npm run dev -- --open
+  npm i
+  npm run dev
+
+  or 
+  npm run dev -- --open
 ```
 
 ### Building
