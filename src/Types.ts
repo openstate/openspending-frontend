@@ -112,6 +112,6 @@ export type Adres = {
 export type SessionData = {
   Bron?: Bron
   Token: string
-  Age: number
+  TTL: number
   Role: 'admin' | 'user' | 'guest'
 };
