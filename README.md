@@ -35,3 +35,9 @@ Je kunt een preview van de productieomgeving starten met `npm run preview`.
   - `git checkout main && git pull && git pull --tags && git checkout <tag>`
   - `sudo docker compose down`
   - `sudo docker compose up --build -d`
+
+## Tests
+Some tests have been added to the `./tests` folder. To run them:
+```bash
+npx vitest
+```
