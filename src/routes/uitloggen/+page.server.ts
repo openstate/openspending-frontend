@@ -17,7 +17,6 @@ export const actions = {
         } else {
           try {
             const response = await res.json()
-            console.log(response)
             if (Object.hasOwn(response, 'error')) {
               return {success: false, reason: `${response.error} (code ${res.status})`}
             }

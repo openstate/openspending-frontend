@@ -115,3 +115,16 @@ export type SessionData = {
   TTL: number
   Role: 'admin' | 'user' | 'guest'
 };
+
+export type NewUser = {
+	firstname: string,
+	lastname: string,
+	email_address: string
+}
+
+export type User = {
+	Firstname: string,
+	Lastname: string,
+	Username: string,
+	Sources: Bron[]
+}
