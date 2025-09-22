@@ -4,9 +4,13 @@ import { fail } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types.js';
 import type { User } from '../../../../Types.js';
 
-export const load: PageServerLoad = async ({ params }) => {
+export const load: PageServerLoad = async ({ locals, params }) => {
   const username = params.username
-  const user: User = await fetch(`${get(api)}/admin/overheidsgebruikers/${username}`)
+  const user: User = await fetch(`${get(api)}/admin/overheidsgebruikers/${username}`, {
+    headers: {
+      'authorization': locals.session.data.Token
+    }
+  })
   .then(response => {
     if (!response.ok) throw new Error(`Kan de gebruiker niet laden: ${get(api)}/admin/overheidsgebruiker/${username} ${response.statusText}`)
     return response.json()
@@ -24,7 +28,6 @@ export const actions = {
     return await fetch(`${get(api)}/admin/overheidsgebruikers/${username}`, {
       method: 'DELETE',
       headers: {
-        'content-type': 'application/json',
         'authorization': locals.session.data.Token
       }
     }).then(async (res) => {

@@ -110,7 +110,6 @@ export type Adres = {
 }
 
 export type SessionData = {
-  Bron?: Bron
   Token: string
   TTL: number
   Role: 'admin' | 'user' | 'guest'

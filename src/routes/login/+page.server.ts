@@ -45,7 +45,7 @@ export const actions = {
       else {
         const authResponse = (await res.json()) as SessionData
         await locals.session.set(authResponse);
-        return {success: true, authResponse }
+        return {success: true }
       }
     })
   }
