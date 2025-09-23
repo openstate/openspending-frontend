@@ -1,7 +1,5 @@
 <script>
   import { page } from '$app/stores';
-  import { get } from 'svelte/store';
-	import { loginEnabled } from '../stores';
   $: session = $page.data.session;
   import logo_openstate_wit from '$lib/assets/logo-openstate-wit.png';
 	import { PersonCircle } from 'svelte-bootstrap-icons';
@@ -16,8 +14,10 @@
       </div>
     </div>
     <div class="d-flex float-end p-1 align-items-center">
-      {#if get(loginEnabled) === 'true' && session.Token}
+      {#if session.Token}
       <a href="/uitloggen" class="btn btn-primary btn-sm" style="width: 110px;"><PersonCircle/> Uitloggen</a>
+      {:else}
+      <a href="/login" class="btn btn-primary btn-sm" style="width: 110px;">Inloggen</a>
       {/if}
     </div>
   </section>

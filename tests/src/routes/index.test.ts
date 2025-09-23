@@ -60,13 +60,11 @@ describe ('login page', () => {
 describe ('gegevens page', () => {
   const path = '/gegevens/Gemeenten/per/hoofdfunctie/zoeterwoude/2024/begroting';
 
-  it('redirects to login if not logged in', async () => {
+  it('resolves if not logged in', async () => {
     let { event, resolve } = mockRequest(path, mockGuestUserSessionData());
 
-		await expect(handle({ event, resolve })).rejects.toSatisfy((response) => {
-			return isRedirect(response) && response.location == '/login';
-		});
-    expect(resolve).not.toHaveBeenCalled;
+    await handle({ event, resolve });
+    expect(resolve).toHaveBeenCalled;
   });
 
   it('resolves when logged in as normal user', async () => {

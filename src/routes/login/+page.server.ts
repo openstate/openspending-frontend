@@ -1,9 +1,5 @@
-import { fail, redirect } from '@sveltejs/kit';
-import { VITE_AUTH_ENABLED, AUTH_CLIENT_SECRET } from '$env/static/private';
-
-export async function load() {
-  if (!VITE_AUTH_ENABLED) throw redirect(307, '/');
-}
+import { fail } from '@sveltejs/kit';
+import { AUTH_CLIENT_SECRET } from '$env/static/private';
 import bcrypt from 'bcrypt'
 import type { SessionData } from '../../Types.js';
 import { apiPost } from '../../utils.js';

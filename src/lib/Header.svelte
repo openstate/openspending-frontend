@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { page } from '$app/stores';
+  $: session = $page.data.session;
   import OpenSpendingLogo from '$lib/assets/open-spending.svg';
 	import { get } from 'svelte/store';
 	import { api } from '../stores';
@@ -15,6 +16,12 @@
     {route: '/lijstenmaker' },
     {route: '/contact' },
   ];
+  let adminRouteAdded = false
+
+  $: if (session && session.Role === 'admin' && !adminRouteAdded) {
+    menuItems.push({route: '/beheer'})
+    adminRouteAdded = true
+  }
 
   let shortLink = ''
 

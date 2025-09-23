@@ -2,8 +2,6 @@
 	import { onMount } from 'svelte';
 	import { CheckCircleFill, ExclamationCircleFill } from 'svelte-bootstrap-icons';
   import { page } from '$app/stores';
-  import { get } from 'svelte/store';
-  import { loginEnabled } from '../../stores.js';
   $: session = $page.data.session;
   export let form;
   let expired: boolean = false
@@ -24,10 +22,6 @@
 </script>
 <div class="row">
   <div class="col-sm-12 col-md-10 col-lg-8 col-xl-8">
-{#if get(loginEnabled) !== 'true'}
-  <h1>Login niet beschikbaar</h1>
-  <p class="lead">De gegevens op deze website zijn openbaar, u hoeft dus niet in te loggen.</p>
-{:else}
 {#if session?.Token}
 <!-- <pre>{JSON.stringify(session, null, 2)}</pre> -->
 <h1>Afmelden</h1>
@@ -99,6 +93,5 @@
       </div>
     </form>
   {/if}
-{/if}
   </div>
 </div>
