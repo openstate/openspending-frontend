@@ -1,8 +1,9 @@
-import { get } from 'svelte/store'
-import { api } from '../../../stores'
+import { apiGet } from '../../../utils'
 
-export async function load({ fetch }) {
-  const bronnen: Array<{Source: string, Slug: string, Jaren: number[], Workspaces: string[]}> = await fetch(`${get(api)}/detaildata/overzicht`)
-    .then(res => res.json())
+export async function load({ data }) {
+  const session = data.session
+  const bronnen: Array<{Source: string, Slug: string, Jaren: number[], Workspaces: string[]}> =
+    await apiGet('/detaildata/overzicht', session.Token)
+      .then(res => res.json())
   return { bronnen }
 }

@@ -2,7 +2,8 @@
 	import { onMount } from 'svelte';
 	import type { Adres, Bron, SourceType } from '../Types';
   import { page } from '$app/stores';
-	import { isLive, ucfirst } from './utils';
+  $: session = $page.data.session
+	import { ucfirst } from './utils';
 
 
   export let Entity: SourceType
@@ -12,6 +13,7 @@
 	import { goto } from '$app/navigation';
 	import { CartCheck } from 'svelte-bootstrap-icons';
 	import type { TileLayer, WMSOptions } from 'leaflet';
+	import { apiGet } from '../utils';
 
   let sources: Bron[] = []
   let filteredSources: Bron[] = []
@@ -73,7 +75,7 @@
   const load = () => {
     if (clickmarker) clickmarker.removeFrom(map)
 
-    fetch(`${get(api)}/bronnen/${Entity}`)
+    apiGet(`/bronnen/${Entity}`, session.Token)
       .then(response => {
         if (!response.ok) throw new Error(`Kan de bronnen niet laden: ${get(api)}/bronnen/${Entity} ${response.statusText}`)
         return response.json()

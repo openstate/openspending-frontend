@@ -1,14 +1,13 @@
-import { get } from 'svelte/store'
-import { api } from '../../../stores.js';
 import { fail, redirect } from '@sveltejs/kit';
 import type { NewUser } from '../../../Types.js';
 import type { PageServerLoad } from '../$types.js';
+import { apiGet, apiPost } from '../../../utils.js';
 
-export const load: PageServerLoad = async ({ url }) => {
+export const load: PageServerLoad = async ({ url, locals }) => {
   const key = url.searchParams.get('key')
   const secret = url.searchParams.get('uitnodiging');
 
-  const user: NewUser = await fetch(`${get(api)}/auth/registreren/ophalen?key=${key}&secret=${secret}`)
+  const user: NewUser = await apiGet(`/auth/registreren/ophalen?key=${key}&secret=${secret}`, locals.session.data.Token)
     .then(response => {
       if (!response.ok) throw new Error(`Kan de uitgenodigde gebruiker niet laden: ${response.statusText}`)
       return response.json()
@@ -30,11 +29,7 @@ export const actions = {
     data['secret'] = url.searchParams.get('uitnodiging') ?? ''
     delete data['confirm_password']
 
-    return await fetch(`${get(api)}/auth/registreren/opslaan`, {
-        method: 'POST',
-        headers: {
-          'content-type': 'application/json',
-        },
+    return await apiPost('/auth/registreren/opslaan', undefined, {
         body: JSON.stringify(data)
     }).then(async res => {
       if (!res.ok) {

@@ -1,9 +1,8 @@
 import { redirect } from '@sveltejs/kit';
 import { isPathAllowed } from '../hooks.server';
 import { VITE_AUTH_ENABLED } from '$env/static/private';
-import { get } from 'svelte/store';
-import { api } from '../stores';
 import type { SessionData } from '../Types';
+import { apiPost } from '../utils';
 
 export async function load({ locals, route }) {
   if(VITE_AUTH_ENABLED === 'true') {
@@ -11,13 +10,7 @@ export async function load({ locals, route }) {
       throw redirect(302, '/login')
     }
     if (!isPathAllowed(route.id)) {
-      await fetch(`${get(api)}/auth/session`, {
-        method: 'post',
-        headers: {
-          'content-type': 'application/json',
-          'accept': 'application/json',
-          'authorization': locals.session.data.Token
-        }
+      await apiPost('/auth/session', locals.session.data.Token, {
       }).then(async res => {
         if (!res.ok) {
           await locals.session.destroy();

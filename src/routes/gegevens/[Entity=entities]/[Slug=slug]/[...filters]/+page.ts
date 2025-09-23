@@ -1,12 +1,12 @@
 import { redirect } from '@sveltejs/kit';
 import type { BronDetail, DataSet } from '../../../../../Types';
-import { api } from '../../../../../stores';
-import { get } from 'svelte/store';
+import { apiGet } from '../../../../../utils';
 
 const verslagsoorten = ['begroting', 'realisatie', 'Q1', 'Q2', 'Q3', 'Q4']
 type Verslagsoort = 'begroting' | 'realisatie' | 'Q1' | 'Q2' | 'Q3' | 'Q4'
 
-export async function load({ fetch, params }) {
+export async function load({ fetch, params, data }) {
+  const session = data.session
   const paths = params.filters.split('/').filter(p => p !== 'per')
   if (paths.length === 0) {
     throw redirect(307, `/gegevens/${params.Entity}`)
@@ -44,7 +44,7 @@ export async function load({ fetch, params }) {
 
   for (const Slug of requested) {
     //test if Bron has Verslagsoort, otherwise use other:
-    const verslagsoorten = await fetch(`${get(api)}/bronnen/${params.Entity}/${Slug.Slug}/${Slug.Period}`)
+    const verslagsoorten = await apiGet(`/bronnen/${params.Entity}/${Slug.Slug}/${Slug.Period}`, session.Token)
       .then(r => r.json())
       .then(a => {
         return Object.keys(a.dataset.verslagsoorten) as Verslagsoort[]
@@ -55,16 +55,16 @@ export async function load({ fetch, params }) {
 
     
 
-    const url = `${get(api)}/bronnen/${params.Entity}/${Slug.Slug}/${Slug.Period}/${Slug.Verslagsoort}/per/${groepering === 'categorie' ? groepering : 'hoofdfunctie'}`
+    const url = `/bronnen/${params.Entity}/${Slug.Slug}/${Slug.Period}/${Slug.Verslagsoort}/per/${groepering === 'categorie' ? groepering : 'hoofdfunctie'}`
     let Bron: BronDetail
     try {
-      Bron = (await fetch(url).then(r => r.json())) as BronDetail
+      Bron = (await apiGet(url, session.Token).then(r => r.json())) as BronDetail
       for (const brondata of Bron.data) {
         if (open.includes(brondata.Code) && brondata.$link) {
-          brondata.data = await fetch(get(api) + new URL(brondata.$link).pathname).then(res => res.json()).then(d => d.data)
+          brondata.data = await apiGet(new URL(brondata.$link).pathname, session.Token).then(res => res.json()).then(d => d.data)
           for (const brondata_l2 of brondata.data ?? []) {
             if (open.includes(brondata_l2.Code) && brondata_l2.$link) {
-              brondata_l2.data = await fetch(get(api) + new URL(brondata_l2.$link).pathname).then(res => res.json()).then(d => d.data)
+              brondata_l2.data = await apiGet(new URL(brondata_l2.$link).pathname, session.Token).then(res => res.json()).then(d => d.data)
             }
           }
         }

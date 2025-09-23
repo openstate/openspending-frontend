@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import Currency from '$lib/Currency.svelte';
-	import { isLive, ucfirst } from '$lib/utils.js';
+	import { ucfirst } from '$lib/utils.js';
 	import { onMount, afterUpdate } from 'svelte';
   import { DashSquareFill, PlusSquareFill, Download, SortNumericDownAlt, SortNumericUp } from 'svelte-bootstrap-icons';
   export let data
@@ -189,11 +189,6 @@
   <p><small><a href="/gegevens/detaildata">klik hier om meer organisaties met detaildata te bekijken &hellip;</a></small></p>
 </div>
 
-{#if (isLive($page.url.hostname))}
-<div class="alert alert-info">
-De detaildata van {data.dataset.Title} is helaas nog niet beschikbaar, probeer het later nogmaals.
-</div>
-{:else}
 <table class="table table-hover caption-top table-bordered">
   <thead>
     <tr>
@@ -286,4 +281,3 @@ De detaildata van {data.dataset.Title} is helaas nog niet beschikbaar, probeer h
   </tfoot>
 </table>
 <p class="mt-5"><a href="{get(api)}/detaildata/{data.params.Entity}/{data.bron.Key}/{data.dataset.Identifier}/{data.params.verslagsoort}.json"><button class="btn btn-primary"><Download/> download brondata</button></a></p>
-{/if}

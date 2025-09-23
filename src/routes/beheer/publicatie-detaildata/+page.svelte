@@ -1,10 +1,10 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { Floppy } from 'svelte-bootstrap-icons';
-  import { get } from 'svelte/store'
-	import { api } from '../../../stores.js';
   import { page } from '$app/stores';
-  $: session = $page.data.session;  export let data
+  $: session = $page.data.session
+	import { apiPost } from '../../../utils.js';
+  export let data
   let saveButton: HTMLButtonElement
   let checkboxes: HTMLInputElement[] = []
 
@@ -31,12 +31,7 @@
       const publish = checkboxes.filter(box => box.checked).map(box => {
         return box.dataset
       })
-      fetch(`${get(api)}/admin/detaildata/publiceer`, {
-        method: 'POST',
-        headers: [
-          ['content-type', 'application/json'],
-          ['authorization', `Bearer: ${session.Token}`]
-        ],
+      apiPost('/admin/detaildata/publiceer', session.Token, {
         body: JSON.stringify(publish)
       }).then(res => {
         if (!res.ok) {

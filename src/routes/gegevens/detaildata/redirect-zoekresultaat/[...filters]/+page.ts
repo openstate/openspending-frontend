@@ -1,6 +1,5 @@
 import { redirect } from '@sveltejs/kit'
-import { api } from '../../../../../stores'
-import { get } from 'svelte/store'
+import { apiGet } from '../../../../../utils'
 
 type Resultaat = {
   Title: string
@@ -14,12 +13,12 @@ type Resultaat = {
   rank: number
 }
 
-export async function load({ params, fetch }) {
-  
+export async function load({ params, data }) {
+  const session = data.session
   try {
     const resultaat = JSON.parse(params.filters.replace(/^resultaat\//, '')) as Resultaat
-    const url = `${get(api)}/detaildata/redirect-zoekresultaat/Gemeenten/${resultaat.Slug}/${resultaat.Workspace}/${resultaat.TitleType}/${resultaat.Code}`
-    const path = await fetch(url)
+    const url = `/detaildata/redirect-zoekresultaat/Gemeenten/${resultaat.Slug}/${resultaat.Workspace}/${resultaat.TitleType}/${resultaat.Code}`
+    const path = await apiGet(url, session.Token)
       .then(async res => {
         if (!res.ok) redirect(302, '/')
         else {

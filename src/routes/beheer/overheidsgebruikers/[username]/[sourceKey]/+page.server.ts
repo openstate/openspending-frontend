@@ -3,15 +3,12 @@ import { api } from '../../../../../stores.js';
 import { fail } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types.js';
 import type { User } from '../../../../../Types.js';
+import { apiDelete, apiGet } from '../../../../../utils.js';
 
 export const load: PageServerLoad = async ({ locals, params }) => {
   const username = params.username
   const sourceKey = params.sourceKey
-  const user: User = await fetch(`${get(api)}/admin/overheidsgebruikers/${username}`, {
-    headers: {
-      'authorization': locals.session.data.Token
-    }
-  })
+  const user: User = await apiGet(`/admin/overheidsgebruikers/${username}`, locals.session.data.Token)
   .then(response => {
     if (!response.ok) throw new Error(`Kan de gebruiker niet laden: ${get(api)}/admin/overheidsgebruiker/${username} ${response.statusText}`)
     return response.json()
@@ -29,12 +26,8 @@ export const actions = {
   default: async ({ locals, params }) => {
     const username = params.username
     const sourceKey = params.sourceKey
-    return await fetch(`${get(api)}/admin/overheidsgebruikers/${username}/${sourceKey}`, {
-      method: 'DELETE',
-      headers: {
-        'authorization': locals.session.data.Token
-      }
-    }).then(async (res) => {
+    return await apiDelete(`/admin/overheidsgebruikers/${username}/${sourceKey}`, locals.session.data.Token)
+    .then(async (res) => {
       if (!res.ok) {
         const message = `Kon gebruiker niet ontkoppelen (API fout ${res.status} ${res.statusText})`
         return fail(400, {success: false, error: message})

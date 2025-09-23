@@ -9,8 +9,9 @@
 	import { api } from '../../../../../stores.js'
   import { get } from 'svelte/store'
 
-  import { isLive } from '$lib/utils.js';
   import { page } from '$app/stores';
+  $: session = $page.data.session
+	import { apiGet } from '../../../../../utils.js';
 
   export let data;
 
@@ -48,8 +49,8 @@
     for (const b of data.requested) {
 			const bron = data.bronnen.filter(bron => `${b.Period}/${b.Slug}/${b.Verslagsoort}` === `${bron.dataset.Period}/${bron.Slug}/${bron.Verslagsoort}`).shift()
 			if (bron === undefined) return
-			const url = `${get(api)}/bronnen/${data.params.Entity}/${bron.Slug}/${b.Verslagsoort}/trends${path}`
-      promises.push(fetch(url).then(res => res.json()))
+			const url = `/bronnen/${data.params.Entity}/${bron.Slug}/${b.Verslagsoort}/trends${path}`
+      promises.push(apiGet(url, session.Token).then(res => res.json()))
     }
     const {Chart} = await import("chart.js/auto");
     Chart.getChart('detailgrafiek_lasten')?.destroy()
@@ -283,7 +284,6 @@
   })
 
   const getDatasetTotals = (ix: number, dataset: SingleDataSet) => data.requested[ix] ? dataset.verslagsoorten[data.requested[ix].Verslagsoort] : undefined
-  
 </script>
 <style>
 	.hidden { display: none;}
@@ -400,7 +400,7 @@
 						<select class="form-select" on:change={(ev) => setPeriode(ix, ev.currentTarget.value)}>
 							{#each bron.datasets as dataset}
 							<option selected={bron.dataset.Period === dataset.Period}>{dataset.Period} 
-              {#if dataset.hasDetaildata && !isLive($page.url.hostname)}
+              {#if dataset.hasDetaildata}
               *
               {/if}
               </option>
@@ -499,15 +499,15 @@
 				<th>&nbsp;</th>
 				{#each data.bronnen as bron}
 				<td class="text-center">
-          {#if (bron.dataset.hasDetaildata && !isLive($page.url.hostname))}
+          {#if bron.dataset.hasDetaildata}
           <a href="/gegevens/{bron.Type}/details/{bron.Slug}/{bron.dataset.Identifier}"><FileEarmarkSpreadsheet/> details</a>
           {/if}
         </td>
 				{/each}
 				{#each data.bronnen as bron}
 				<td class="text-center">
-          {#if (bron.dataset.hasDetaildata)}
-          <a href="/gegevens/{bron.Type}/details/{bron.Slug}"><FileEarmarkSpreadsheet/> details</a>
+          {#if bron.dataset.hasDetaildata}
+          <a href="/gegevens/{bron.Type}/details/{bron.Slug}/{bron.dataset.Identifier}"><FileEarmarkSpreadsheet/> details</a>
           {/if}
         </td>
 				{/each}

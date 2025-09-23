@@ -1,15 +1,7 @@
-import { get } from 'svelte/store';
-import { api } from '../../stores.js';
+import { apiPost } from '../../utils.js';
 export const actions = {
 	default: async ({ locals }) => {
-    return await fetch(`${get(api)}/auth/signout`, {
-      method: 'post',
-      headers: {
-        'content-type': 'application/json',
-        'accept': 'application/json',
-        'authorization': locals.session.data.Token
-      }
-    })
+    return await apiPost('/auth/signout', locals.session.data.Token, {})
       .then(async res => {
         if (res.ok) {
       		await locals.session.destroy();

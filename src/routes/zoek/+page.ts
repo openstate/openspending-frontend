@@ -1,9 +1,9 @@
-import { get } from 'svelte/store';
 import type { DataSet, SourceType } from '../../Types';
-import { api } from '../../stores';
+import { apiGet } from '../../utils';
 
 let error: string = ''
-export async function load({ url, fetch }) {
+export async function load({ url, data }) {
+  const session = data.session
   let booleanOperator = '&'
   const q = url.searchParams.get('q')
   switch(url.searchParams.get('zoekmethode')?.toLowerCase()) {
@@ -44,10 +44,10 @@ export async function load({ url, fetch }) {
   if (q) {
     if (url.searchParams.get('titel')) {
       titel = url.searchParams.get('titel')!
-      workspaces = await(fetch(`${get(api)}/zoek/titel?q=${titel}`)).then(res => res.json())
+      workspaces = await(apiGet(`/zoek/titel?q=${titel}`, session.Token)).then(res => res.json())
     }
     const pgq = encodeURIComponent(booleanOperator === 'raw' ? q : q.split(' ').join(booleanOperator))
-    result = await(fetch(`${get(api)}/zoek?q=${pgq}`).then(async res => {
+    result = await(apiGet(`/zoek?q=${pgq}`, session.Token).then(async res => {
       if (res.ok) {
         error = ''
         return res.json()
@@ -57,7 +57,7 @@ export async function load({ url, fetch }) {
       }
     }))
 
-    sources =  await(fetch(`${get(api)}/zoek/bron?q=${pgq}`).then(async res => {
+    sources =  await(apiGet(`/zoek/bron?q=${pgq}`, session.Token).then(async res => {
       if (res.ok) {
         return res.json()
       } else {
@@ -65,7 +65,7 @@ export async function load({ url, fetch }) {
       }
     }))
 
-    detaildata =  await(fetch(`${get(api)}/zoek/detaildata?q=${pgq}`).then(async res => {
+    detaildata =  await(apiGet(`/zoek/detaildata?q=${pgq}`, session.Token).then(async res => {
       if (res.ok) {
         return res.json()
       } else {

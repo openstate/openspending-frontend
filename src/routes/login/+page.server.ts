@@ -1,16 +1,15 @@
 import { fail, redirect } from '@sveltejs/kit';
 import { VITE_AUTH_ENABLED, AUTH_CLIENT_SECRET } from '$env/static/private';
-import { get } from 'svelte/store';
-import { api } from '../../stores.js';
 
 export async function load() {
   if (!VITE_AUTH_ENABLED) throw redirect(307, '/');
 }
 import bcrypt from 'bcrypt'
 import type { SessionData } from '../../Types.js';
+import { apiPost } from '../../utils.js';
 
 export const actions = {
-	default: async ({ request, fetch, locals }) => {
+	default: async ({ request, locals }) => {
     const formData = await request.formData();
     if (
       !formData.has('username') || !formData.has('wachtwoord')
@@ -24,12 +23,7 @@ export const actions = {
       // password: await bcrypt.hash(formData.get('wachtwoord')!.toString(), 10),
       password: formData.get('wachtwoord')
     }
-    return await fetch(`${get(api)}/auth`, {
-      method: 'post',
-      headers: {
-        'content-type': 'application/json',
-        'accept': 'application/json',
-      },
+    return await apiPost(`/auth`, locals.session.data.Token, {
       body: JSON.stringify(payload)
     })
     .then(async res => {

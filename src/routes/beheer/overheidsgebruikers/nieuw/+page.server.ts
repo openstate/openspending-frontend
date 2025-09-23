@@ -3,9 +3,10 @@ import { api } from '../../../../stores.js';
 import { fail } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types.js';
 import type { Bron } from '../../../../Types.js';
+import { apiGet, apiPost } from '../../../../utils.js';
 
-export const load: PageServerLoad = async () => {
-  const sources: Bron[] = await fetch(`${get(api)}/bronnen/Gemeenten`)
+export const load: PageServerLoad = async ({ locals }) => {
+  const sources: Bron[] = await apiGet('/bronnen/Gemeenten', locals.session.data.Token)
   .then(response => {
     if (!response.ok) throw new Error(`Kan de bronnen niet laden: ${get(api)}/bronnen/Gemeenten ${response.statusText}`)
     return response.json()
@@ -24,12 +25,7 @@ export const actions = {
     const formData = await request.formData();
     const data = Object.fromEntries(formData.entries());
 
-    return await fetch(`${get(api)}/admin/overheidsgebruikers`, {
-      method: 'POST',
-      headers: {
-        'content-type': 'application/json',
-        'authorization': locals.session.data.Token
-      },
+    return await apiPost('/admin/overheidsgebruikers', locals.session.data.Token, {
       body: JSON.stringify(data)
     }).then(async (res) => {
       if (!res.ok) {
