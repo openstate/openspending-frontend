@@ -4,10 +4,11 @@ import type { SessionData } from '../Types';
 import { apiPost } from '../utils';
 
 export async function load({ locals, route }) {
-  if (!isPathAllowed(route.id) && !locals.session.data.Token) {
+  const existingSession = locals.session.data
+  if (!isPathAllowed(route.id, existingSession.Role) && !locals.session.data.Token) {
     throw redirect(302, '/login')
   }
-  if (!isPathAllowed(route.id)) {
+  if (!isPathAllowed(route.id, existingSession.Role)) {
     await apiPost('/auth/session', locals.session.data.Token, {
     }).then(async res => {
       if (!res.ok) {

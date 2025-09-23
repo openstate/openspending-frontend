@@ -38,7 +38,11 @@ export function mockRequestEvent(path: string, session?: Session<SessionData>): 
 }
 
 export function mockGuestUserSessionData(): SessionData {
-  return {Token: "", TTL: 60, Role: "guest"};
+  return {Token: "", TTL: 60, Role: undefined};
+}
+
+export function mockSourceUserSessionData(): SessionData {
+  return {Token: "a token", TTL: 60, Role: "source"};
 }
 
 export function mockNormalUserSessionData(): SessionData {
