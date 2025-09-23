@@ -7,7 +7,6 @@
 	import { XSquareFill, FileEarmarkSpreadsheet, InfoCircleFill } from 'svelte-bootstrap-icons';
 	import { onMount } from 'svelte';
 	import { api } from '../../../../../stores.js'
-  import { get } from 'svelte/store'
 
   import { page } from '$app/stores';
   $: session = $page.data.session
@@ -212,8 +211,8 @@
       i = i + 1
 			const bron = data.bronnen.filter(bron => `${b.Period}/${b.Slug}/${b.Verslagsoort}` === `${bron.dataset.Period}/${bron.Slug}/${bron.Verslagsoort}`).shift()
 			if (bron === undefined) return
-			const url = `${get(api)}/bronnen/${data.params.Entity}/${bron.Slug}/${b.Verslagsoort}/trends`
-			await fetch(url)
+			const url = `/bronnen/${data.params.Entity}/${bron.Slug}/${b.Verslagsoort}/trends`
+			await apiGet(url, session.Token)
 				.then(r => r.json())
 				.then(r => r.trends as Record<number, {Baten: number, Lasten: number}>)
 				.then(trend => {
@@ -266,7 +265,7 @@
         findSource.select()
       }
     })
-    fetch(`${get(api)}/utils/bronnen/${data.params.Entity}/${data.bronnen[0].dataset.Period}`)
+    apiGet(`/utils/bronnen/${data.params.Entity}/${data.bronnen[0].dataset.Period}`, session.Token)
       .then(res => res.json())
 			.then(d => d as Array<{Type: string, Slug: string, label: string, entiteit: string, value: string}>)
       .then(bronnen => {

@@ -1,5 +1,3 @@
-import { get } from 'svelte/store'
-import { api } from '../../../../../stores.js';
 import { fail } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types.js';
 import type { User } from '../../../../../Types.js';
@@ -10,7 +8,7 @@ export const load: PageServerLoad = async ({ locals, params }) => {
   const sourceKey = params.sourceKey
   const user: User = await apiGet(`/admin/overheidsgebruikers/${username}`, locals.session.data.Token)
   .then(response => {
-    if (!response.ok) throw new Error(`Kan de gebruiker niet laden: ${get(api)}/admin/overheidsgebruiker/${username} ${response.statusText}`)
+    if (!response.ok) throw new Error(`Kan de gebruiker niet laden: /admin/overheidsgebruiker/${username} ${response.statusText}`)
     return response.json()
   }).catch(e => {
     console.info(`An error occurred when retrieving users: ${e}`)

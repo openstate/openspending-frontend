@@ -4,8 +4,9 @@
 	import { ucfirst } from '$lib/utils';
 	import { onMount } from 'svelte';
 	import { Download, ListUl, Record, XSquareFill } from 'svelte-bootstrap-icons';
-	import { api } from '../../stores';
-	import { get } from 'svelte/store';
+  import { page } from '$app/stores';
+	import { apiGet } from '../../utils';
+  $: session = $page.data.session
 
   let loader: bootstrap.Modal;
   type Lijst = {
@@ -23,7 +24,7 @@
 
   const toonLijst = async () => {
     loader.show()
-    fetch(`${get(api)}${getUrl()}`)
+    apiGet(`${getUrl()}`, session.Token)
       .then(async res => {
         if (res.ok) {
           lijst = await res.json()
@@ -134,7 +135,7 @@
 	filter.periode = {label: new Date().getFullYear().toString(), value: new Date().getFullYear()}
 
 	const makeAutocomplete = async () => {
-		const data = await fetch(`${get(api)}/zoek/onderwerpen/${filter.periode.value}/alles`).then(res => res.json())
+		const data = await apiGet(`/zoek/onderwerpen/${filter.periode.value}/alles`, session.Token).then(res => res.json())
 		const {Autocomplete} = await import('$lib/autocomplete');
 		const opts = { data, threshold: 1, maximumItems: 10, onSelectItem: (picked: {value: string, label: string}) => {
 			filter.onderwerp = picked
@@ -162,7 +163,7 @@
 	const updateRoute = async (filterName: keyof typeof filter, label: string, value: string | number) => {
 		filter[filterName] = {label, value}
 		if (filterName === 'periode') {
-			await fetch(`${get(api)}/lijstenmaker/hoogste/10/${filter.bron.value}/${filter.periode.value}`)
+			await apiGet(`/lijstenmaker/hoogste/10/${filter.bron.value}/${filter.periode.value}`, session.Token)
 				.then(res => res.json())
 				.then(res =>  res as {$links: string[]})
 				.then(links => {

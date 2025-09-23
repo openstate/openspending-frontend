@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { page } from '$app/stores';
+  $: session = $page.data.session
 
   const url = new URL($page.url)
   const path = url.pathname.split('/').filter(p => p)
@@ -9,8 +10,7 @@
 	import { onMount } from 'svelte';
 	import type { Bron } from '../Types';
 	import { goto } from '$app/navigation';
-	import { api } from '../stores';
-  import { get } from 'svelte/store'
+	import { apiGet } from '../utils';
 
   let showError = false
   onMount(async () => {
@@ -20,11 +20,11 @@
         entity = 'Provincies'
         slug = slug.replace('provincie-', '') + '-pv'
       }
-      bron = await  fetch(`${get(api)}/bronnen/${entity}/${slug}`)
+      bron = await apiGet(`/bronnen/${entity}/${slug}`, session.Token)
         .then(async res => {
           if (res.status === 404 && entity === 'Gemeenten') {
             entity = 'GemeenschappelijkeRegelingen'
-            return await fetch(`${get(api)}/bronnen/${entity}/${slug}`)
+            return await apiGet(`/bronnen/${entity}/${slug}`, session.Token)
               .then(async res => {
                 if (res.ok) return await res.json()
               })
