@@ -1,11 +1,10 @@
 <script lang="ts">
 	import { onMount } from "svelte";
-	import type { Bron } from "../../../../Types";
   import { enhance } from "$app/forms";
-  import type { PageData } from './$types';
+	import type { Bron } from "../../../../../Types.js";
 
+  export let data
   export let form
-  export let data: PageData
 
   let findSourceField: HTMLInputElement
   let sourceField: HTMLInputElement
@@ -49,35 +48,22 @@
     })
   })
 </script>
-
-<style>
-  #sources {
-    width: 50%;
-    height: 400px;
-    overflow: hidden;
-  }
-  #sources ul li a {
-    display: block;
-    line-height: 2.5em;
-    margin-left: 0.75rem;
-  }
-</style>
-
-<h1>Overheidsgebruiker toevoegen</h1>
-<p>Gebruik dit formulier om een nieuwe overheidsgebruiker toe te voegen.</p>
-<p>Als de overheidsgebruiker al uitgenodigd is maar de uitnodigingslink is verouderd, vul dan
-  alleen het e-mailadres in - er wordt dan een nieuwe uitnodigingslink aangemaakt. 
+<h1>Koppel gebruiker aan nieuwe bron</h1>
+<p class="lead">
+  {data.user.Firstname} {data.user.Lastname}<br/>
+  {data.user.Username}<br/>
+  {data.user.Sources.map((source) => source.Title).join(", ")}
 </p>
 {#if form?.success}
   <div class="alert alert-success mt-4" role="alert">
     {form?.message}
-    {form?.invitationLink}
   </div>
 {/if}
 <form class="gap-4 w-50" method="POST" use:enhance>
   <input type='hidden' id='source' name='source'/>
   <div class="form-floating mb-3">
     <input
+      required
       id="find_source"
       name="find_source"
       aria-label="Zoek"
@@ -96,41 +82,7 @@
     {/each}
     </ul>
   </div>
-  <div class="form-floating mb-3">
-    <input
-      type="text"
-      class="form-control form-control-lg"
-      id="firstname"
-      name="firstname"
-      value={form?.data?.firstname ?? ''}
-      placeholder="Voornaam&hellip;"
-    />
-    <label for="firstname" class="form-label">Voornaam</label>
-  </div>
-  <div class="form-floating mb-3">
-    <input
-      type="text"
-      class="form-control form-control-lg"
-      id="lastname"
-      name="lastname"
-      value={form?.data?.lastname ?? ''}
-      placeholder="Achternaam&hellip;"
-    />
-    <label for="lastname" class="form-label">Achternaam</label>
-  </div>
-  <div class="form-floating mb-3">
-    <input
-      required
-      type="email"
-      class="form-control form-control-lg"
-      id="email_address"
-      name="email_address"
-      value={form?.data?.email_address ?? ''}
-      placeholder="E-mailadres&hellip;"
-    />
-    <label for="emai_address" class="form-label">E-mailadres</label>
-  </div>
-	<button type="submit" class="btn btn-primary">Toevoegen</button>
+	<button type="submit" class="btn btn-primary">Koppelen</button>
 </form>
 {#if form?.error}
   <div class="alert alert-warning mt-4" role="alert">
