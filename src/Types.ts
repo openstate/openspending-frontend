@@ -110,6 +110,7 @@ export type Adres = {
 }
 
 export type SessionData = {
+	Name: string
   Token: string
   TTL: number
   Role: 'admin' | 'user' | 'source' | undefined

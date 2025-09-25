@@ -13,7 +13,10 @@
         <a href="https://openstate.eu/nl/doneren/" class="btn button-help-mee">Help mee</a>
       </div>
     </div>
-    <div class="d-flex float-end p-1 align-items-center">
+    <div class="d-flex float-end p-1 align-items-center">      
+      {#if session.Name}
+      <div class="d-flex name text-nowrap me-3">{session.Name}</div>
+      {/if}
       {#if session.Token}
       <a href="/uitloggen" class="btn btn-primary btn-sm" style="width: 110px;"><PersonCircle/> Uitloggen</a>
       {:else}
@@ -51,5 +54,8 @@
       font-size: 12px;
       border-radius: var(--border-radius);
       font-weight: 500;
+  }
+  .name {
+    color: var(--white)
   }
 </style>
