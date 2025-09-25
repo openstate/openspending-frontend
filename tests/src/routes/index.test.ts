@@ -24,11 +24,13 @@ describe ('beheer page', () => {
     expect(resolve).not.toHaveBeenCalled;
   });
 
-  it('resolves when logged in as source user', async() => {
+  it('redirects to login?noAdmin when logged in as source user', async() => {
     let { event, resolve } = mockRequest(path, mockSourceUserSessionData());
 
-		await expect(handle({ event, resolve })).resolves.toEqual(undefined);
-    expect(resolve).toHaveBeenCalled;
+    await expect(handle({ event, resolve })).rejects.toSatisfy((response) => {
+			return isRedirect(response) && response.location == '/login?noAdmin';
+		});
+    expect(resolve).not.toHaveBeenCalled;
   });
 
   it('resolves when logged in as admin user', async() => {
@@ -98,11 +100,13 @@ describe ('beheer publish detaildata page', () => {
     expect(resolve).not.toHaveBeenCalled;
   });
 
-  it('resolves when logged in as source user', async() => {
+  it('redirects to login?noAdmin when logged in as source user', async() => {
     let { event, resolve } = mockRequest(path, mockSourceUserSessionData());
 
-		await expect(handle({ event, resolve })).resolves.toEqual(undefined);
-    expect(resolve).toHaveBeenCalled;
+		await expect(handle({ event, resolve })).rejects.toSatisfy((response) => {
+			return isRedirect(response) && response.location == '/login?noAdmin';
+		});
+    expect(resolve).not.toHaveBeenCalled;
   });
 
   it('resolves when logged in as admin user', async() => {

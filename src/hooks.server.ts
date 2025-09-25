@@ -3,19 +3,10 @@ import { AUTH_CLIENT_SECRET as secret } from '$env/static/private';
 import { redirect } from '@sveltejs/kit';
 import { sessionFromEvent } from './utils';
 const admin_paths = ['/beheer'];
-const source_admin_paths = ['/beheer', '/beheer/publicatie-detaildata'];
 
-export function isPathAllowed(path?: string | null, role?: string | undefined) {
-  if (role === 'source' && isSourceAdminPath(path)) return true
-  if (role === 'admin' && isAdminPath(path)) return true
+// role not currently used but kept in argument list for future purposes
+export function isPathAllowed(path?: string | null, _role?: string | undefined) {
   return !isAdminPath(path)
-}
-
-const isSourceAdminPath = (path?: string | null) => {
-  if (path === null || path === undefined) return false
-  return source_admin_paths.some(adminPath =>
-    path === adminPath || path === `${adminPath}/__data.json`
-  );
 }
 
 const isAdminPath = (path?: string | null) => {

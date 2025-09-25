@@ -18,7 +18,7 @@
   ];
   let adminRouteAdded = false
 
-  $: if ((['admin', 'source'].includes(session.Role ?? '')) && !adminRouteAdded) {
+  $: if ((['admin'].includes(session.Role ?? '')) && !adminRouteAdded) {
     menuItems.push({route: '/beheer'})
     adminRouteAdded = true
   }
