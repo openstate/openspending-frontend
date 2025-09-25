@@ -9,7 +9,7 @@
   let passwordsDiffer = '';
 </script>
 
-<h1>In registreren</h1>
+<h1>Registreren</h1>
 {#if form?.success}
   <div class="alert alert-success mt-4" role="alert">
     {form?.message}

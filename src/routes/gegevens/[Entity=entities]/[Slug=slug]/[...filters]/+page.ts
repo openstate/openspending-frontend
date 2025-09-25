@@ -5,6 +5,15 @@ import { apiGet } from '../../../../../utils';
 const verslagsoorten = ['begroting', 'realisatie', 'Q1', 'Q2', 'Q3', 'Q4']
 type Verslagsoort = 'begroting' | 'realisatie' | 'Q1' | 'Q2' | 'Q3' | 'Q4'
 
+function pvNumberToFindoPvNumber(pv: number) {
+  return pv - 19; // Findo.nl does not use standard PV numbering but uses 1..12
+}
+
+function extractKeyNumber(key: string, pattern: string) {
+  const re = new RegExp(`${pattern}0*`, "i")
+  return parseInt(key.replace(re, ''))
+}
+
 export async function load({ fetch, params, data }) {
   const session = data.session
   const paths = params.filters.split('/').filter(p => p !== 'per')
@@ -81,5 +90,19 @@ export async function load({ fetch, params, data }) {
       return d.hasDetaildata
     })
   })
-	return { params, requested, bronnen, open, groepering, datasetsWithDetaildata };
+
+  let documentsUrl: string | undefined = undefined
+  const baseUrl = 'https://www.findo.nl/dashboard/dashboard'
+  const bron = bronnen[0]
+  if (bron) {
+    if (bron.Key.startsWith('GM')) {
+      const keyNumber = extractKeyNumber(bron.Key, 'GM')
+      documentsUrl = `${baseUrl}/gemeentelijke-financi%c3%able-stukken?Regionlevel=gemeente&Regioncode=${keyNumber}`
+    } else if (bron.Key.startsWith('PV')) {
+      const keyNumber = extractKeyNumber(bron.Key, 'PV')
+      const findoPvNumber = pvNumberToFindoPvNumber(keyNumber)
+      documentsUrl = `${baseUrl}/provinciale-financi%c3%able-stukken?Regionlevel=provincie&Regioncode=${findoPvNumber}`
+    }
+  }
+	return { params, requested, bronnen, open, groepering, datasetsWithDetaildata, documentsUrl };
 }

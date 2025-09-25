@@ -583,5 +583,10 @@
       {/each}
     </thead>
    </table>
+	{#if data.documentsUrl}
+	  <p>Gemeentelijke financiële stukken (begrotingen en jaarrekeningen) kunt u downloaden via
+  		<a target="_blank" href={data.documentsUrl}>Findo.nl</a>.
+	  </p>
+	{/if}
   </div>
 </div>

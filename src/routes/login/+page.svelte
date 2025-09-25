@@ -57,8 +57,11 @@
       Uw sessie is verlopen, u dient opnieuw in te loggen.
     </div>
   {/if}
-    <p class="lead">Om toegang te krijgen tot de Openspending website dient u in te loggen met de gegevens die u van ons heeft ontvangen.</p>
-    <form method="POST" action="/login">
+    <p class="lead">
+      Via deze inlog kunt u als decentrale overheidsorganisatie een preview zien van de detaildata die u aan het CBS heeft aangeleverd.
+      Zodra u bij de aanlevering van uw verrijkte Iv3 data toestemming geeft voor delen met derden kunnen wij de gegevens openbaar publiceren.
+    </p>
+    <form method="POST" action="/login" class='mt-5'>
       {#if form !== null}
         {#if form.success === false}
           <div class="alert alert-warning" role="alert">
