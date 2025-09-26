@@ -90,7 +90,6 @@
 
   }
 
-	// $: apiUrl = `${get(api)}/lijstenmaker/top/${getTop()}/${lijsten.order.defaultValue}/${getVerslagsoort()}/bedragen/van/${getSourceType()}/in/${lijsten.year.defaultValue}/`
 	const periode: Record<string, number> = {}
 	for (let year = new Date().getFullYear(); year >= 2016; year--)  periode[year.toString()] = year
 	const lijsten: Record<string, Record<string, string | number>> = {

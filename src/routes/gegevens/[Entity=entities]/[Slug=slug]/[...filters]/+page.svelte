@@ -6,11 +6,10 @@
 	import DataRow from '$lib/DataRow.svelte';
 	import { XSquareFill, FileEarmarkSpreadsheet, InfoCircleFill } from 'svelte-bootstrap-icons';
 	import { onMount } from 'svelte';
-	import { api } from '../../../../../stores.js'
 
   import { page } from '$app/stores';
   $: session = $page.data.session
-	import { apiGet } from '../../../../../utils.js';
+	import { apiGet, apiUrl } from '../../../../../utils.js';
 
   export let data;
 
@@ -114,7 +113,7 @@
         console.error(e)
         alert('Kan de grafieken niet maken, probeer het later nogmaals.')
       })
-    // const url = `${get(api)}/bronnen/${data.params.Entity}/${bron.Slug}/${b.Verslagsoort}/trends`
+    // const url = `${apiUrl()}/bronnen/${data.params.Entity}/${bron.Slug}/${b.Verslagsoort}/trends`
     // document.getElementById('detailgrafiek')!.innerHTML = `<pre>${JSON.stringify(urls, null, 2)}</pre>`
   }
 
@@ -576,8 +575,8 @@
         <td>{bron.Title}</td>
         <td>{bron.Period}</td>
         <td>
-          <a target="_blank" href="{$api}/spreadsheet/{data.bronnen[0].Type}/{bron.Period}/{bron.Slug}">Spreadsheet</a> <InfoCircleFill data-bs-toggle="tooltip" data-bs-title="Download deze gegevens als Spreadsheet."/>
-          <a target="_blank" href="{$api}/fiscaldatapackage/{data.bronnen[0].Type}/{bron.Period}/{bron.Slug}/datapackage.json"> Fiscal Data Package</a> <InfoCircleFill data-bs-toggle="tooltip" data-bs-title="Het Fiscal Data Package is een lichtgewicht en gebruikersgericht formaat voor het publiceren en gebruiken van fiscale gegevens, zie fiscal.datapackage.org."/>
+          <a target="_blank" href="{apiUrl()}/spreadsheet/{data.bronnen[0].Type}/{bron.Period}/{bron.Slug}">Spreadsheet</a> <InfoCircleFill data-bs-toggle="tooltip" data-bs-title="Download deze gegevens als Spreadsheet."/>
+          <a target="_blank" href="{apiUrl()}/fiscaldatapackage/{data.bronnen[0].Type}/{bron.Period}/{bron.Slug}/datapackage.json"> Fiscal Data Package</a> <InfoCircleFill data-bs-toggle="tooltip" data-bs-title="Het Fiscal Data Package is een lichtgewicht en gebruikersgericht formaat voor het publiceren en gebruiken van fiscale gegevens, zie fiscal.datapackage.org."/>
         </td>
       </tr>
       {/each}

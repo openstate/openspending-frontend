@@ -6,6 +6,10 @@ export function sessionFromEvent(event: RequestEvent) {
   return event.locals.session.data;
 };
 
+export function apiUrl() {
+  return get(api)
+}
+
 export async function apiGet(path: string, token: string) {
   const headers: Record<string, string> = {
     'authorization': token

@@ -5,9 +5,6 @@
 	import { onMount, afterUpdate } from 'svelte';
   import { DashSquareFill, PlusSquareFill, Download, SortNumericDownAlt, SortNumericUp } from 'svelte-bootstrap-icons';
   export let data
-  import { page } from '$app/stores';
-	import { api } from '../../../../../../../../../stores';
-  import { get } from 'svelte/store'
 
   $: idPrefix = data.params.type.substring(0, 1).toUpperCase()
   $: hasFilters = (data.filters.categorie.length + data.filters.grootboek.length + data.filters.kostenplaats.length) > 0
@@ -280,4 +277,5 @@
     </tr>
   </tfoot>
 </table>
-<p class="mt-5"><a href="{get(api)}/detaildata/{data.params.Entity}/{data.bron.Key}/{data.dataset.Identifier}/{data.params.verslagsoort}.json"><button class="btn btn-primary"><Download/> download brondata</button></a></p>
+<p class="mt-5"><a download href="/gegevens/{data.bron.Type}/details/{data.bron.Slug}/{data.dataset.Identifier}/{data.params.verslagsoort}/details">
+  <button class="btn btn-primary"><Download/> download brondata</button></a></p>
