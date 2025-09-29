@@ -1,15 +1,7 @@
-import { get } from 'svelte/store';
-import { api } from '../../stores.js';
+import { apiPost } from '../../utils.js';
 export const actions = {
 	default: async ({ locals }) => {
-    return await fetch(`${get(api)}/auth/signout`, {
-      method: 'post',
-      headers: {
-        'content-type': 'application/json',
-        'accept': 'application/json',
-        'authorization': locals.session.data.Token
-      }
-    })
+    return await apiPost('/auth/signout', locals.session.data.Token, {})
       .then(async res => {
         if (res.ok) {
       		await locals.session.destroy();
@@ -17,7 +9,6 @@ export const actions = {
         } else {
           try {
             const response = await res.json()
-            console.log(response)
             if (Object.hasOwn(response, 'error')) {
               return {success: false, reason: `${response.error} (code ${res.status})`}
             }

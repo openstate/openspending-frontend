@@ -2,8 +2,6 @@
 	import { onMount } from 'svelte';
 	import { CheckCircleFill, ExclamationCircleFill } from 'svelte-bootstrap-icons';
   import { page } from '$app/stores';
-  import { get } from 'svelte/store';
-  import { loginEnabled } from '../../stores.js';
   $: session = $page.data.session;
   export let form;
   let expired: boolean = false
@@ -24,10 +22,6 @@
 </script>
 <div class="row">
   <div class="col-sm-12 col-md-10 col-lg-8 col-xl-8">
-{#if get(loginEnabled) !== 'true'}
-  <h1>Login niet beschikbaar</h1>
-  <p class="lead">De gegevens op deze website zijn openbaar, u hoeft dus niet in te loggen.</p>
-{:else}
 {#if session?.Token}
 <!-- <pre>{JSON.stringify(session, null, 2)}</pre> -->
 <h1>Afmelden</h1>
@@ -63,8 +57,11 @@
       Uw sessie is verlopen, u dient opnieuw in te loggen.
     </div>
   {/if}
-    <p class="lead">Om toegang te krijgen tot de Openspending website dient u in te loggen met de gegevens die u van ons heeft ontvangen.</p>
-    <form method="POST" action="/login">
+    <p class="lead">
+      Via deze inlog kunt u als decentrale overheidsorganisatie een preview zien van de detaildata die u aan het CBS heeft aangeleverd.
+      Zodra u bij de aanlevering van uw verrijkte Iv3 data toestemming geeft voor delen met derden kunnen wij de gegevens openbaar publiceren.
+    </p>
+    <form method="POST" action="/login" class='mt-5'>
       {#if form !== null}
         {#if form.success === false}
           <div class="alert alert-warning" role="alert">
@@ -99,6 +96,5 @@
       </div>
     </form>
   {/if}
-{/if}
   </div>
 </div>

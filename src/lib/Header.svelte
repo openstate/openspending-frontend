@@ -1,9 +1,9 @@
 <script lang="ts">
 	import { page } from '$app/stores';
+  $: session = $page.data.session;
   import OpenSpendingLogo from '$lib/assets/open-spending.svg';
-	import { get } from 'svelte/store';
-	import { api } from '../stores';
 	import { onMount } from 'svelte';
+	import { apiUrl } from '../utils';
 
   type MenuItem = { route: string, label?: string }
 	const menuItems:MenuItem[] = [
@@ -15,6 +15,12 @@
     {route: '/lijstenmaker' },
     {route: '/contact' },
   ];
+  let adminRouteAdded = false
+
+  $: if ((['admin'].includes(session.Role ?? '')) && !adminRouteAdded) {
+    menuItems.push({route: '/beheer'})
+    adminRouteAdded = true
+  }
 
   let shortLink = ''
 
@@ -23,7 +29,7 @@
     const btn = (ev.currentTarget! as HTMLElement)
     btn.innerHTML = hourglassIcon
     getPopover()
-    await fetch(get(api) + '/utils/short' + window.location.pathname)
+    await fetch(apiUrl() + '/utils/short' + window.location.pathname)
       .then(async res => {
         shortLink = res.ok ? (await res.json()).url : window.location.toString()
         shortLinkPopover.show()

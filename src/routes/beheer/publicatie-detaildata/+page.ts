@@ -1,6 +1,5 @@
-import { get } from 'svelte/store'
 import type { SourceType } from '../../../Types'
-import { api } from '../../../stores'
+import { apiGet } from '../../../utils'
 
 type Bron = {
   Type: SourceType
@@ -11,8 +10,9 @@ type Bron = {
   Key: string
 }
 
-export async function load({ fetch }) {
-  const bronnen: Bron[] = await fetch(`${get(api)}/detaildata/overzicht/niet-gepubliceerd`)
+export async function load({ data }) {
+  const session = data.session
+  const bronnen: Bron[] = await apiGet(`/detaildata/overzicht/niet-gepubliceerd`, session.Token)
     .then(res => res.json())
   return { bronnen }
 }

@@ -1,17 +1,17 @@
 import { error, redirect } from '@sveltejs/kit'
 import type { BronDetail } from '../../../../../../../../Types'
-import { api } from '../../../../../../../../stores'
-import { get } from 'svelte/store'
+import { apiGet } from '../../../../../../../../utils'
 
-export async function load({ params, fetch}) {
-  const bron = await fetch(`${get(api)}/bronnen/${params.Entity}/${params.Slug}`)
+export async function load({ params, data}) {
+  const session = data.session
+  const bron = await apiGet(`/bronnen/${params.Entity}/${params.Slug}`, session.Token)
     .then(res => {
       if (!res.ok) throw error(404)
       return res.json()
     })
     .then(bron => bron as BronDetail)
 
-  const periodes = await fetch(`${get(api)}/detaildata/${params.Entity}/${bron.Key}/${params.dataset}/periodes`)
+  const periodes = await apiGet(`/detaildata/${params.Entity}/${bron.Key}/${params.dataset}/periodes`, session.Token)
     .then(res => {
       if (!res.ok) throw error(404)
       return res.json()

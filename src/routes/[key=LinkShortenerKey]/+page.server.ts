@@ -1,9 +1,8 @@
 import { redirect } from '@sveltejs/kit'
-import { get } from 'svelte/store'
-import { api } from '../../stores'
+import { apiUrl } from '../../utils'
 
 export async function load({ fetch, params }) {
-  await fetch(`${get(api)}/utils/long/${params.key}`)
+  await fetch(`${apiUrl()}/utils/long/${params.key}`)
     .then(async res => {
       if (!res.ok) {
         return redirect(307, `/`)

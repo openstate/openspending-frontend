@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { page } from '$app/stores';
-	import { isLive } from '$lib/utils.js';
   export let data
   
 </script>

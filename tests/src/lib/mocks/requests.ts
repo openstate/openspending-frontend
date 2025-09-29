@@ -38,15 +38,19 @@ export function mockRequestEvent(path: string, session?: Session<SessionData>): 
 }
 
 export function mockGuestUserSessionData(): SessionData {
-  return {Token: "", TTL: 60, Role: "guest"};
+  return {Name: '', Token: "", TTL: 60, Role: undefined};
+}
+
+export function mockSourceUserSessionData(): SessionData {
+  return {Name: 'Gemeente Ambtenaar', Token: "a token", TTL: 60, Role: "source"};
 }
 
 export function mockNormalUserSessionData(): SessionData {
-  return {Token: "a token", TTL: 60, Role: "user"};
+  return {Name: 'Gewone gebruiker', Token: "a token", TTL: 60, Role: "user"};
 }
 
 export function mockAdminUserSessionData(): SessionData {
-  return {Token: "a token", TTL: 60, Role: "admin"};
+  return {Name: 'De Beheerder', Token: "a token", TTL: 60, Role: "admin"};
 }
 
 function mockUserSession(): Session<SessionData> {

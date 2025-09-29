@@ -2,16 +2,16 @@
 	import { onMount } from 'svelte';
 	import type { Adres, Bron, SourceType } from '../Types';
   import { page } from '$app/stores';
-	import { isLive, ucfirst } from './utils';
+  $: session = $page.data.session
+	import { ucfirst } from './utils';
 
 
   export let Entity: SourceType
   import 'leaflet/dist/leaflet.css';
-  import { get } from 'svelte/store'
-  import { api } from '../stores.js'
 	import { goto } from '$app/navigation';
 	import { CartCheck } from 'svelte-bootstrap-icons';
 	import type { TileLayer, WMSOptions } from 'leaflet';
+	import { apiGet } from '../utils';
 
   let sources: Bron[] = []
   let filteredSources: Bron[] = []
@@ -73,9 +73,9 @@
   const load = () => {
     if (clickmarker) clickmarker.removeFrom(map)
 
-    fetch(`${get(api)}/bronnen/${Entity}`)
+    apiGet(`/bronnen/${Entity}`, session.Token)
       .then(response => {
-        if (!response.ok) throw new Error(`Kan de bronnen niet laden: ${get(api)}/bronnen/${Entity} ${response.statusText}`)
+        if (!response.ok) throw new Error(`Kan de bronnen niet laden: /bronnen/${Entity} ${response.statusText}`)
         return response.json()
       })
       .then($sources => {
@@ -152,7 +152,7 @@
 
     const clickLayer = async (ev: L.LeafletMouseEvent, feature: GeoJSON.Feature<GeoJSON.Geometry, any>, layer: L.Layer) => {
       const props = feature.properties as FeatureProperties
-      await fetch(`${get(api)}/bronnen/Key/${props.statcode}`)
+      await apiGet(`/bronnen/Key/${props.statcode}`, session.Token)
         .then(async res => {
           if (res.ok) {
             const Brontype = feature.properties.rubriek === 'provincie' ? 'Provincies' : (feature.properties.rubriek === 'waterschappen' ? 'Waterschappen' : 'Gemeenten')
@@ -250,7 +250,7 @@
         popupAnchor:  [factor * 0, factor * 20] // point from which the popup should open relative to the iconAnchor
     });
 
-    fetch(`${get(api)}/gemeenschappelijkeregeling/adres`)
+    apiGet('/gemeenschappelijkeregeling/adres', session.Token)
       .then(res => res.json() as Promise<Array<Adres>>)
       .then(adressen => {
         LayerGemeenschappelijkeRegelingen = new L.LayerGroup([])

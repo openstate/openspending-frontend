@@ -156,3 +156,16 @@ h1 {color: var(--magenta);}
 h1 img {
 	width: 320px;
 }
+
+ul.spaced li {margin-bottom: 8px;}
+
+.show-when-searching {
+  visibility: hidden;
+  position: absolute;
+  background-color: white;
+  z-index: 10;
+
+  &.searching {
+    visibility: visible;
+  }
+}

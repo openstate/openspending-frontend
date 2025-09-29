@@ -1,9 +1,9 @@
 import { redirect } from '@sveltejs/kit'
-import { api } from '../../../../../stores'
-import { get } from 'svelte/store'
+import { apiGet } from '../../../../../utils'
 
-export async function load({ fetch, params }) {
-  await fetch(`${get(api)}/detaildata/${params.Entity}/${params.Slug}`)
+export async function load({ params, data }) {
+  const session = data.session
+  await apiGet(`/detaildata/${params.Entity}/${params.Slug}`, session.Token)
     .then(async res => {
       if (!res.ok) {
         return redirect(307, `/gegevens/${params.Entity}/${params.Slug}`)

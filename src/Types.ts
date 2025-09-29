@@ -110,8 +110,21 @@ export type Adres = {
 }
 
 export type SessionData = {
-  Bron?: Bron
+	Name: string
   Token: string
   TTL: number
-  Role: 'admin' | 'user' | 'guest'
+  Role: 'admin' | 'user' | 'source' | undefined
 };
+
+export type NewUser = {
+	firstname: string,
+	lastname: string,
+	email_address: string
+}
+
+export type User = {
+	Firstname: string,
+	Lastname: string,
+	Username: string,
+	Sources: Bron[]
+}

@@ -1,13 +1,10 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import Currency from '$lib/Currency.svelte';
-	import { isLive, ucfirst } from '$lib/utils.js';
+	import { ucfirst } from '$lib/utils.js';
 	import { onMount, afterUpdate } from 'svelte';
   import { DashSquareFill, PlusSquareFill, Download, SortNumericDownAlt, SortNumericUp } from 'svelte-bootstrap-icons';
   export let data
-  import { page } from '$app/stores';
-	import { api } from '../../../../../../../../../stores';
-  import { get } from 'svelte/store'
 
   $: idPrefix = data.params.type.substring(0, 1).toUpperCase()
   $: hasFilters = (data.filters.categorie.length + data.filters.grootboek.length + data.filters.kostenplaats.length) > 0
@@ -189,11 +186,6 @@
   <p><small><a href="/gegevens/detaildata">klik hier om meer organisaties met detaildata te bekijken &hellip;</a></small></p>
 </div>
 
-{#if (isLive($page.url.hostname))}
-<div class="alert alert-info">
-De detaildata van {data.dataset.Title} is helaas nog niet beschikbaar, probeer het later nogmaals.
-</div>
-{:else}
 <table class="table table-hover caption-top table-bordered">
   <thead>
     <tr>
@@ -285,5 +277,5 @@ De detaildata van {data.dataset.Title} is helaas nog niet beschikbaar, probeer h
     </tr>
   </tfoot>
 </table>
-<p class="mt-5"><a href="{get(api)}/detaildata/{data.params.Entity}/{data.bron.Key}/{data.dataset.Identifier}/{data.params.verslagsoort}.json"><button class="btn btn-primary"><Download/> download brondata</button></a></p>
-{/if}
+<p class="mt-5"><a download href="/gegevens/{data.bron.Type}/details/{data.bron.Slug}/{data.dataset.Identifier}/{data.params.verslagsoort}/details">
+  <button class="btn btn-primary"><Download/> download brondata</button></a></p>
