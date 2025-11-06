@@ -28,7 +28,7 @@
     } else {
       data.sortering = undefined
     }
-    goto(`/gegevens/Gemeenten/details/${data.params.Slug}/${data.params.dataset}/${data.params.verslagsoort}/${data.params.type}/categorie=${data.filters.categorie.join(',')}/grootboek=${data.filters.grootboek.join(',')}/kostenplaats=${data.filters.kostenplaats.join(',')}${getSortering()}`)
+    goto(`/gegevens/${data.params.Entity}/details/${data.params.Slug}/${data.params.dataset}/${data.params.verslagsoort}/${data.params.type}/categorie=${data.filters.categorie.join(',')}/grootboek=${data.filters.grootboek.join(',')}/kostenplaats=${data.filters.kostenplaats.join(',')}${getSortering()}`)
   }
 
   const toggleRow = (ev: Event) => {
@@ -49,7 +49,7 @@
       data.filters[key as keyof typeof data.filters] = filter
         .filter(v => v.trim()!=='')
         .sort((a, b) => a > b ? 1 : -1)
-      goto(`/gegevens/Gemeenten/details/${data.params.Slug}/${data.params.dataset}/${data.params.verslagsoort}/${data.params.type}/categorie=${data.filters.categorie.join(',')}/grootboek=${data.filters.grootboek.join(',')}/kostenplaats=${data.filters.kostenplaats.join(',')}${getSortering()}/#${row.id}`)
+      goto(`/gegevens/${data.params.Entity}/details/${data.params.Slug}/${data.params.dataset}/${data.params.verslagsoort}/${data.params.type}/categorie=${data.filters.categorie.join(',')}/grootboek=${data.filters.grootboek.join(',')}/kostenplaats=${data.filters.kostenplaats.join(',')}${getSortering()}/#${row.id}`)
     }
   }
 

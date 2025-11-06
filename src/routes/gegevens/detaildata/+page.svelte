@@ -35,9 +35,9 @@
       <tbody>
         {#each data.bronnen as bron}
         <tr>
-          <!-- <td><a href="/gegevens/Gemeenten/{bron.Slug}">{bron.Source}</a></td> -->
+          <!-- <td><a href="/gegevens/${bron.SourceType}/{bron.Slug}">{bron.Source}</a></td> -->
           <td>{bron.Source}</td>
-          <td>{@html bron.Jaren.map((jaar, index) => { return `<a href="/gegevens/Gemeenten/details/${bron.Slug}/${bron.Workspaces[index]}">${jaar}</a>`}).join(', ')}</td>
+          <td>{@html bron.Jaren.map((jaar, index) => { return `<a href="/gegevens/${bron.SourceType}/details/${bron.Slug}/${bron.Workspaces[index]}">${jaar}</a>`}).join(', ')}</td>
         </tr>
         {/each}
       </tbody>
