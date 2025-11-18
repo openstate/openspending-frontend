@@ -172,7 +172,7 @@
               content = `
               <p class="fs-6">${source.Title}</p>
               <p>${ucfirst(source.verslagsoort)} ${source.dataset.Period}:<br>
-              Baten: € ${(1000 * source.totaal.Baten).toLocaleString()}<br>Lasten: € ${(source.totaal.Lasten * 1000).toLocaleString()}
+              Baten: € ${(1000 * (source.totaal?.Baten ?? 0)).toLocaleString()}<br>Lasten: € ${((source.totaal?.Lasten ?? 0) * 1000).toLocaleString()}
               </p>
               <p><a href="/gegevens/${Brontype}/${source.Slug}">Ga naar gegevens &raquo;</a></p>
               `
