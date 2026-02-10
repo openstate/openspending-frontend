@@ -167,31 +167,33 @@
           </ul>
         </div>
       </div>
-      <form class="d-flex" role="search" action="/zoek">
-        <input
-          class="form-control me-2"
-          type="search"
-          name="q"
-          id="zoekveld"
-          placeholder="Zoek&hellip;"
-          aria-label="Zoek"
-        />
-        <input type="hidden" name="zoekmethode" value="EN">
-        <button class="btn btn-outline-primary" type="submit">Zoek</button>
-      </form>
-      <button 
-        id="shareButton"
-        class="btn btn-outline-primary ms-2"
-        on:click={short}
-        data-bs-toggle="popover"
-        data-bs-placement="bottom"
-        data-bs-content="..."
-        data-bs-html="true" 
-      >{@html shareIcon}</button>
-      <button class="navbar-toggler pe-0" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar"
-        aria-controls="offcanvasNavbar" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-      </button>
+      <div id="search-and-buttons">
+        <form class="d-flex" role="search" action="/zoek">
+          <input
+            class="form-control me-2"
+            type="search"
+            name="q"
+            id="zoekveld"
+            placeholder="Zoek&hellip;"
+            aria-label="Zoek"
+          />
+          <input type="hidden" name="zoekmethode" value="EN">
+          <button class="btn btn-outline-primary search-site" type="submit">Zoek</button>
+        </form>
+        <button 
+          id="shareButton"
+          class="btn btn-outline-primary ms-2"
+          on:click={short}
+          data-bs-toggle="popover"
+          data-bs-placement="bottom"
+          data-bs-content="..."
+          data-bs-html="true"
+        >{@html shareIcon}</button>
+        <button class="navbar-toggler pe-0" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar"
+          aria-controls="offcanvasNavbar" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+      </div>
     </div>
   </nav>
 </header>
@@ -237,13 +239,17 @@
     color: var(--primary-color);
 }
 
+#search-and-buttons {
+  display: flex;
+}
+
 /* @media (max-width: 991px) {
     .login-button {
         display: none;
     }
 } */
 
-@media(min-width: 991px) {
+@media(min-width: 992px) {
     .nav-link::before {
         content: "";
         position: absolute;
@@ -262,6 +268,13 @@
         width: 100%;
         visibility: visible;
     }
+
+}
+
+@media(max-width: 767px) {
+    .search-site {display: none;}
+    #shareButton {display: none;}
+    #zoekveld {width: 100px;}
 }
 
 </style>
