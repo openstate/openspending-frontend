@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { onMount } from 'svelte';
   import SelectWithOther from '$lib/form_components/SelectWithOther.svelte'
   import OpenQuestion from '$lib/form_components/OpenQuestion.svelte';
   import { submitForm } from '../../utils';
@@ -7,6 +8,8 @@
 
   export let capjs_site_key: string
 
+  let loader: bootstrap.Modal;
+  let capToken: string
   let errorMessage: string | undefined
   let successMessage: string | undefined
   let questions: FormQuestionType[] = [
@@ -16,6 +19,7 @@
   ]
 
   const handleClick = async (event) => {
+    loader.show()
     const result = await submitForm(event, questions, capToken)
     if (result.valid && result.success) {
       errorMessage = undefined
@@ -28,11 +32,24 @@
         errorMessage = result.message
       }
     }
+    loader.hide()
   }
 
-  let capToken: string
+  onMount(async () => {
+    const bootstrap = await import('bootstrap');
+    loader = new bootstrap.Modal(document.getElementById('loading')!)
+  })
 </script>
 
+<div class="modal modal-fullscreen" data-bs-backdrop="static" data-bs-keyboard="false" id="loading">
+  <div class="modal-dialog">
+	  <div class="d-flex justify-content-center" style="margin-top: 400px;">
+		  <div class="spinner-border text-light" style="width: 3rem; height: 3rem;" role="status">
+        <span class="visually-hidden">Loading...</span>
+      </div>
+    </div>
+  </div>
+</div>
 <form class="os-form" method="POST" on:submit={handleClick}>
   {#if errorMessage}
   <div class='alert alert-danger'>{errorMessage}</div>
