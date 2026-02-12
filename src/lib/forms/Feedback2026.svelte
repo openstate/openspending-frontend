@@ -13,9 +13,9 @@
   let errorMessage: string | undefined
   let successMessage: string | undefined
   let questions: FormQuestionType[] = [
-    {number: 1, answer: undefined, valid: false, validate: undefined},
-    {number: 2, answer: undefined, valid: false, validate: undefined},
-    {number: 3, answer: undefined, valid: false, validate: undefined}
+    {number: 1, answer: undefined, valid: false, validate: undefined, clear: undefined},
+    {number: 2, answer: undefined, valid: false, validate: undefined, clear: undefined},
+    {number: 3, answer: undefined, valid: false, validate: undefined, clear: undefined}
   ]
 
   const handleClick = async (event) => {
@@ -57,33 +57,38 @@
   {#if successMessage}
   <div class='alert alert-success'>{successMessage}</div>
   {/if}
-  <SelectWithOther
-    question="Ik gebruik OpenSpending als"
-    questionRequired={true}
-    items={["Burger", "Journalist", "Ambtenaar", "Wetenschapper", "Anders"]}
-    bind:selected={questions[0].answer}
-    bind:valid={questions[0].valid}
-    bind:validate={questions[0].validate}
-    otherOption="Anders"
-    other_placeholder="Graag invullen..."
-  />
-  <OpenQuestion
-    question="Heeft u suggesties of opmerkingen?"
-    bind:answer={questions[1].answer}
-    bind:valid={questions[1].valid}
-    bind:validate={questions[1].validate}
-    placeholder="Optioneel"
-    numberOfLines={5}
-  />
-  <OpenQuestion
-    question="Ik denk graag mee over bestaande en nieuwe functionaliteit van OpenSpending.
-    Door mijn e-mailadres op te geven geef ik toestemming aan OpenState om mij hierover te benaderen."
-    bind:answer={questions[2].answer}
-    bind:valid={questions[2].valid}
-    bind:validate={questions[2].validate}
-    placeholder="Mijn e-mailadres (optioneel)"
-  />
-  <p class="mb-3"><small><span class="required">*</span> Verplicht veld</small></p>
-  <CapWidget bind:token={capToken} {capjs_site_key} />
-	<button type="submit" class="btn btn-primary"  disabled={!capToken}>Verstuur</button>
+  {#if !successMessage}
+    <SelectWithOther
+      question="Ik gebruik OpenSpending als"
+      questionRequired={true}
+      items={["Burger", "Journalist", "Ambtenaar", "Wetenschapper", "Anders"]}
+      bind:selected={questions[0].answer}
+      bind:valid={questions[0].valid}
+      bind:validate={questions[0].validate}
+      bind:clear={questions[0].clear}
+      otherOption="Anders"
+      other_placeholder="Graag invullen..."
+    />
+    <OpenQuestion
+      question="Heeft u suggesties of opmerkingen?"
+      bind:answer={questions[1].answer}
+      bind:valid={questions[1].valid}
+      bind:validate={questions[1].validate}
+      bind:clear={questions[1].clear}
+      placeholder="Optioneel"
+      numberOfLines={5}
+    />
+    <OpenQuestion
+      question="Ik denk graag mee over bestaande en nieuwe functionaliteit van OpenSpending.
+      Door mijn e-mailadres op te geven geef ik toestemming aan OpenState om mij hierover te benaderen."
+      bind:answer={questions[2].answer}
+      bind:valid={questions[2].valid}
+      bind:validate={questions[2].validate}
+      bind:clear={questions[2].clear}
+      placeholder="Mijn e-mailadres (optioneel)"
+    />
+    <p class="mb-3"><small><span class="required">*</span> Verplicht veld</small></p>
+    <CapWidget bind:token={capToken} {capjs_site_key} />
+    <button type="submit" class="btn btn-primary"  disabled={!capToken}>Verstuur</button>
+  {/if}
 </form>

@@ -11,6 +11,9 @@
     validated = true
     setValidClass()
   }
+  export let clear = () => {
+    answer = undefined
+  }
 
   $: valid = (!questionRequired || questionRequired && !!(answer || '').trim())
 

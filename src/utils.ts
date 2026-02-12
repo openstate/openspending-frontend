@@ -72,6 +72,9 @@ export async function submitForm(event: Event, questions: FormQuestionType[], ca
       const body = await res.json()
       return {valid: true, success: false, message: `Kon data niet opslaan (API fout ${body.error})`}
     }
+    for (const q of questions) {
+      q.clear?.()
+    }
     return {valid: true, success: true}
   })
   .catch(e => {

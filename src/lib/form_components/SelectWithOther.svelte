@@ -14,8 +14,11 @@
     validated = true
     setValidClass()
   }
+  export let clear = () => {
+    selectedItem = undefined
+  }
 
-  let selectedItem: { [id: string] : string }
+  let selectedItem: { [id: string] : string } | undefined
   let other: string | undefined
   let other_class: string
 
