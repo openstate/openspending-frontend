@@ -2,7 +2,7 @@ import { handleSession } from 'svelte-kit-cookie-session';
 import { AUTH_CLIENT_SECRET as secret } from '$env/static/private';
 import { redirect } from '@sveltejs/kit';
 import { sessionFromEvent } from './utils';
-const admin_paths = ['/beheer'];
+const admin_paths = ['/beheer', '/polls/feedback_2026'];
 
 // role not currently used but kept in argument list for future purposes
 export function isPathAllowed(path?: string | null, _role?: string | undefined) {

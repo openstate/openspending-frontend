@@ -128,3 +128,17 @@ export type User = {
 	Username: string,
 	Sources: Bron[]
 }
+
+export type FormQuestionType = {
+	number: number,
+	answer: string | undefined,
+	valid: boolean,
+	validate: (() => boolean) | undefined,
+	clear:(() => void) | undefined
+}
+
+export type SubmitFormResultType = {
+	valid: boolean,
+	success: boolean,
+	message?: string
+}
