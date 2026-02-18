@@ -44,7 +44,7 @@ export async function apiDelete(path: string, token: string) {
   return await fetch(get(api) + path, options)
 }
 
-export async function submitForm(event: Event, questions: FormQuestionType[], capToken: string): Promise<SubmitFormResultType> {
+export async function submitForm(url: string, event: Event, questions: FormQuestionType[], capToken: string): Promise<SubmitFormResultType> {
   event.stopPropagation()
   event.preventDefault()
 
@@ -64,7 +64,7 @@ export async function submitForm(event: Event, questions: FormQuestionType[], ca
     answers: answers,
     capToken: capToken
   }
-  return await apiPost('/polls/feedback_2026', undefined, {
+  return await apiPost(url, undefined, {
     body: JSON.stringify(body)
   }).then(async res => {
     if (!res.ok) {

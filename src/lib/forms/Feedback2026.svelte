@@ -20,7 +20,7 @@
 
   const handleClick = async (event) => {
     loader.show()
-    const result = await submitForm(event, questions, capToken)
+    const result = await submitForm('/polls/feedback_2026', event, questions, capToken)
     if (result.valid && result.success) {
       errorMessage = undefined
       successMessage = "Hartelijk dank voor uw feedback! Indien u uw e-mailadres heeft opgegeven zullen wij contact met u opnemen."
