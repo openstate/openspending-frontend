@@ -56,7 +56,6 @@ export async function submitForm(event: Event, questions: FormQuestionType[], ca
     return {valid: false, success: true}
   }
 
-  // TODO Spinner show and hide
   let answers = questions.map((q, index) => ({
     'QuestionNumber': index + 1,
     'Answer': q.answer
