@@ -15,11 +15,31 @@
   export let rowNumber_level3 = 0
   export let metric: 'Bevolking' | 'Huishouden' | 'Oppervlakte' | undefined = undefined
 
+  // If multiple municipalities are shown and the first municipality has no entries for certain categories
+  // these categories would be missing. Therefore first aggregate all categories
+  $: batenZero = (row.Baten ?? 0) == 0
+  $: lastenZero = (row.Lasten ?? 0) == 0
+  $: allDataRows = row?.data || []
+  $: allDataRowIds = allDataRows.map((d) => d.ID)
+  $: {
+    for (let bron of bronnen) {
+      let data = getDataForLevel(bron)
+      if ((data?.Baten ?? 0) > 0) batenZero = false
+      if ((data?.Lasten ?? 0) > 0) lastenZero = false
+      for (const d of (data?.data || [])) {
+        if (!allDataRowIds.includes(d.ID)) {
+          allDataRowIds.push(d.ID)
+          allDataRows.push({ID: d.ID, Title: d.Title, Code: d.Code, Description: d.Description})
+        }
+      }
+    }
+  }
+
   const _onClick = async  (event: MouseEvent, row: BronData) => {
     if((event.target as HTMLElement).classList.contains('trendsPerHoofdfunctie')) {
       return
     }
-    if (row?.$link && (row.Baten ?? 0) + (row.Lasten ?? 0) !== 0) {
+    if (row?.$link && (!batenZero || !lastenZero)) {
       const tr = (event.currentTarget as HTMLElement);
       tr.classList.add('opening');
       return await onClick(event, row)
@@ -53,26 +73,6 @@
   const getAmount = (bron: BronDetail, soort: 'Baten' | 'Lasten') => {
     const data = getDataForLevel(bron)
     return normalize(data?.[soort], bron)
-  }
-
-  // If multiple municipalities are shown and the first municipality has no entries for certain categories
-  // these categories would be missing. Therefore first aggregate all categories
-  $: batenZero = (row.Baten ?? 0) == 0
-  $: lastenZero = (row.Lasten ?? 0) == 0
-  $: allDataRows = row?.data || []
-  $: allDataRowIds = allDataRows.map((d) => d.ID)
-  $: {
-    for (let bron of bronnen) {
-      let data = getDataForLevel(bron)
-      if ((data?.Baten ?? 0) > 0) batenZero = false
-      if ((data?.Lasten ?? 0) > 0) lastenZero = false
-      for (const d of (data?.data || [])) {
-        if (!allDataRowIds.includes(d.ID)) {
-          allDataRowIds.push(d.ID)
-          allDataRows.push({ID: d.ID, Title: d.Title, Code: d.Code, Description: d.Description})
-        }
-      }
-    }
   }
 </script>
 <style>
