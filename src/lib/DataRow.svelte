@@ -27,34 +27,53 @@
     }
   }
 
-  const getAmmountLevel2 = (bron: BronDetail, soort: 'Baten' | 'Lasten') => {
-    const data = bron.data[rowNumber_level1].data
-    if (data !== undefined) return data[rowNumber_level2][soort]
+  const getDataForLevel = (bron: BronDetail) => {
+    if (level === 1) {
+      return (bron.data[rowNumber_level1])
+    } else if (level === 2) {
+      const data = bron.data[rowNumber_level1].data
+      return (data?.[rowNumber_level2])
+    } else if (level === 3) {
+      const data = bron.data[rowNumber_level1].data
+      const data_l2 = data?.[rowNumber_level2]?.data
+      return data_l2?.[rowNumber_level3]
+    }
     return
   }
 
-  const getAmmountLevel3 = (bron: BronDetail, soort: 'Baten' | 'Lasten') => {
-    const data = bron.data[rowNumber_level1].data
-    if (data !== undefined) {
-      const data_l3 = data[rowNumber_level2].data
-      if (data_l3 !== undefined) {
-        try {
-          return data_l3[rowNumber_level3][soort]
-        } catch(e) {}
+  const normalize = (amount: number | null | undefined, bron: BronDetail) => {
+    if (typeof amount !== 'number') return amount
+    if (metric !== undefined && bron.metrics && bron.metrics[metric]) {
+      return Math.round(100 * 1000 * amount / bron.metrics[metric]) / 100 ;
+    } else {
+      return amount
+    }
+  }
+
+  const getAmount = (bron: BronDetail, soort: 'Baten' | 'Lasten') => {
+    const data = getDataForLevel(bron)
+    return normalize(data?.[soort], bron)
+  }
+
+  // If multiple municipalities are shown and the first municipality has no entries for certain categories
+  // these categories would be missing. Therefore first aggregate all categories
+  $: batenZero = (row.Baten ?? 0) == 0
+  $: lastenZero = (row.Lasten ?? 0) == 0
+  $: allDataRows = row?.data || []
+  $: allDataRowIds = allDataRows.map((d) => d.ID)
+  $: {
+    for (let bron of bronnen) {
+      let data = getDataForLevel(bron)
+      if ((data?.Baten ?? 0) > 0) batenZero = false
+      if ((data?.Lasten ?? 0) > 0) lastenZero = false
+      for (const d of (data?.data || [])) {
+        if (!allDataRowIds.includes(d.ID)) {
+          allDataRowIds.push(d.ID)
+          allDataRows.push({ID: d.ID, Title: d.Title, Code: d.Code, Description: d.Description})
+        }
       }
     }
-    return
   }
-
-  const normalize = (ammount: number | null | undefined, bron: BronDetail) => {
-    if (typeof ammount !== 'number') return ammount
-    if (metric !== undefined && bron.metrics && bron.metrics[metric]) {
-      return Math.round(100 * 1000 * ammount / bron.metrics[metric]) / 100 ;
-    } else {
-      return ammount
-    }
-  }
-
 </script>
 <style>
   span.closer {
@@ -122,11 +141,11 @@
   class:level-2={level ===2}
   class:level-3={level ===3}
   class:lastRow={lastRow}
-  class:zero = {(row.Baten ?? 0) === 0 &&  (row.Lasten ?? 0) === 0}
+  class:zero = {batenZero && lastenZero}
   on:click={(ev) => _onClick(ev, row)} 
 >
   <td class="togglerow">
-    {#if ((row.Baten ?? 0) !== 0 || (row.Lasten ?? 0) !== 0) && level < 3}
+    {#if (!batenZero || !lastenZero) && level < 3}
     <span class="opener"><PlusSquareFill style="cursor: pointer;" fill="#888"/></span>
     <span class="closer"><DashSquareFill style="cursor: pointer;" fill="Black"/></span>
     <span class="spinner-border spinner-border-sm text-secondary" aria-hidden="true"></span>
@@ -134,8 +153,8 @@
     <span class="treenode"></span>
     {/if}
   </td>
-  <td class="code" class:text-secondary = {(row.Baten ?? 0) === 0 && (row.Lasten ?? 0) === 0}>{row.Code}</td>
-  <td class:text-secondary = {(row.Baten ?? 0) === 0 && (row.Lasten ?? 0) === 0}>
+  <td class="code" class:text-secondary = {batenZero && lastenZero}>{row.Code}</td>
+  <td class:text-secondary = {batenZero && lastenZero}>
     {#if trendsPerHoofdfunctie}
     <div class="row">
       <div class="col-11">
@@ -149,43 +168,25 @@
      {row?.Description ?? row?.Title}
     {/if}
   </td>
-  {#if level === 1}
   {#each bronnen as bron}
-  <td class="text-end"><Currency classes="text-primary" ammount={normalize(bron.data[rowNumber_level1].Baten, bron)} symbol="" />
+  <td class="text-end"><Currency classes="text-primary" ammount={getAmount(bron, 'Baten')} symbol="" />
   </td>
   {/each}
   {#each bronnen as bron}
-  <td class="text-end"><Currency classes="text-info" ammount={normalize(bron.data[rowNumber_level1].Lasten, bron)} symbol="" /></td>
+  <td class="text-end"><Currency classes="text-info" ammount={getAmount(bron, 'Lasten')} symbol="" /></td>
   {/each}
-  {:else if level === 2}
-  {#each bronnen as bron}
-  <td class="text-end"><Currency classes="text-primary" ammount={normalize(getAmmountLevel2(bron, 'Baten'), bron)} symbol="" /></td>
-  {/each}
-  {#each bronnen as bron}
-  <td class="text-end"><Currency classes="text-info" ammount={normalize(getAmmountLevel2(bron, 'Lasten'), bron)} symbol="" /></td>
-  {/each}
-  {:else if level === 3}
-  {#each bronnen as bron}
-  <td class="text-end"><Currency classes="text-primary" ammount={normalize(getAmmountLevel3(bron, 'Baten'), bron)} symbol="" /></td>
-  {/each}
-  {#each bronnen as bron}
-  <td class="text-end"><Currency classes="text-info" ammount={normalize(getAmmountLevel3(bron, 'Lasten'), bron)} symbol="" /></td>
-  {/each}
-  {/if}
 </tr>
-{#if row?.data}
-  {#each row.data as subrow, i}
-    <DataRow 
-      row={subrow} 
-      onClick={onClick} 
-      metric={metric} 
-      level={level+1} 
-      hideZero={hideZero} 
-      rowNumber_level1={rowNumber_level1}
-      rowNumber_level2={level === 1 ? i : rowNumber_level2}
-      rowNumber_level3={level === 2 ? i : 0}
-      bronnen={bronnen}
-      trendsPerHoofdfunctie={trendsPerHoofdfunctie}
-      lastRow={i+1 === row.data.filter(d => !hideZero || (d.Baten??0) + (d.Lasten??0) !== 0).length}/>
-  {/each}
-{/if}
+{#each allDataRows as subrow, i}
+  <DataRow
+    row={subrow}
+    onClick={onClick}
+    metric={metric}
+    level={level+1}
+    hideZero={hideZero}
+    rowNumber_level1={rowNumber_level1}
+    rowNumber_level2={level === 1 ? i : rowNumber_level2}
+    rowNumber_level3={level === 2 ? i : 0}
+    bronnen={bronnen}
+    trendsPerHoofdfunctie={trendsPerHoofdfunctie}
+    lastRow={i+1 === row?.data?.filter(d => !hideZero || (d.Baten??0) + (d.Lasten??0) !== 0).length}/>
+{/each}
