@@ -520,7 +520,7 @@
 			onClick={toggleRow}
 			hideZero={hideZero}
 			lastRow={i+1 === Bron.data.length }
-			rowNumber_level1={i}
+			id_level1={row.ID}
       metric={metric}
 			bronnen={data.bronnen}/>
 		{/each}

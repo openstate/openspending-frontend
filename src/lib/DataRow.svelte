@@ -10,9 +10,9 @@
   export let hideZero: boolean = true
   export let lastRow: boolean = false
   export let bronnen: BronDetail[] = []
-  export let rowNumber_level1 = 0
-  export let rowNumber_level2 = 0
-  export let rowNumber_level3 = 0
+  export let id_level1 = ''
+  export let id_level2 = ''
+  export let id_level3 = ''
   export let metric: 'Bevolking' | 'Huishouden' | 'Oppervlakte' | undefined = undefined
 
   // If multiple municipalities are shown and the first municipality has no entries for certain categories
@@ -49,14 +49,14 @@
 
   const getDataForLevel = (bron: BronDetail) => {
     if (level === 1) {
-      return (bron.data[rowNumber_level1])
+      return bron.data.filter((x) => x.ID == id_level1)[0]
     } else if (level === 2) {
-      const data = bron.data[rowNumber_level1].data
-      return (data?.[rowNumber_level2])
+      const data = bron.data.filter((x) => x.ID == id_level1)[0]?.data
+      return data?.filter((x) => x.ID == id_level2)[0]
     } else if (level === 3) {
-      const data = bron.data[rowNumber_level1].data
-      const data_l2 = data?.[rowNumber_level2]?.data
-      return data_l2?.[rowNumber_level3]
+      const data = bron.data.filter((x) => x.ID == id_level1)[0]?.data
+      const data_l2 = data?.filter((x) => x.ID == id_level2)[0]?.data
+      return data_l2?.filter((x) => x.ID == id_level3)[0]
     }
     return
   }
@@ -183,9 +183,9 @@
     metric={metric}
     level={level+1}
     hideZero={hideZero}
-    rowNumber_level1={rowNumber_level1}
-    rowNumber_level2={level === 1 ? i : rowNumber_level2}
-    rowNumber_level3={level === 2 ? i : 0}
+    id_level1={id_level1}
+    id_level2={level === 1 ? subrow.ID : id_level2}
+    id_level3={level === 2 ? subrow.ID : ''}
     bronnen={bronnen}
     trendsPerHoofdfunctie={trendsPerHoofdfunctie}
     lastRow={i+1 === row?.data?.filter(d => !hideZero || (d.Baten??0) + (d.Lasten??0) !== 0).length}/>

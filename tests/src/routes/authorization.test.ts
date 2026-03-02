@@ -1,4 +1,7 @@
-import { describe, it, expect, vi } from 'vitest';
+//
+// NOTE: the tests in this file use mocking and do not need the API to be up and running
+//
+import { describe, it, expect } from 'vitest';
 import { isRedirect } from '@sveltejs/kit';
 import { mockAdminUserSessionData, mockRequest, mockGuestUserSessionData, mockNormalUserSessionData, mockSourceUserSessionData } from '../lib/mocks/requests';
 import { handle } from '../../../src/hooks.server';
@@ -12,7 +15,7 @@ describe ('beheer page', () => {
 		await expect(handle({ event, resolve })).rejects.toSatisfy((response) => {
 			return isRedirect(response) && response.location == '/login';
 		});
-    expect(resolve).not.toHaveBeenCalled;
+    expect(resolve).not.toHaveBeenCalled();
   });
 
   it('redirects to login?noAdmin when logged in as normal user', async() => {
@@ -21,7 +24,7 @@ describe ('beheer page', () => {
 		await expect(handle({ event, resolve })).rejects.toSatisfy((response) => {
 			return isRedirect(response) && response.location == '/login?noAdmin';
 		});
-    expect(resolve).not.toHaveBeenCalled;
+    expect(resolve).not.toHaveBeenCalled();
   });
 
   it('redirects to login?noAdmin when logged in as source user', async() => {
@@ -30,14 +33,14 @@ describe ('beheer page', () => {
     await expect(handle({ event, resolve })).rejects.toSatisfy((response) => {
 			return isRedirect(response) && response.location == '/login?noAdmin';
 		});
-    expect(resolve).not.toHaveBeenCalled;
+    expect(resolve).not.toHaveBeenCalled();
   });
 
   it('resolves when logged in as admin user', async() => {
     let { event, resolve } = mockRequest(path, mockAdminUserSessionData());
 
 		await expect(handle({ event, resolve })).resolves.toEqual(undefined);
-    expect(resolve).toHaveBeenCalled;
+    expect(resolve).toHaveBeenCalled();
   });
 });
 
@@ -50,7 +53,7 @@ describe ('beheer overheidsgebruikers page', () => {
 		await expect(handle({ event, resolve })).rejects.toSatisfy((response) => {
 			return isRedirect(response) && response.location == '/login';
 		});
-    expect(resolve).not.toHaveBeenCalled;
+    expect(resolve).not.toHaveBeenCalled();
   });
 
   it('redirects to login?noAdmin when logged in as normal user', async() => {
@@ -59,7 +62,7 @@ describe ('beheer overheidsgebruikers page', () => {
 		await expect(handle({ event, resolve })).rejects.toSatisfy((response) => {
 			return isRedirect(response) && response.location == '/login?noAdmin';
 		});
-    expect(resolve).not.toHaveBeenCalled;
+    expect(resolve).not.toHaveBeenCalled();
   });
 
   it('redirects to login?noAdmin when logged in as source user', async() => {
@@ -68,7 +71,7 @@ describe ('beheer overheidsgebruikers page', () => {
 		await expect(handle({ event, resolve })).rejects.toSatisfy((response) => {
 			return isRedirect(response) && response.location == '/login?noAdmin';
 		});
-    expect(resolve).not.toHaveBeenCalled;
+    expect(resolve).not.toHaveBeenCalled();
   });
 
   it('resolves when logged in as admin user', async() => {
@@ -88,7 +91,7 @@ describe ('beheer publish detaildata page', () => {
 		await expect(handle({ event, resolve })).rejects.toSatisfy((response) => {
 			return isRedirect(response) && response.location == '/login';
 		});
-    expect(resolve).not.toHaveBeenCalled;
+    expect(resolve).not.toHaveBeenCalled();
   });
 
   it('redirects to login?noAdmin when logged in as normal user', async() => {
@@ -97,7 +100,7 @@ describe ('beheer publish detaildata page', () => {
 		await expect(handle({ event, resolve })).rejects.toSatisfy((response) => {
 			return isRedirect(response) && response.location == '/login?noAdmin';
 		});
-    expect(resolve).not.toHaveBeenCalled;
+    expect(resolve).not.toHaveBeenCalled();
   });
 
   it('redirects to login?noAdmin when logged in as source user', async() => {
@@ -106,14 +109,14 @@ describe ('beheer publish detaildata page', () => {
 		await expect(handle({ event, resolve })).rejects.toSatisfy((response) => {
 			return isRedirect(response) && response.location == '/login?noAdmin';
 		});
-    expect(resolve).not.toHaveBeenCalled;
+    expect(resolve).not.toHaveBeenCalled();
   });
 
   it('resolves when logged in as admin user', async() => {
     let { event, resolve } = mockRequest(path, mockAdminUserSessionData());
 
 		await expect(handle({ event, resolve })).resolves.toEqual(undefined);
-    expect(resolve).toHaveBeenCalled;
+    expect(resolve).toHaveBeenCalled();
   });
 });
 
@@ -124,21 +127,21 @@ describe ('login page', () => {
     let { event, resolve } = mockRequest(path, mockGuestUserSessionData());
 
     await handle({ event, resolve });
-    expect(resolve).toHaveBeenCalled;
+    expect(resolve).toHaveBeenCalled();
   });
 
   it('resolves when logged in as normal user', async () => {
     let { event, resolve } = mockRequest(path, mockNormalUserSessionData());
 
     await handle({ event, resolve });
-    expect(resolve).toHaveBeenCalled;
+    expect(resolve).toHaveBeenCalled();
   });
 
   it('resolves when logged in as admin user', async () => {
     let { event, resolve } = mockRequest(path, mockNormalUserSessionData());
 
     await handle({ event, resolve });
-    expect(resolve).toHaveBeenCalled;
+    expect(resolve).toHaveBeenCalled();
   });
 });
 
@@ -149,20 +152,20 @@ describe ('gegevens page', () => {
     let { event, resolve } = mockRequest(path, mockGuestUserSessionData());
 
     await handle({ event, resolve });
-    expect(resolve).toHaveBeenCalled;
+    expect(resolve).toHaveBeenCalled();
   });
 
   it('resolves when logged in as normal user', async () => {
     let { event, resolve } = mockRequest(path, mockNormalUserSessionData());
 
     await handle({ event, resolve });
-    expect(resolve).toHaveBeenCalled;
+    expect(resolve).toHaveBeenCalled();
   });
 
   it('resolves when logged in as admin user', async () => {
     let { event, resolve } = mockRequest(path, mockNormalUserSessionData());
 
     await handle({ event, resolve });
-    expect(resolve).toHaveBeenCalled;
+    expect(resolve).toHaveBeenCalled();
   });
 });
