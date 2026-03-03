@@ -31,30 +31,45 @@ describe ('gegevens for 2 sources', () => {
     return new DOMParser({errorHandler: {warning: errorFunction, error: errorFunction, fatalError: errorFunction}}).parseFromString(text)
   }
 
-  const testCategoryPresent = (category: string, present: boolean) => {
+  const testCategoryPresent = (category: string, present: boolean,
+                               amount: string = '', position: number = 0,
+                               secondAmount: string = '', secondPosition: number = 0) => {
     const nExpected = present ? 1 : 0
-    const rows = xpath.select(`//div[contains(@class, "col-11") and contains(text(), "${category}")]`, root) as Node[]
+    const selector = `//div[contains(@class, "col-11") and contains(text(), "${category}")]`
+    const rows = xpath.select(selector, root) as Node[]
     expect(rows?.length).toBe(nExpected)
+
+    if (amount){
+      const s = `${selector}/ancestor::td/following-sibling::td[position()=${position}]/span[contains(@class, "currency") and contains(text(), "${amount}")]`
+      const rows = xpath.select(s, root) as Node[]
+      expect(rows?.length).toBe(nExpected)
+    }
+
+    if (secondAmount){
+      const s = `${selector}/ancestor::td/following-sibling::td[position()=${secondPosition}]/span[contains(@class, "currency") and contains(text(), "${secondAmount}")]`
+      const rows = xpath.select(s, root) as Node[]
+      expect(rows?.length).toBe(nExpected)
+    }
   }
 
   it('correctly shows all categories if some only present for one of the sources', async () => {
     root = await getDocumentForPath(pathBoth)
-    testCategoryPresent(categoryGoudaOnly, true)
-    testCategoryPresent(categoryHoornOnly, true)
-    testCategoryPresent(categoryBoth, true)
+    testCategoryPresent(categoryHoornOnly, true, '37', 3)
+    testCategoryPresent(categoryGoudaOnly, true, '18', 4)
+    testCategoryPresent(categoryBoth, true, '969', 3,  '1.181', 4)
   })
 
   it('correctly shows categories for Hoorn', async () => {
     root = await getDocumentForPath(pathHoornOnly)
-    testCategoryPresent(categoryHoornOnly, true)
+    testCategoryPresent(categoryHoornOnly, true, '37', 2)
     testCategoryPresent(categoryGoudaOnly, false)
-    testCategoryPresent(categoryBoth, true)
+    testCategoryPresent(categoryBoth, true, '969', 2)
   })
 
   it('correctly shows categories for Gouda', async () => {
     root = await getDocumentForPath(pathGoudaOnly)
-    testCategoryPresent(categoryGoudaOnly, true)
+    testCategoryPresent(categoryGoudaOnly, true, '18', 2)
     testCategoryPresent(categoryHoornOnly, false)
-    testCategoryPresent(categoryBoth, true)
+    testCategoryPresent(categoryBoth, true, '1.181', 2)
   })
 })
