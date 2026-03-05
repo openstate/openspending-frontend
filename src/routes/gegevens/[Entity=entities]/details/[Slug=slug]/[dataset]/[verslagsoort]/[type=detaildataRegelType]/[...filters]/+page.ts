@@ -29,7 +29,10 @@ export async function load({ params, data}) {
     .then(bron => bron as BronDetail)
   const dataset = bron.datasets.filter(dataset => dataset.Identifier === params.dataset).shift()!
   const verslagsoorten = (await apiGet(`/detaildata/${entity}/${bron.Key}/${dataset.Identifier}/verslagsoorten`, session.Token)
-    .then(r => r.json())) as string[]
+    .then(res => {
+      if (!res.ok) throw error(res.status)
+      return res.json()
+    })) as string[]
 
   if (params.verslagsoort === 'onbekend' || !verslagsoorten.includes(params.verslagsoort)) {
     redirect(302, `/gegevens/${entity}/details/${bron.Slug}/${dataset.Identifier}/${verslagsoorten[0]}/kostenplaats/categorie/*`)

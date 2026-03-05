@@ -90,6 +90,17 @@
     </div>
   </div>
   {/if}
+{:else if $page.status === 403}
+  <h1>Niet geautoriseerd</h1>
+  <div class="row">
+    <div class="col col-sm-12 col-lg-9 col-md-12">
+      <p class="lead">
+        U heeft geen toegang tot de pagina die u probeert op te vragen.
+        Indien dit wel het geval zou moeten zijn verzoeken wij u contact met ons op te nemen via het
+        <a href='/contact' target='_blank'>contactformulier</a>.
+      </p>
+    </div>
+  </div>
 {:else}
 <h1>Er is een fout opgetreden</h1>
 <p class="lead">Er is helaas iets fout gegaan, probeert u het later nogmaals.</p>

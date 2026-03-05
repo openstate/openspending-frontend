@@ -13,7 +13,7 @@ export async function load({ params, data}) {
 
   const verslagsoorten = await apiGet(`/detaildata/${params.Entity}/${bron.Key}/${params.dataset}/verslagsoorten`, session.Token)
     .then(res => {
-      if (!res.ok) throw error(404)
+      if (!res.ok) throw error(res.status)
       return res.json()
     })
     .then(verslagsoorten => verslagsoorten as Array<{ Verslagsoort: string }>)

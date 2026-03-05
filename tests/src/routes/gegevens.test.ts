@@ -1,9 +1,8 @@
 //
 // NOTE: the tests in this file need the API to be up and running in dev mode
 //
-import { describe, it, expect } from 'vitest';
-import xpath from 'xpath';
-import { DOMParser } from '@xmldom/xmldom'
+import { describe, it } from 'vitest';
+import { getDocumentForPath, TEST_DOMAIN, testSelectorPresent } from '../lib/utils/requests';
 
 describe ('gegevens for 2 sources', () => {
   // Solves bugs discovered in february 2026:
@@ -14,41 +13,29 @@ describe ('gegevens for 2 sources', () => {
   //   - when solving the above bug, it was found that when combining data from different sources subcategories from the second source
   //     ended up with the wrong subcategories from the first source because the `data` structure in sources was accessed using indices
   //     instead of IDs
-  const pathBoth = 'http://localhost:5173/gegevens/Gemeenten/per/hoofdfunctie/hoorn/2024/begroting/gouda/2024/begroting/open/0|0.1'
-  const pathHoornOnly = 'http://localhost:5173/gegevens/Gemeenten/per/hoofdfunctie/hoorn/2024/begroting/open/0|0.1'
-  const pathGoudaOnly = 'http://localhost:5173/gegevens/Gemeenten/per/hoofdfunctie/gouda/2024/begroting/open/0|0.1'
+  const pathBoth = `${TEST_DOMAIN}/gegevens/Gemeenten/per/hoofdfunctie/hoorn/2024/begroting/gouda/2024/begroting/open/0|0.1`
+  const pathHoornOnly = `${TEST_DOMAIN}/gegevens/Gemeenten/per/hoofdfunctie/hoorn/2024/begroting/open/0|0.1`
+  const pathGoudaOnly = `${TEST_DOMAIN}/gegevens/Gemeenten/per/hoofdfunctie/gouda/2024/begroting/open/0|0.1`
 
-  const errorFunction = (_msg: string) => {}
   const categoryGoudaOnly = "Ingeleend personeel"
   const categoryHoornOnly = "Overige verrekeningen"
   const categoryBoth = "Overige goederen en diensten"
   let root: Document = new Document()
 
-  const getDocumentForPath = async (path: string) => {
-    const response = await fetch(path);
-    expect(response.status).toBe(200);
-    const text = await response.text()
-    return new DOMParser({errorHandler: {warning: errorFunction, error: errorFunction, fatalError: errorFunction}}).parseFromString(text)
-  }
-
   const testCategoryPresent = (category: string, present: boolean,
                                amount: string = '', position: number = 0,
                                secondAmount: string = '', secondPosition: number = 0) => {
-    const nExpected = present ? 1 : 0
     const selector = `//div[contains(@class, "col-11") and contains(text(), "${category}")]`
-    const rows = xpath.select(selector, root) as Node[]
-    expect(rows?.length).toBe(nExpected)
+    testSelectorPresent(root, selector, present)
 
     if (amount){
-      const s = `${selector}/ancestor::td/following-sibling::td[position()=${position}]/span[contains(@class, "currency") and contains(text(), "${amount}")]`
-      const rows = xpath.select(s, root) as Node[]
-      expect(rows?.length).toBe(nExpected)
+      const selector2 = `${selector}/ancestor::td/following-sibling::td[position()=${position}]/span[contains(@class, "currency") and contains(text(), "${amount}")]`
+      testSelectorPresent(root, selector2, present)
     }
 
     if (secondAmount){
-      const s = `${selector}/ancestor::td/following-sibling::td[position()=${secondPosition}]/span[contains(@class, "currency") and contains(text(), "${secondAmount}")]`
-      const rows = xpath.select(s, root) as Node[]
-      expect(rows?.length).toBe(nExpected)
+      const selector2 = `${selector}/ancestor::td/following-sibling::td[position()=${secondPosition}]/span[contains(@class, "currency") and contains(text(), "${secondAmount}")]`
+      testSelectorPresent(root, selector2, present)
     }
   }
 

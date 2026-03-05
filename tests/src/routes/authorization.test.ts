@@ -169,3 +169,29 @@ describe ('gegevens page', () => {
     expect(resolve).toHaveBeenCalled();
   });
 });
+
+
+describe ('gegevens detaildata page', () => {
+  const path = '/gegevens/detaildata';
+
+  it('resolves if not logged in', async () => {
+    let { event, resolve } = mockRequest(path, mockGuestUserSessionData());
+
+    await handle({ event, resolve });
+    expect(resolve).toHaveBeenCalled();
+  });
+
+  it('resolves when logged in as normal user', async () => {
+    let { event, resolve } = mockRequest(path, mockNormalUserSessionData());
+
+    await handle({ event, resolve });
+    expect(resolve).toHaveBeenCalled();
+  });
+
+  it('resolves when logged in as admin user', async () => {
+    let { event, resolve } = mockRequest(path, mockNormalUserSessionData());
+
+    await handle({ event, resolve });
+    expect(resolve).toHaveBeenCalled();
+  });
+});

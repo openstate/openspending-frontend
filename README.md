@@ -42,5 +42,5 @@ npx vitest
 There are 2 types of tests:
 - component tests (e.g. `authorization.test.ts`). These use mocking of requests and don't require the `API` to be up and running.
 - more complicated route tests (e.g. `gegevens.test.ts`). Since these tests only read data and do not change it, it was chosen
-for simplicity to run the tests against the `API running in development` (`npm run dev`). The tests assume that the data from 2024 are loaded
-(`45067NED`).
+for simplicity to run the tests against the `API running in development` (`npm run dev`). The tests assume that certain data
+is present. The script `setup_content_for_tests` in `openspending-api` can be used to check the presence of the required data.
