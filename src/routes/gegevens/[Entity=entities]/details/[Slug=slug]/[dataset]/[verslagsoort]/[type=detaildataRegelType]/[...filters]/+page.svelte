@@ -32,6 +32,7 @@
   }
 
   const toggleRow = (ev: Event) => {
+		const opts = {keepFocus: true, noScroll: true}
     const row = ev.currentTarget as HTMLTableRowElement
     const categorie = row.dataset.categorie
     let key = row.dataset.filterKey ?? ''
@@ -49,7 +50,7 @@
       data.filters[key as keyof typeof data.filters] = filter
         .filter(v => v.trim()!=='')
         .sort((a, b) => a > b ? 1 : -1)
-      goto(`/gegevens/${data.params.Entity}/details/${data.params.Slug}/${data.params.dataset}/${data.params.verslagsoort}/${data.params.type}/categorie=${data.filters.categorie.join(',')}/grootboek=${data.filters.grootboek.join(',')}/kostenplaats=${data.filters.kostenplaats.join(',')}${getSortering()}/#${row.id}`)
+      goto(`/gegevens/${data.params.Entity}/details/${data.params.Slug}/${data.params.dataset}/${data.params.verslagsoort}/${data.params.type}/categorie=${data.filters.categorie.join(',')}/grootboek=${data.filters.grootboek.join(',')}/kostenplaats=${data.filters.kostenplaats.join(',')}${getSortering()}/#${row.id}`, opts)
     }
   }
 
@@ -72,7 +73,6 @@
     if (document.location.hash) {
       const id = document.location.hash.replace(/^#/, '')
       const row = document.querySelector(`[id="${id}"]`)
-      setTimeout(() => window.scrollBy(0, -80), 100)
       if (row) {
         row.classList.add('highlight')
         setTimeout(() => {
