@@ -34,13 +34,14 @@ Je kunt een preview van de productieomgeving starten met `npm run preview`.
   - `sudo docker compose up --build -d`
 
 ## Tests
-Some tests have been added to the `./tests` folder. To run them:
+To run the tests in the `./tests` folder:
 ```bash
 npx vitest
 ```
+To run a single test e.g. `npx vitest tests/src/routes/gegevens-detaildata.test.ts`
 
 There are 2 types of tests:
-- component tests (e.g. `authorization.test.ts`). These use mocking of requests and don't require the `API` to be up and running.
-- more complicated route tests (e.g. `gegevens.test.ts`). Since these tests only read data and do not change it, it was chosen
-for simplicity to run the tests against the `API running in development` (`npm run dev`). The tests assume that certain data
-is present. The script `setup_content_for_tests` in `openspending-api` can be used to check the presence of the required data.
+  - component tests (e.g. `authorization.test.ts`). These use mocking of requests and don't require the `api` to be up and running.
+  - more complicated route tests (e.g. `gegevens.test.ts`). Since these tests only read data and do not change it, it was chosen
+for simplicity to run the tests against the `api running in test mode`. See the `Tests` section in the `README` for `openspending-api`.
+The `frontend` must be running in `dev` mode when running these tests.
