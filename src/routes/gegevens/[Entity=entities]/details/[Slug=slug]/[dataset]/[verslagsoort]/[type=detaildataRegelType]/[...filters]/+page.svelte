@@ -3,7 +3,8 @@
 	import Currency from '$lib/Currency.svelte';
 	import { ucfirst } from '$lib/utils.js';
 	import { onMount, afterUpdate } from 'svelte';
-  import { DashSquareFill, PlusSquareFill, Download, SortNumericDownAlt, SortNumericUp } from 'svelte-bootstrap-icons';
+  import { DashSquareFill, PlusSquareFill, Download, SortNumericDownAlt, SortNumericUp, InfoCircleFill } from 'svelte-bootstrap-icons';
+	import { apiUrl } from '../../../../../../../../../utils.js';
   export let data
 
   $: idPrefix = data.params.type.substring(0, 1).toUpperCase()
@@ -91,9 +92,12 @@
       btn?.classList.add('btn-primary')
     }
   })
-  onMount(() => {
+
+  onMount(async () => {
+    const bootstrap = await import('bootstrap');
+    [...document.querySelectorAll('[data-bs-toggle="tooltip"]')].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
   })
-  </script>
+</script>
 <svelte:head>
 	<title>Detaildata {data.bron.Title} | Open Spending</title>
 	<meta property="og:title" content="Detaildata {data.bron.Title}} | Open Spending" />
@@ -277,5 +281,27 @@
     </tr>
   </tfoot>
 </table>
+<div class="row">
+  <div class="col-sm-12 col-m-6 col-lg-6">
+   <h3 class="fs-6 mt-5">Downloads</h3>
+   <table class="table">
+    <thead>
+      <tr>
+        <th>Bron</th>
+        <th>Periode</th>
+        <th>Downloads</th>
+      </tr>
+      <tr>
+        <td>{data.bron.Title}</td>
+        <td>{data.dataset.Period}</td>
+        <td>
+          <a target="_blank" href="{apiUrl()}/detaildata/fiscaldatapackage/{data.bron.Type}/{data.dataset.Period}/{data.bron.Slug}/datapackage.json"> Fiscal Data Package</a> <InfoCircleFill data-bs-toggle="tooltip" data-bs-title="Het Fiscal Data Package is een lichtgewicht en gebruikersgericht formaat voor het publiceren en gebruiken van fiscale gegevens, zie fiscal.datapackage.org."/>
+        </td>
+      </tr>
+    </thead>
+   </table>
+  </div>
+</div>
+
 <p class="mt-5"><a download href="/gegevens/{data.bron.Type}/details/{data.bron.Slug}/{data.dataset.Identifier}/{data.params.verslagsoort}/details">
   <button class="btn btn-primary"><Download/> download brondata</button></a></p>
