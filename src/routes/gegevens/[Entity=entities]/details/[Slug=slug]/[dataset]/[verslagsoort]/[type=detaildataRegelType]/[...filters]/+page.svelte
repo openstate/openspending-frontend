@@ -4,7 +4,6 @@
 	import { ucfirst } from '$lib/utils.js';
 	import { onMount, afterUpdate } from 'svelte';
   import { DashSquareFill, PlusSquareFill, Download, SortNumericDownAlt, SortNumericUp, InfoCircleFill } from 'svelte-bootstrap-icons';
-	import { apiUrl } from '../../../../../../../../../utils.js';
   export let data
 
   $: idPrefix = data.params.type.substring(0, 1).toUpperCase()

@@ -7,14 +7,12 @@ export const GET: RequestHandler = async ({ params, locals }) => {
   let excel
   let contentType: string = ''
   let contentDisposition: string = ''
-  let contentLength: string = ''
   await apiGet(`/spreadsheet/${params.Entity}/${params.Period}/${params.Slug}`, session.Token)
     .then(res => {
       if (!res.ok) throw error(404)
       excel = res.body
       contentType = res.headers.get('content-type') || ''
       contentDisposition = res.headers.get('content-disposition') || ''
-      contentLength = res.headers.get('content-length') || ''
     })
 
   return new Response(
@@ -23,8 +21,7 @@ export const GET: RequestHandler = async ({ params, locals }) => {
       status: 200,
       headers: {
       "Content-Type" : contentType,
-      "Content-Disposition": contentDisposition,
-      "Content-Length": contentLength
+      "Content-Disposition": contentDisposition
       }
     }
   )
