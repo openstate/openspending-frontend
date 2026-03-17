@@ -1,0 +1,31 @@
+import { error, type RequestHandler } from "@sveltejs/kit"
+import { apiGet } from "../../../../../../utils"
+
+export const GET: RequestHandler = async ({ params, locals }) => {
+  const session = locals.session.data
+
+  let excel
+  let contentType: string = ''
+  let contentDisposition: string = ''
+  let contentLength: string = ''
+  await apiGet(`/detaildata/spreadsheet/${params.Entity}/${params.Period}/${params.Slug}`, session.Token)
+    .then(res => {
+      if (!res.ok) throw error(404)
+      excel = res.body
+      contentType = res.headers.get('content-type') || ''
+      contentDisposition = res.headers.get('content-disposition') || ''
+      contentLength = res.headers.get('content-length') || ''
+    })
+
+  return new Response(
+    excel,
+    {
+      status: 200,
+      headers: {
+      "Content-Type" : contentType,
+      "Content-Disposition": contentDisposition,
+      "Content-Length": contentLength
+      }
+    }
+  )
+}

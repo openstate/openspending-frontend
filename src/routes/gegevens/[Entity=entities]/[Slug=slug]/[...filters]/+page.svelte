@@ -9,7 +9,7 @@
 
   import { page } from '$app/stores';
   $: session = $page.data.session
-	import { apiGet, apiUrl } from '../../../../../utils.js';
+	import { apiGet } from '../../../../../utils.js';
 
   export let data;
 
@@ -575,8 +575,8 @@
         <td>{bron.Title}</td>
         <td>{bron.Period}</td>
         <td>
-          <a target="_blank" href="{apiUrl()}/spreadsheet/{data.bronnen[0].Type}/{bron.Period}/{bron.Slug}">Spreadsheet</a> <InfoCircleFill data-bs-toggle="tooltip" data-bs-title="Download deze gegevens als Spreadsheet."/>
-          <a target="_blank" href="{apiUrl()}/fiscaldatapackage/{data.bronnen[0].Type}/{bron.Period}/{bron.Slug}/datapackage.json"> Fiscal Data Package</a> <InfoCircleFill data-bs-toggle="tooltip" data-bs-title="Het Fiscal Data Package is een lichtgewicht en gebruikersgericht formaat voor het publiceren en gebruiken van fiscale gegevens, zie fiscal.datapackage.org."/>
+          <a target="_blank" href="/spreadsheet/{data.bronnen[0].Type}/{bron.Period}/{bron.Slug}">Spreadsheet</a> <InfoCircleFill data-bs-toggle="tooltip" data-bs-title="Download deze gegevens als Spreadsheet."/>
+          <a target="_blank" href="/fiscaldatapackage/{data.bronnen[0].Type}/{bron.Period}/{bron.Slug}"> Fiscal Data Package</a> <InfoCircleFill data-bs-toggle="tooltip" data-bs-title="Het Fiscal Data Package is een lichtgewicht en gebruikersgericht formaat voor het publiceren en gebruiken van fiscale gegevens, zie fiscal.datapackage.org."/>
         </td>
       </tr>
       {/each}

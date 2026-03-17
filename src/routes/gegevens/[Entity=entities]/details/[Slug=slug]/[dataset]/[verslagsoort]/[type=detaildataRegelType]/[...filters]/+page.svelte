@@ -298,7 +298,8 @@
         <td>{data.bron.Title}</td>
         <td>{data.dataset.Period}</td>
         <td>
-          <a target="_blank" href="{apiUrl()}/detaildata/fiscaldatapackage/{data.bron.Type}/{data.dataset.Period}/{data.bron.Slug}/datapackage.json"> Fiscal Data Package</a> <InfoCircleFill data-bs-toggle="tooltip" data-bs-title="Het Fiscal Data Package is een lichtgewicht en gebruikersgericht formaat voor het publiceren en gebruiken van fiscale gegevens, zie fiscal.datapackage.org."/>
+          <a target="_blank" href="/spreadsheet/{data.bron.Type}/{data.dataset.Period}/details/{data.bron.Slug}">Spreadsheet</a> <InfoCircleFill data-bs-toggle="tooltip" data-bs-title="Download deze gegevens als Spreadsheet."/>
+          <a target="_blank" href="/fiscaldatapackage/{data.bron.Type}/{data.dataset.Period}/details/{data.bron.Slug}"> Fiscal Data Package</a> <InfoCircleFill data-bs-toggle="tooltip" data-bs-title="Het Fiscal Data Package is een lichtgewicht en gebruikersgericht formaat voor het publiceren en gebruiken van fiscale gegevens, zie fiscal.datapackage.org."/>
         </td>
       </tr>
     </thead>
