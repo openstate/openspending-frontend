@@ -93,6 +93,8 @@
     }
   })
 
+  import { page } from '$app/stores';
+  $: session = $page.data.session;
   onMount(async () => {
     const bootstrap = await import('bootstrap');
     [...document.querySelectorAll('[data-bs-toggle="tooltip"]')].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
@@ -281,6 +283,7 @@
     </tr>
   </tfoot>
 </table>
+{#if session.Role == 'admin'}
 <div class="row">
   <div class="col-sm-12 col-m-6 col-lg-6">
    <h3 class="fs-6 mt-5">Downloads</h3>
@@ -302,6 +305,6 @@
    </table>
   </div>
 </div>
-
+{/if}
 <p class="mt-5"><a download href="/gegevens/{data.bron.Type}/details/{data.bron.Slug}/{data.dataset.Identifier}/{data.params.verslagsoort}/details">
   <button class="btn btn-primary"><Download/> download brondata</button></a></p>
