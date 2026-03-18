@@ -4,7 +4,8 @@
 //       detaildata of De Wolden must be published
 //
 import { describe, it } from 'vitest';
-import { ADMIN_USERNAME, DEWOLDEN_USERNAME, getDocumentForPath, KRIMPENERWAARD_USERNAME, TEST_DOMAIN, testSelectorPresent } from '../lib/utils/requests';
+import { ADMIN_USERNAME, DEWOLDEN_USERNAME, KRIMPENERWAARD_USERNAME, TEST_DOMAIN } from '../lib/utils/requests';
+import { getDocumentForPath, testSelectorPresent, testSum } from '../lib/utils/xpath';
 
 describe ('overzicht detaildata', () => {
   let root: Document = new Document()
@@ -226,3 +227,17 @@ describe ('detaildata data',  () => {
   })
 })
 
+describe ('totalen van gegevens', () => {
+  const path = `${TEST_DOMAIN}/gegevens/Gemeenten/details/de-wolden/45067NED/2024X001/kostenplaats/categorie/*`
+  let root: Document = new Document()
+
+  it('has the correct total for Baten', async () => {
+    root = await getDocumentForPath(path)
+    testSum(root, 'Baten', 4, {"amountsTotalColumn": "2", "skipSummariesCheck": "true"})
+  })
+
+  it('has the correct total for Lasten', async () => {
+    root = await getDocumentForPath(path)
+    testSum(root, 'Lasten', 5, {"amountsTotalColumn": "3", "skipSummariesCheck": "true"})
+  })
+})

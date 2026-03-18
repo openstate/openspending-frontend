@@ -191,7 +191,7 @@
   <p><small><a href="/gegevens/detaildata">klik hier om meer organisaties met detaildata te bekijken &hellip;</a></small></p>
 </div>
 
-<table class="table table-hover caption-top table-bordered">
+<table class="table amounts table-hover caption-top table-bordered">
   <thead>
     <tr>
       <th class="togglerow">&nbsp;</th>

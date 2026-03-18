@@ -2,7 +2,8 @@
 // NOTE: the tests in this file need the API to be up and running in dev mode
 //
 import { describe, it } from 'vitest';
-import { getDocumentForPath, TEST_DOMAIN, testSelectorPresent } from '../lib/utils/requests';
+import { TEST_DOMAIN } from '../lib/utils/requests';
+import { getDocumentForPath, testSelectorPresent, testSum } from '../lib/utils/xpath';
 
 describe ('gegevens for 2 sources', () => {
   // Solves bugs discovered in february 2026:
@@ -58,5 +59,108 @@ describe ('gegevens for 2 sources', () => {
     testCategoryPresent(categoryGoudaOnly, true, '18', 2)
     testCategoryPresent(categoryHoornOnly, false)
     testCategoryPresent(categoryBoth, true, '1.181', 2)
+  })
+})
+
+describe ('totalen van gegevens', () => {
+  describe ('voor 1 gemeente', () => {
+    const pathDeWoldenBegroting = `${TEST_DOMAIN}/gegevens/Gemeenten/per/hoofdfunctie/de-wolden/2024/begroting`
+    const pathDeWoldenQ1 = `${TEST_DOMAIN}/gegevens/Gemeenten/per/hoofdfunctie/de-wolden/2024/Q1`
+    const pathDeWoldenQ2 = `${TEST_DOMAIN}/gegevens/Gemeenten/per/hoofdfunctie/de-wolden/2024/Q2`
+    const pathDeWoldenQ3 = `${TEST_DOMAIN}/gegevens/Gemeenten/per/hoofdfunctie/de-wolden/2024/Q3`
+    const pathDeWoldenQ4 = `${TEST_DOMAIN}/gegevens/Gemeenten/per/hoofdfunctie/de-wolden/2024/Q4`
+    const pathDeWoldenRealisatie = `${TEST_DOMAIN}/gegevens/Gemeenten/per/hoofdfunctie/de-wolden/2024/realisatie`
+    let root: Document = new Document()
+
+    describe ('Begroting', () => {
+      it('has the correct total for Baten', async () => {
+        root = await getDocumentForPath(pathDeWoldenBegroting)
+        testSum(root, 'Baten', 4)
+      })
+
+      it('has the correct total for Lasten', async () => {
+        root = await getDocumentForPath(pathDeWoldenBegroting)
+        testSum(root, 'Lasten', 5)
+      })
+    })
+
+    describe ('Q1', () => {
+      it('has the correct total for Baten', async () => {
+        root = await getDocumentForPath(pathDeWoldenQ1)
+        testSum(root, 'Baten', 4)
+      })
+
+      it('has the correct total for Lasten', async () => {
+        root = await getDocumentForPath(pathDeWoldenQ1)
+        testSum(root, 'Lasten', 5)
+      })
+    })
+
+    describe ('Q2', () => {
+      it('has the correct total for Baten', async () => {
+        root = await getDocumentForPath(pathDeWoldenQ2)
+        testSum(root, 'Baten', 4)
+      })
+
+      it('has the correct total for Lasten', async () => {
+        root = await getDocumentForPath(pathDeWoldenQ2)
+        testSum(root, 'Lasten', 5)
+      })
+    })
+
+    describe ('Q3', () => {
+      it('has the correct total for Baten', async () => {
+        root = await getDocumentForPath(pathDeWoldenQ3)
+        testSum(root, 'Baten', 4)
+      })
+
+      it('has the correct total for Lasten', async () => {
+        root = await getDocumentForPath(pathDeWoldenQ3)
+        testSum(root, 'Lasten', 5)
+      })
+    })
+
+    describe ('Q4', () => {
+      it('has the correct total for Baten', async () => {
+        root = await getDocumentForPath(pathDeWoldenQ4)
+        testSum(root, 'Baten', 4)
+      })
+
+      it('has the correct total for Lasten', async () => {
+        root = await getDocumentForPath(pathDeWoldenQ4)
+        testSum(root, 'Lasten', 5)
+      })
+    })
+
+    describe ('Realistatie', () => {
+      it('has the correct total for Baten', async () => {
+        root = await getDocumentForPath(pathDeWoldenRealisatie)
+        testSum(root, 'Baten', 4)
+      })
+
+      it('has the correct total for Lasten', async () => {
+        root = await getDocumentForPath(pathDeWoldenRealisatie)
+        testSum(root, 'Lasten', 5)
+      })
+    })
+  })
+
+  describe ('voor 2 gemeenten', () => {
+    const pathBegroting = `${TEST_DOMAIN}/gegevens/Gemeenten/per/hoofdfunctie/de-wolden/2024/begroting/gouda/2024/begroting`
+    let root: Document = new Document()
+
+    describe ('Begroting', () => {
+      it('has the correct total for Baten', async () => {
+        root = await getDocumentForPath(pathBegroting)
+        testSum(root, 'Baten', 4) // De Wolden
+        testSum(root, 'Baten', 4, {"summariesRow": "2", "amountsColumn": "5"}) // Gouda
+      })
+
+      it('has the correct total for Lasten', async () => {
+        root = await getDocumentForPath(pathBegroting)
+        testSum(root, 'Lasten', 5, {"amountsColumn": "6"}) // De Wolden
+        testSum(root, 'Lasten', 5, {"summariesRow": "2", "amountsColumn": "7"}) // Gouda
+      })
+    })
   })
 })

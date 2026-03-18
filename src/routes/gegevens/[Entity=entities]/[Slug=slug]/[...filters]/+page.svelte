@@ -430,7 +430,7 @@
 </div>
 
 <div>
-	<table class="table table-hover caption-top table-bordered">
+	<table class="table amounts table-hover caption-top table-bordered">
   <caption>
     <form class="row row-cols-lg-auto g-3 align-items-center">
       <div class="col-12">
@@ -526,15 +526,17 @@
 		{/each}
 		</tbody>
 		<tfoot>
-			<td></td>
-			<td></td>
-			<td></td>
-			{#each data.bronnen as bron, ix}
-				<th class="text-end"><Currency classes="text-white p-1 bg-primary" ammount={normalize(getDatasetTotals(ix, bron.dataset)?.Baten, bron)} /></th>
-			{/each}
-			{#each data.bronnen as bron, ix}
-				<th class="text-end"><Currency classes="text-white p-1 bg-info" ammount={normalize(getDatasetTotals(ix, bron.dataset)?.Lasten, bron)} /></th>
-			{/each}
+			<tr>
+				<td></td>
+				<td></td>
+				<td></td>
+				{#each data.bronnen as bron, ix}
+					<th class="text-end"><Currency classes="text-white p-1 bg-primary" ammount={normalize(getDatasetTotals(ix, bron.dataset)?.Baten, bron)} /></th>
+				{/each}
+				{#each data.bronnen as bron, ix}
+					<th class="text-end"><Currency classes="text-white p-1 bg-info" ammount={normalize(getDatasetTotals(ix, bron.dataset)?.Lasten, bron)} /></th>
+				{/each}
+			</tr>
 		</tfoot>
 	</table>
 </div>
