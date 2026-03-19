@@ -498,14 +498,14 @@
 				{#each data.bronnen as bron}
 				<td class="text-center">
           {#if bron.dataset.hasDetaildata}
-          <a href="/gegevens/{bron.Type}/details/{bron.Slug}/{bron.dataset.Identifier}"><FileEarmarkSpreadsheet/> details</a>
+          <a href="/gegevens/{bron.Type}/details/{bron.Slug}/{bron.dataset.Period}"><FileEarmarkSpreadsheet/> details</a>
           {/if}
         </td>
 				{/each}
 				{#each data.bronnen as bron}
 				<td class="text-center">
           {#if bron.dataset.hasDetaildata}
-          <a href="/gegevens/{bron.Type}/details/{bron.Slug}/{bron.dataset.Identifier}"><FileEarmarkSpreadsheet/> details</a>
+          <a href="/gegevens/{bron.Type}/details/{bron.Slug}/{bron.dataset.Period}"><FileEarmarkSpreadsheet/> details</a>
           {/if}
         </td>
 				{/each}

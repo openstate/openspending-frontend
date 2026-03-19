@@ -28,7 +28,7 @@
     } else {
       data.sortering = undefined
     }
-    goto(`/gegevens/${data.params.Entity}/details/${data.params.Slug}/${data.params.dataset}/${data.params.verslagsoort}/${data.params.type}/categorie=${data.filters.categorie.join(',')}/grootboek=${data.filters.grootboek.join(',')}/kostenplaats=${data.filters.kostenplaats.join(',')}${getSortering()}`)
+    goto(`/gegevens/${data.params.Entity}/details/${data.params.Slug}/${data.params.Period}/${data.params.verslagsoort}/${data.params.type}/categorie=${data.filters.categorie.join(',')}/grootboek=${data.filters.grootboek.join(',')}/kostenplaats=${data.filters.kostenplaats.join(',')}${getSortering()}`)
   }
 
   const toggleRow = (ev: Event) => {
@@ -50,7 +50,7 @@
       data.filters[key as keyof typeof data.filters] = filter
         .filter(v => v.trim()!=='')
         .sort((a, b) => a > b ? 1 : -1)
-      goto(`/gegevens/${data.params.Entity}/details/${data.params.Slug}/${data.params.dataset}/${data.params.verslagsoort}/${data.params.type}/categorie=${data.filters.categorie.join(',')}/grootboek=${data.filters.grootboek.join(',')}/kostenplaats=${data.filters.kostenplaats.join(',')}${getSortering()}/#${row.id}`, opts)
+      goto(`/gegevens/${data.params.Entity}/details/${data.params.Slug}/${data.params.Period}/${data.params.verslagsoort}/${data.params.type}/categorie=${data.filters.categorie.join(',')}/grootboek=${data.filters.grootboek.join(',')}/kostenplaats=${data.filters.kostenplaats.join(',')}${getSortering()}/#${row.id}`, opts)
     }
   }
 
@@ -58,15 +58,6 @@
     if (data.sortering !== undefined)
       return `/sorteer/${data.sortering.BL}/${data.sortering.volgorde}`
     else return ''
-  }
-
-  const verslagsoortMod = (raw: string) => {
-    if (raw.endsWith('0')) return 'begroting'
-    if (raw.endsWith('1')) return 'Q1'
-    if (raw.endsWith('2')) return 'Q2'
-    if (raw.endsWith('3')) return 'Q3'
-    if (raw.endsWith('4')) return 'Q4'
-    if (raw.endsWith('5')) return 'realisatie'
   }
 
   afterUpdate(() => {
@@ -148,8 +139,8 @@
     			{ucfirst(data.params.type)}
 			  </a>
 				<ul class="dropdown-menu">
-					<li><a class="dropdown-item" href="/gegevens/{data.params.Entity}/details/{data.params.Slug}/{data.params.dataset}/{data.params.verslagsoort}/grootboek/categorie/*">Grootboek</a></li>
-					<li><a class="dropdown-item" href="/gegevens/{data.params.Entity}/details/{data.params.Slug}/{data.params.dataset}/{data.params.verslagsoort}/kostenplaats/categorie/*">Kostenplaats</a></li>
+					<li><a class="dropdown-item" href="/gegevens/{data.params.Entity}/details/{data.params.Slug}/{data.params.Period}/{data.params.verslagsoort}/grootboek/categorie/*">Grootboek</a></li>
+					<li><a class="dropdown-item" href="/gegevens/{data.params.Entity}/details/{data.params.Slug}/{data.params.Period}/{data.params.verslagsoort}/kostenplaats/categorie/*">Kostenplaats</a></li>
 				</ul>
 			</span>
 		</li>
@@ -158,11 +149,11 @@
 		<li class="breadcrumb-item" aria-current="page">
 			<span class="dropdown">
 			  <a href="{'#'}" class="dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-    			{data.dataset.Period}
+    			{data.params.Period}
 			  </a>
 				<ul class="dropdown-menu">
           {#each data.periodes as periode}
-  					<li><a class="dropdown-item" href="/gegevens/{data.params.Entity}/details/{data.params.Slug}/{periode.Identifier}/{data.params.verslagsoort}/{data.params.type}/categorie/*">{periode.Period}</a></li>
+  					<li><a class="dropdown-item" href="/gegevens/{data.params.Entity}/details/{data.params.Slug}/{periode}/{data.params.verslagsoort}/{data.params.type}/categorie/*">{periode}</a></li>
           {/each}
 				</ul>
 			</span>
@@ -172,11 +163,11 @@
 		<li class="breadcrumb-item" aria-current="page">
 			<span class="dropdown">
 			  <a href="{'#'}" class="dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-    			{verslagsoortMod(data.params.verslagsoort)}
+    			{data.params.verslagsoort}
 			  </a>
 				<ul class="dropdown-menu">
           {#each data.verslagsoorten as verslagsoort}
-  					<li><a class="dropdown-item" href="/gegevens/{data.params.Entity}/details/{data.params.Slug}/{data.params.dataset}/{verslagsoort}/{data.params.type}/categorie/*">{verslagsoortMod(verslagsoort)}</a></li>
+  					<li><a class="dropdown-item" href="/gegevens/{data.params.Entity}/details/{data.params.Slug}/{data.params.Period}/{verslagsoort}/{data.params.type}/categorie/*">{verslagsoort}</a></li>
           {/each}
 				</ul>
 			</span>
@@ -187,7 +178,7 @@
 
 <h1>Detaildata {data.bron.Title}</h1>
 <div class="mb-5">
-  <h2 class="fs-6"><em>bron: Gemeenten {data.dataset.Period}</em></h2>
+  <h2 class="fs-6"><em>bron: Gemeenten {data.params.Period}</em></h2>
   <p><small><a href="/gegevens/detaildata">klik hier om meer organisaties met detaildata te bekijken &hellip;</a></small></p>
 </div>
 
@@ -295,10 +286,10 @@
       </tr>
       <tr>
         <td>{data.bron.Title}</td>
-        <td>{data.dataset.Period}</td>
+        <td>{data.params.Period}</td>
         <td>
-          <a target="_blank" href="/spreadsheet/{data.bron.Type}/{data.dataset.Period}/details/{data.bron.Slug}">Spreadsheet</a> <InfoCircleFill data-bs-toggle="tooltip" data-bs-title="Download deze gegevens als Spreadsheet."/>
-          <a target="_blank" href="/fiscaldatapackage/{data.bron.Type}/{data.dataset.Period}/details/{data.bron.Slug}"> Fiscal Data Package</a> <InfoCircleFill data-bs-toggle="tooltip" data-bs-title="Het Fiscal Data Package is een lichtgewicht en gebruikersgericht formaat voor het publiceren en gebruiken van fiscale gegevens, zie fiscal.datapackage.org."/>
+          <a target="_blank" href="/spreadsheet/{data.bron.Type}/{data.params.Period}/details/{data.bron.Slug}">Spreadsheet</a> <InfoCircleFill data-bs-toggle="tooltip" data-bs-title="Download deze gegevens als Spreadsheet."/>
+          <a target="_blank" href="/fiscaldatapackage/{data.bron.Type}/{data.params.Period}/details/{data.bron.Slug}"> Fiscal Data Package</a> <InfoCircleFill data-bs-toggle="tooltip" data-bs-title="Het Fiscal Data Package is een lichtgewicht en gebruikersgericht formaat voor het publiceren en gebruiken van fiscale gegevens, zie fiscal.datapackage.org."/>
         </td>
       </tr>
     </thead>
@@ -306,5 +297,5 @@
   </div>
 </div>
 {/if}
-<p class="mt-5"><a download href="/gegevens/{data.bron.Type}/details/{data.bron.Slug}/{data.dataset.Identifier}/{data.params.verslagsoort}/details">
+<p class="mt-5"><a download href="/gegevens/{data.bron.Type}/details/{data.bron.Slug}/{data.dataset.Period}/{data.params.verslagsoort}/details">
   <button class="btn btn-primary"><Download/> download brondata</button></a></p>

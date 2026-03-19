@@ -58,10 +58,11 @@ describe ('detaildata data',  () => {
   }
 
   describe ('published detaildata gemeente level 1',  () => {
-    let level1Path = `${TEST_DOMAIN}/gegevens/Gemeenten/details/de-wolden/45067NED`
+    // Note that this will redirect to add `Q2` as period
+    let level1Path = `${TEST_DOMAIN}/gegevens/Gemeenten/details/de-wolden/2024`
 
     const testDataLevel1Present = async (present: boolean) => {
-      await testDataPresent(present, "Verkeer, vervoer en waterstaat", "4.76", "148.991")
+      await testDataPresent(present, "Verkeer, vervoer en waterstaat", "127.089", "528.859")
     }
 
     it('shows data to admin user', async () => {
@@ -86,7 +87,7 @@ describe ('detaildata data',  () => {
   })
 
   describe ('unpublished detaildata gemeente level 1',  () => {
-    let level1Path = `${TEST_DOMAIN}/gegevens/Gemeenten/details/krimpenerwaard/45067NED`
+    let level1Path = `${TEST_DOMAIN}/gegevens/Gemeenten/details/krimpenerwaard/2024`
 
     const testDataLevel1Present = async (present: boolean) => {
       await testDataPresent(present, "Verkeer, vervoer en waterstaat", "1.170.715", "1.928.660")
@@ -115,7 +116,7 @@ describe ('detaildata data',  () => {
   })
 
   describe ('published detaildata gemeente level 2',  () => {
-    let level2Path = `${TEST_DOMAIN}/gegevens/Gemeenten/details/de-wolden/45067NED/2024X001/kostenplaats/categorie=3/grootboek=/kostenplaats=#C3`
+    let level2Path = `${TEST_DOMAIN}/gegevens/Gemeenten/details/de-wolden/2024/Q1/kostenplaats/categorie=3/grootboek=/kostenplaats=#C3`
 
     const testDataLevel2Present = async (present: boolean) => {
       await testDataPresent(present, "Onderhouden wegen", "2.035", "14.204")
@@ -143,7 +144,7 @@ describe ('detaildata data',  () => {
   })
 
   describe ('unpublished detaildata gemeente level 2',  () => {
-    let level2Path = `${TEST_DOMAIN}/gegevens/Gemeenten/details/krimpenerwaard/45067NED/2024X001/kostenplaats/categorie=3/grootboek=/kostenplaats=#C3`
+    let level2Path = `${TEST_DOMAIN}/gegevens/Gemeenten/details/krimpenerwaard/2024/Q1/kostenplaats/categorie=3/grootboek=/kostenplaats=#C3`
 
     const testDataLevel2Present = async (present: boolean) => {
       await testDataPresent(present, "wegen, straten, pleinen groot onderhoud", "1.153.068", "1.289.938")
@@ -171,7 +172,7 @@ describe ('detaildata data',  () => {
   })
 
   describe ('published detaildata gemeente level 3',  () => {
-    let level3Path = `${TEST_DOMAIN}/gegevens/Gemeenten/details/de-wolden/45067NED/2024X001/kostenplaats/categorie=3/grootboek=/kostenplaats=3|4021000000#C3K4021000000`
+    let level3Path = `${TEST_DOMAIN}/gegevens/Gemeenten/details/de-wolden/2024/Q1/kostenplaats/categorie=3/grootboek=/kostenplaats=3|4021000000#C3K4021000000`
 
     const testDataLevel3Present = async (present: boolean) => {
       await testDataPresent(present, "Electriciteitsverbruik", "-", "618")
@@ -199,7 +200,7 @@ describe ('detaildata data',  () => {
   })
 
   describe ('unpublished detaildata gemeente level 3',  () => {
-    let level3Path = `${TEST_DOMAIN}/gegevens/Gemeenten/details/krimpenerwaard/45067NED/2024X001/kostenplaats/categorie=3/grootboek=/kostenplaats=3|621010#C3K621010`
+    let level3Path = `${TEST_DOMAIN}/gegevens/Gemeenten/details/krimpenerwaard/2024/Q1/kostenplaats/categorie=3/grootboek=/kostenplaats=3|621010#C3K621010`
 
     const testDataLevel3Present = async (present: boolean) => {
       await testDataPresent(present, "leges ondergrondse infrastructuur", "27.298", "-")
@@ -228,7 +229,7 @@ describe ('detaildata data',  () => {
 })
 
 describe ('totalen van gegevens', () => {
-  const path = `${TEST_DOMAIN}/gegevens/Gemeenten/details/de-wolden/45067NED/2024X001/kostenplaats/categorie/*`
+  const path = `${TEST_DOMAIN}/gegevens/Gemeenten/details/de-wolden/2024/Q1/kostenplaats/categorie/*`
   let root: Document = new Document()
 
   it('has the correct total for Baten', async () => {

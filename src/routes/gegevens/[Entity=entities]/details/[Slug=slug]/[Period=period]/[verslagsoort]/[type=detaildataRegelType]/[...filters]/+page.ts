@@ -21,23 +21,25 @@ export async function load({ params, data}) {
       entity = params.Entity
       break
   }
+  const period = Number(params.Period)
   const bron = await apiGet(`/bronnen/${entity}/${params.Slug}`, session.Token)
     .then(res => {
       if (!res.ok) throw error(404)
       return res.json()
     })
     .then(bron => bron as BronDetail)
-  const dataset = bron.datasets.filter(dataset => dataset.Identifier === params.dataset).shift()!
-  const verslagsoorten = (await apiGet(`/detaildata/${entity}/${bron.Key}/${dataset.Identifier}/verslagsoorten`, session.Token)
+  const periodes = bron.datasets.map(dataset => dataset.Period)
+
+  const dataset = bron.datasets.filter(dataset => dataset.Period === period).shift()!
+  const verslagsoorten = (await apiGet(`/detaildata/${entity}/${bron.Slug}/${params.Period}/verslagsoorten`, session.Token)
     .then(res => {
       if (!res.ok) throw error(res.status)
       return res.json()
     })) as string[]
-
   if (params.verslagsoort === 'onbekend' || !verslagsoorten.includes(params.verslagsoort)) {
-    redirect(302, `/gegevens/${entity}/details/${bron.Slug}/${dataset.Identifier}/${verslagsoorten[0]}/kostenplaats/categorie/*`)
+    redirect(302, `/gegevens/${entity}/details/${bron.Slug}/${params.Period}/${verslagsoorten[0]}/kostenplaats/categorie/*`)
   }
-  const rows: DataRow[] = (await apiGet(`/detaildata/${entity}/${bron.Key}/${dataset.Identifier}/${params.verslagsoort}/per/categorie`, session.Token)
+  const rows: DataRow[] = (await apiGet(`/detaildata/${entity}/${bron.Slug}/${params.Period}/${params.verslagsoort}/per/categorie`, session.Token)
     .then(res => {
       if (!res.ok) throw error(404)
       return res.json()
@@ -73,7 +75,7 @@ export async function load({ params, data}) {
 
   }
   if ((params.type === 'grootboek' || params.type === 'kostenplaats') && filters.categorie.length > 0) {
-    const url = `/detaildata/${entity}/${bron.Key}/${dataset.Identifier}/${params.verslagsoort}/per/categorie/${filters.categorie.join(',')}/${params.type}`
+    const url = `/detaildata/${entity}/${bron.Slug}/${params.Period}/${params.verslagsoort}/per/categorie/${filters.categorie.join(',')}/${params.type}`
     await apiGet(url, session.Token)
       .then(async res => {
         if (!res.ok) return []
@@ -108,7 +110,7 @@ export async function load({ params, data}) {
       }
       for (const key of Object.keys(idsPerCategory)) {
         const $key = parseInt(key) as keyof typeof idsPerCategory
-        const url = `/detaildata/${entity}/${bron.Key}/${dataset.Identifier}/${params.verslagsoort}/per/categorie/${key}/${params.type}/${idsPerCategory[$key].join(',')}/${params.type === 'grootboek' ? 'kostenplaats' : 'grootboek'}`
+        const url = `/detaildata/${entity}/${bron.Slug}/${params.Period}/${params.verslagsoort}/per/categorie/${key}/${params.type}/${idsPerCategory[$key].join(',')}/${params.type === 'grootboek' ? 'kostenplaats' : 'grootboek'}`
         await apiGet(url, session.Token)
           .then(async res => {
             if (!res.ok) return
@@ -140,11 +142,6 @@ export async function load({ params, data}) {
     }
 
   }
-
-  const periodes = await apiGet(`/detaildata/${entity}/${bron.Key}`, session.Token)
-    .then(res => res.json() )
-    .then(res => (res as Array<{Period: number, Identifier: string}>).sort((a, b) => a.Period>b.Period ? -1 : 1)
-      .map(row => {return {Period: row.Period, Identifier: row.Identifier}}))
 
   return { sortering, bron, dataset, params, rows, filters, grootboeken, periodes, verslagsoorten }
 }

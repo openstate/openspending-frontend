@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { page } from '$app/stores';
   export let data
   
 </script>
@@ -37,7 +36,7 @@
         <tr>
           <!-- <td><a href="/gegevens/${bron.SourceType}/{bron.Slug}">{bron.Source}</a></td> -->
           <td>{bron.Source}</td>
-          <td>{@html bron.Jaren.map((jaar, index) => { return `<a href="/gegevens/${bron.SourceType}/details/${bron.Slug}/${bron.Workspaces[index]}">${jaar}</a>`}).join(', ')}</td>
+          <td>{@html bron.Jaren.map((jaar) => { return `<a href="/gegevens/${bron.SourceType}/details/${bron.Slug}/${jaar}">${jaar}</a>`}).join(', ')}</td>
         </tr>
         {/each}
       </tbody>
