@@ -39,7 +39,7 @@ export async function load({ params, data}) {
   if (params.verslagsoort === 'onbekend' || !verslagsoorten.includes(params.verslagsoort)) {
     redirect(302, `/gegevens/${entity}/details/${bron.Slug}/${params.Period}/${verslagsoorten[0]}/kostenplaats/categorie/*`)
   }
-  const rows: DataRow[] = (await apiGet(`/detaildata/${entity}/${bron.Slug}/${params.Period}/${params.verslagsoort}/per/categorie`, session.Token)
+  const rows: DataRow[] = (await apiPythonGet(`/detaildata/${entity}/${bron.Slug}/${params.Period}/${params.verslagsoort}/per/categorie`, session.Token)
     .then(res => {
       if (!res.ok) throw error(404)
       return res.json()
