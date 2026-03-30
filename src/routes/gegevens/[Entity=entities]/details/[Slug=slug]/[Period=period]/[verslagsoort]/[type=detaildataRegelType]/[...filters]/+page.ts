@@ -1,6 +1,6 @@
 import { error, redirect } from '@sveltejs/kit';
 import type { SourceType, BronDetail } from '../../../../../../../../../Types';
-import { apiGet } from '../../../../../../../../../utils';
+import { apiGet, apiPythonGet } from '../../../../../../../../../utils';
 
 export type DataRow = {
   Code: string | number,
@@ -31,7 +31,7 @@ export async function load({ params, data}) {
   const periodes = bron.datasets.map(dataset => dataset.Period)
 
   const dataset = bron.datasets.filter(dataset => dataset.Period === period).shift()!
-  const verslagsoorten = (await apiGet(`/detaildata/${entity}/${bron.Slug}/${params.Period}/verslagsoorten`, session.Token)
+  const verslagsoorten = (await apiPythonGet(`/detaildata/${entity}/${bron.Slug}/${params.Period}/verslagsoorten`, session.Token)
     .then(res => {
       if (!res.ok) throw error(res.status)
       return res.json()
