@@ -1,5 +1,5 @@
 import type { SourceType } from '../../../Types'
-import { apiGet } from '../../../utils'
+import { apiPythonGet } from '../../../utils'
 
 type Bron = {
   Type: SourceType
@@ -12,7 +12,7 @@ type Bron = {
 
 export async function load({ data }) {
   const session = data.session
-  const bronnen: Bron[] = await apiGet(`/detaildata/overzicht/niet-gepubliceerd`, session.Token)
+  const bronnen: Bron[] = await apiPythonGet(`/detaildata/overzicht/niet-gepubliceerd`, session.Token)
     .then(res => res.json())
   return { bronnen }
 }
