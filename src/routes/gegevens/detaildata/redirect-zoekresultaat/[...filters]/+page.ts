@@ -1,5 +1,5 @@
 import { redirect } from '@sveltejs/kit'
-import { apiGet } from '../../../../../utils'
+import { apiPythonGet } from '../../../../../utils'
 
 type Resultaat = {
   Title: string
@@ -19,7 +19,7 @@ export async function load({ params, data }) {
   try {
     const resultaat = JSON.parse(params.filters.replace(/^resultaat\//, '')) as Resultaat
     const url = `/detaildata/redirect-zoekresultaat/Gemeenten/${resultaat.Slug}/${resultaat.Period}/${resultaat.TitleType}/${resultaat.Code}`
-    const path = await apiGet(url, session.Token)
+    const path = await apiPythonGet(url, session.Token)
       .then(async res => {
         if (!res.ok) redirect(302, '/')
         else {
