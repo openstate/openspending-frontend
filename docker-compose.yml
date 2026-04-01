@@ -15,6 +15,7 @@ services:
       - ORIGIN=${CORS_ORIGIN}
 networks:
   openspending:
+    external: true
     name: openspending
   # On a local machine, create this network befor running the container
     # docker network create -d bridge  docker_nginx-load-balancer
