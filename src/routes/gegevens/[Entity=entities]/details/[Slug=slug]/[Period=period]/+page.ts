@@ -1,6 +1,6 @@
 import { error, redirect } from '@sveltejs/kit'
 import type { BronDetail } from '../../../../../../Types'
-import { apiGet } from '../../../../../../utils'
+import { apiGet, apiPythonGet } from '../../../../../../utils'
 
 export async function load({ params, data}) {
   const session = data.session
@@ -11,7 +11,7 @@ export async function load({ params, data}) {
     })
     .then(bron => bron as BronDetail)
 
-  const verslagsoorten = await apiGet(`/detaildata/${params.Entity}/${bron.Slug}/${params.Period}/verslagsoorten`, session.Token)
+  const verslagsoorten = await apiPythonGet(`/detaildata/${params.Entity}/${bron.Slug}/${params.Period}/verslagsoorten`, session.Token)
     .then(res => {
       if (!res.ok) throw error(res.status)
       return res.json()

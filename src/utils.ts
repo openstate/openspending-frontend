@@ -1,6 +1,6 @@
 import type { RequestEvent } from "@sveltejs/kit";
 import { get } from 'svelte/store';
-import { api } from './stores';
+import { api, apiPython } from './stores';
 import type { FormQuestionType, SubmitFormResultType } from "./Types";
 
 export function sessionFromEvent(event: RequestEvent) {
@@ -18,6 +18,15 @@ export async function apiGet(path: string, token: string) {
   const options = { headers: headers }
 
   return await fetch(get(api) + path, options)
+}
+
+export async function apiPythonGet(path: string, token: string) {
+  const headers: Record<string, string> = {
+    'authorization': token
+  }
+  const options = { headers: headers }
+
+  return await fetch(get(apiPython) + path, options)
 }
 
 export async function apiPost(path: string, token: string | undefined, options: Record<string, any> = {}) {

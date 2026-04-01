@@ -5,3 +5,9 @@ export const api = readable('', function start(set) {
 	return function stop() {
 	};
 });
+
+export const apiPython = readable('', function start(set) {
+  set(import.meta.env.VITE_DATA2_API ?? 'http://localhost:5000')
+	return function stop() {
+	};
+});

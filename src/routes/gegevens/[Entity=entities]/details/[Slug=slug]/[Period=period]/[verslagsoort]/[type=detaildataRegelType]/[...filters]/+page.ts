@@ -1,6 +1,6 @@
 import { error, redirect } from '@sveltejs/kit';
 import type { SourceType, BronDetail } from '../../../../../../../../../Types';
-import { apiGet } from '../../../../../../../../../utils';
+import { apiGet, apiPythonGet } from '../../../../../../../../../utils';
 
 export type DataRow = {
   Code: string | number,
@@ -31,7 +31,7 @@ export async function load({ params, data}) {
   const periodes = bron.datasets.map(dataset => dataset.Period)
 
   const dataset = bron.datasets.filter(dataset => dataset.Period === period).shift()!
-  const verslagsoorten = (await apiGet(`/detaildata/${entity}/${bron.Slug}/${params.Period}/verslagsoorten`, session.Token)
+  const verslagsoorten = (await apiPythonGet(`/detaildata/${entity}/${bron.Slug}/${params.Period}/verslagsoorten`, session.Token)
     .then(res => {
       if (!res.ok) throw error(res.status)
       return res.json()
@@ -39,7 +39,7 @@ export async function load({ params, data}) {
   if (params.verslagsoort === 'onbekend' || !verslagsoorten.includes(params.verslagsoort)) {
     redirect(302, `/gegevens/${entity}/details/${bron.Slug}/${params.Period}/${verslagsoorten[0]}/kostenplaats/categorie/*`)
   }
-  const rows: DataRow[] = (await apiGet(`/detaildata/${entity}/${bron.Slug}/${params.Period}/${params.verslagsoort}/per/categorie`, session.Token)
+  const rows: DataRow[] = (await apiPythonGet(`/detaildata/${entity}/${bron.Slug}/${params.Period}/${params.verslagsoort}/per/categorie`, session.Token)
     .then(res => {
       if (!res.ok) throw error(404)
       return res.json()
@@ -76,7 +76,7 @@ export async function load({ params, data}) {
   }
   if ((params.type === 'grootboek' || params.type === 'kostenplaats') && filters.categorie.length > 0) {
     const url = `/detaildata/${entity}/${bron.Slug}/${params.Period}/${params.verslagsoort}/per/categorie/${filters.categorie.join(',')}/${params.type}`
-    await apiGet(url, session.Token)
+    await apiPythonGet(url, session.Token)
       .then(async res => {
         if (!res.ok) return []
         return await res.json()
@@ -111,7 +111,7 @@ export async function load({ params, data}) {
       for (const key of Object.keys(idsPerCategory)) {
         const $key = parseInt(key) as keyof typeof idsPerCategory
         const url = `/detaildata/${entity}/${bron.Slug}/${params.Period}/${params.verslagsoort}/per/categorie/${key}/${params.type}/${idsPerCategory[$key].join(',')}/${params.type === 'grootboek' ? 'kostenplaats' : 'grootboek'}`
-        await apiGet(url, session.Token)
+        await apiPythonGet(url, session.Token)
           .then(async res => {
             if (!res.ok) return
             let subSubrows: DataRow[] = await res.json()
