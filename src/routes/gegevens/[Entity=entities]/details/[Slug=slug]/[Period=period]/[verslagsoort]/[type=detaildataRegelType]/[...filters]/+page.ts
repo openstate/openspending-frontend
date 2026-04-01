@@ -28,7 +28,7 @@ export async function load({ params, data}) {
       return res.json()
     })
     .then(bron => bron as BronDetail)
-  const periodes = bron.datasets.map(dataset => dataset.Period)
+  const periodes = bron.datasets.filter(dataset => dataset.hasDetaildata).map(dataset => dataset.Period)
 
   const dataset = bron.datasets.filter(dataset => dataset.Period === period).shift()!
   const verslagsoorten = (await apiPythonGet(`/detaildata/${entity}/${bron.Slug}/${params.Period}/verslagsoorten`, session.Token)
