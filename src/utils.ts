@@ -1,7 +1,7 @@
 import type { RequestEvent } from "@sveltejs/kit";
 import { get } from 'svelte/store';
 import { api, apiPython } from './stores';
-import type { FormQuestionType, SubmitFormResultType } from "./Types";
+import type { Response, SubmitFormResultType } from "./Types";
 
 export function sessionFromEvent(event: RequestEvent) {
   return event.locals.session.data;
@@ -53,7 +53,11 @@ export async function apiDelete(path: string, token: string) {
   return await fetch(get(api) + path, options)
 }
 
-export async function submitForm(url: string, event: Event, questions: FormQuestionType[], capToken: string): Promise<SubmitFormResultType> {
+export function createResponse(number: number): Response {
+  return {number: number, answer: undefined, valid: false, validate: undefined, clear: undefined}
+}
+
+export async function submitForm(url: string, event: Event, questions: Response[], capToken: string): Promise<SubmitFormResultType> {
   event.stopPropagation()
   event.preventDefault()
 
@@ -65,8 +69,8 @@ export async function submitForm(url: string, event: Event, questions: FormQuest
     return {valid: false, success: true}
   }
 
-  let answers = questions.map((q, index) => ({
-    'QuestionNumber': index + 1,
+  let answers = questions.map((q) => ({
+    'QuestionNumber': q.number,
     'Answer': q.answer
   }))
   let body = {

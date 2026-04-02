@@ -1,10 +1,10 @@
 <script lang="ts">
   import { onMount } from 'svelte';
-  import SelectWithOther from '$lib/form_components/SelectWithOther.svelte'
+  import SelectWithSubOptions from '$lib/form_components/SelectWithSubOptions.svelte'
   import OpenQuestion from '$lib/form_components/OpenQuestion.svelte';
-  import { submitForm } from '../../utils';
+  import { createResponse, submitForm } from '../../utils';
   import CapWidget from '$lib/form_components/CapWidget.svelte';
-	import type { FormQuestionType } from '../../Types';
+	import TextInput from '$lib/form_components/TextInput.svelte';
 
   export let capjs_site_key: string
 
@@ -12,10 +12,18 @@
   let capToken: string
   let errorMessage: string | undefined
   let successMessage: string | undefined
-  let questions: FormQuestionType[] = [
-    {number: 1, answer: undefined, valid: false, validate: undefined, clear: undefined},
-    {number: 2, answer: undefined, valid: false, validate: undefined, clear: undefined},
-    {number: 3, answer: undefined, valid: false, validate: undefined, clear: undefined}
+
+  let usageResponse = createResponse(1)
+  let resultResponse = createResponse(2)
+  let remarksResponse = createResponse(3)
+  let nameResponse = createResponse(4)
+  let emailResponse = createResponse(5)
+  let questions = [
+    usageResponse,
+    resultResponse,
+    remarksResponse,
+    nameResponse,
+    emailResponse
   ]
 
   const handleClick = async (event) => {
@@ -58,37 +66,73 @@
   <div class='alert alert-success'>{successMessage}</div>
   {/if}
   {#if !successMessage}
-    <SelectWithOther
+    <SelectWithSubOptions
       question="Ik gebruik OpenSpending als"
       questionRequired={true}
       items={["Burger", "Journalist", "Ambtenaar", "Wetenschapper", "Anders"]}
-      bind:selected={questions[0].answer}
-      bind:valid={questions[0].valid}
-      bind:validate={questions[0].validate}
-      bind:clear={questions[0].clear}
-      otherOption="Anders"
-      other_placeholder="Graag invullen..."
+      subItemsTitle = "Werkzaam bij:"
+      subItems = {{
+        Ambtenaar: ["Gemeente", "Provincie", "Waterschap", "Gemeenschappelijke regeling", "Rijksoverheid", "Anders"]
+      }}
+      subTextinputs = {{
+        Anders: "Graag invullen..."
+      }}
+      bind:selected={usageResponse.answer}
+      bind:valid={usageResponse.valid}
+      bind:validate={usageResponse.validate}
+      bind:clear={usageResponse.clear}
+    />
+    <SelectWithSubOptions
+      question="Heeft u gevonden wat u zocht?"
+      questionRequired={true}
+      items={["Ja", "Nee", "n.v.t."]}
+      subTextinputs = {{
+        Ja: "Hoe heeft u het kunnen gebruiken?",
+        Nee: "Geef een beschrijving wat u zocht"
+      }}
+      bind:selected={resultResponse.answer}
+      bind:valid={resultResponse.valid}
+      bind:validate={resultResponse.validate}
+      bind:clear={resultResponse.clear}
     />
     <OpenQuestion
-      question="Heeft u suggesties of opmerkingen?"
-      bind:answer={questions[1].answer}
-      bind:valid={questions[1].valid}
-      bind:validate={questions[1].validate}
-      bind:clear={questions[1].clear}
+      question="Heeft u verdere suggesties of opmerkingen?"
+      bind:answer={remarksResponse.answer}
+      bind:valid={remarksResponse.valid}
+      bind:validate={remarksResponse.validate}
+      bind:clear={remarksResponse.clear}
       placeholder="Optioneel"
       numberOfLines={5}
     />
-    <OpenQuestion
-      question="Ik denk graag mee over bestaande en nieuwe functionaliteit van OpenSpending.
-      Door mijn e-mailadres op te geven geef ik toestemming aan OpenState om mij hierover te benaderen."
-      bind:answer={questions[2].answer}
-      bind:valid={questions[2].valid}
-      bind:validate={questions[2].validate}
-      bind:clear={questions[2].clear}
-      placeholder="Mijn e-mailadres (optioneel)"
-    />
+    <div class="form-component">
+      <p class="fw-bold">
+        Ik denk graag mee over bestaande en nieuwe functionaliteit van OpenSpending.
+        Door mijn naam en e-mailadres op te geven geef ik toestemming aan OpenState om mij hierover te benaderen.
+      </p>
+      <div class="d-flex">
+        <TextInput
+          id="naam"
+          question="Mijn naam"
+          placeholder="Optioneel"
+          css="me-4"
+          bind:answer={nameResponse.answer}
+          bind:valid={nameResponse.valid}
+          bind:validate={nameResponse.validate}
+          bind:clear={nameResponse.clear}
+        />
+        <TextInput
+          id="email_address"
+          question="Mijn e-mailadres"
+          placeholder="Optioneel"
+          bind:answer={emailResponse.answer}
+          bind:valid={emailResponse.valid}
+          bind:validate={emailResponse.validate}
+          bind:clear={emailResponse.clear}
+        />
+      </div>
+    </div>
     <p class="mb-3"><small><span class="required">*</span> Verplicht veld</small></p>
     <CapWidget bind:token={capToken} {capjs_site_key} />
-    <button type="submit" class="btn btn-primary"  disabled={!capToken}>Verstuur</button>
+    <button type="submit" class="btn btn-primary" disabled={!capToken}>Verstuur</button>
   {/if}
 </form>

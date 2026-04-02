@@ -24,7 +24,7 @@
 </script>
 
 <div class="form-component {validClass}">
-  <p>{question}</p>
+  <p class="fw-bold">{question}</p>
   {#if numberOfLines == 1}
     <input
       name="openquestion"

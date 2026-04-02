@@ -5,7 +5,7 @@
 </script>
 {#if session.Role == 'admin'}
 <div class="float-end d-flex flex-column">
-	<p>Help je ons de site te verbeteren?</p>
+	<p>Help ons de site te verbeteren</p>
 	<a href="/polls/feedback_2026" class="btn btn-primary btn-lg">Doe de poll!<br>duur: 3m</a>
 </div>
 {/if}

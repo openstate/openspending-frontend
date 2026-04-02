@@ -129,7 +129,7 @@ export type User = {
 	Sources: Bron[]
 }
 
-export type FormQuestionType = {
+export type Response = {
 	number: number,
 	answer: string | undefined,
 	valid: boolean,
