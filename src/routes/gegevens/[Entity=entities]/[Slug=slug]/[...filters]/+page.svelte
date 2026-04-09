@@ -9,7 +9,7 @@
 
   import { page } from '$app/stores';
   $: session = $page.data.session
-	import { apiGet } from '../../../../../utils.js';
+	import { apiGet, apiPythonGet } from '../../../../../utils.js';
 
   export let data;
 
@@ -20,6 +20,7 @@
 	$: Bron = data.bronnen[0]
 	let loader: bootstrap.Modal;
   let detailgrafiekContainer: bootstrap.Modal
+	let suggestiesContainer: bootstrap.Modal
 	const go = async (showLoader: boolean = true, updateCharts: boolean = true) => {
 		const url = slugs().length === 0 ? `/gegevens/${data.params.Entity}` : `/gegevens/${data.params.Entity}/per/${data.groepering}/${slugsUrl()}${data.open.length === 0 ? '' : `/open/${data.open.join('|')}`}`
 		const opts = {keepFocus: true, noScroll: true}
@@ -123,6 +124,30 @@
 	}
 
   const isThereAnyDetaildataAvaliable = () =>  Object.values(data.datasetsWithDetaildata).filter(o => o.length>0).length > 0
+
+	const showSuggesties = async (event: Event) => {
+		const url = `/bronnen/${Bron.Type}/${Bron.Slug}/suggesties`
+		await apiPythonGet(url, session.Token)
+			.then(async r => {
+				console.info("hier32")
+				console.info(r)
+				const results = await r.json()
+				console.info("hier33")
+				console.info(results)
+				const aantalGemeenten = results['CBS_ID'].length
+				console.info(aantalGemeenten)
+
+				let tableBody = document.getElementById('suggestiesTableBody')
+				for (let i=1; i<aantalGemeenten; i++) {
+					const tr = tableBody?.appendChild(document.createElement('tr'))
+					let td = tr?.appendChild(document.createElement('td'))
+					td?.appendChild(document.createTextNode(results['Gemeente'][i]))
+					td = tr?.appendChild(document.createElement('td'))
+					td?.appendChild(document.createTextNode(results['SimilariteitScore'][i]))
+				}
+				suggestiesContainer.show()
+			})
+	}
 
 	const setPeriode = async (ix: number, periode: string) => {
     const item = data.requested[ix]
@@ -247,6 +272,7 @@
     [...document.querySelectorAll('[data-bs-toggle="tooltip"]')].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
 		loader = new bootstrap.Modal(document.getElementById('loading')!)
     detailgrafiekContainer = new bootstrap.Modal(document.getElementById('detailgrafiekContainer')!)
+    suggestiesContainer = new bootstrap.Modal(document.getElementById('suggestiesContainer')!)
     const onSelectItem = async (arg: {label: string, value: string, field: any}) => {
       let [_, Slug] = (arg.value as string).split('|')
 			arg.field.value = ''
@@ -313,6 +339,28 @@
         <div style="width: 100%;">
           <canvas id="detailgrafiek_baten"></canvas>
           <canvas id="detailgrafiek_lasten"></canvas>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Sluit</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal" tabindex="-1" id="suggestiesContainer">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Suggesties</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Sluit"></button>
+      </div>
+      <div class="modal-body">
+        <div style="width: 100%;">
+					<p>Onderstaande gemeenten zijn volgens Amigo het meest vergelijkbaar met {Bron.Title}</p>
+					<table>
+						<tbody id="suggestiesTableBody"></tbody>
+					</table>
         </div>
       </div>
       <div class="modal-footer">
@@ -424,7 +472,13 @@
 			class:hidden={data.bronnen.length >= 3}
 		>
 			<input autocomplete="off" id="find-source" bind:this={findSource} aria-label="Zoek" class="form-control" type="text" size="20" placeholder={`voeg ${brontype} toe om te vergelijken …`}>
-			<span class="input-group-text"><kbd>/</kbd></span>
+			<span class="input-group-text">
+				{#if session.Role == 'admin'}
+				<a class="btn btn-primary btn-sm" href="{'#'}" on:click|preventDefault={(ev) => showSuggesties(ev)}>Suggesties</a>
+				{:else}
+				<kbd>/</kbd>
+				{/if}
+			</span>
 		</div>
 	</div>
 </div>
