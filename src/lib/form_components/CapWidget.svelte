@@ -14,4 +14,8 @@
   })
 </script>
 
-<cap-widget id="cap" data-cap-api-endpoint="https://capjs.openstate.eu/{capjs_site_key}"></cap-widget>
+<cap-widget
+  id="cap"
+  data-cap-api-endpoint="https://capjs.openstate.eu/{capjs_site_key}"
+  data-cap-i18n-initial-state="Ik ben geen robot"
+></cap-widget>
