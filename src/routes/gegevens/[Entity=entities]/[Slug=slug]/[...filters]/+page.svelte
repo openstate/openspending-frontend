@@ -10,8 +10,11 @@
   import { page } from '$app/stores';
   $: session = $page.data.session
 	import { apiGet, apiPythonGet } from '../../../../../utils.js';
+	import SuggestiesModal from '$lib/SuggestiesModal.svelte';
 
   export let data;
+	let doShowSuggesties = false
+	let suggesties: {[id: string]: []} = {}
 
 	let hideZero: boolean = true
 	const slugs = () => data.requested.map(bron => bron.Slug)
@@ -20,7 +23,7 @@
 	$: Bron = data.bronnen[0]
 	let loader: bootstrap.Modal;
   let detailgrafiekContainer: bootstrap.Modal
-	let suggestiesContainer: bootstrap.Modal
+
 	const go = async (showLoader: boolean = true, updateCharts: boolean = true) => {
 		const url = slugs().length === 0 ? `/gegevens/${data.params.Entity}` : `/gegevens/${data.params.Entity}/per/${data.groepering}/${slugsUrl()}${data.open.length === 0 ? '' : `/open/${data.open.join('|')}`}`
 		const opts = {keepFocus: true, noScroll: true}
@@ -136,17 +139,17 @@
 				console.info(results)
 				const aantalGemeenten = results['CBS_ID'].length
 				console.info(aantalGemeenten)
-
-				let tableBody = document.getElementById('suggestiesTableBody')
-				for (let i=1; i<aantalGemeenten; i++) {
-					const tr = tableBody?.appendChild(document.createElement('tr'))
-					let td = tr?.appendChild(document.createElement('td'))
-					td?.appendChild(document.createTextNode(results['Gemeente'][i]))
-					td = tr?.appendChild(document.createElement('td'))
-					td?.appendChild(document.createTextNode(results['SimilariteitScore'][i]))
-				}
-				suggestiesContainer.show()
+				suggesties = results as {[id: string]: []}
+				doShowSuggesties = true
 			})
+	}
+
+	$: {
+		if (doShowSuggesties) {
+			console.info("doShowSuggesties is true now")
+		} else {
+			console.info("doShowSuggesties is false")
+		}
 	}
 
 	const setPeriode = async (ix: number, periode: string) => {
@@ -272,7 +275,6 @@
     [...document.querySelectorAll('[data-bs-toggle="tooltip"]')].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
 		loader = new bootstrap.Modal(document.getElementById('loading')!)
     detailgrafiekContainer = new bootstrap.Modal(document.getElementById('detailgrafiekContainer')!)
-    suggestiesContainer = new bootstrap.Modal(document.getElementById('suggestiesContainer')!)
     const onSelectItem = async (arg: {label: string, value: string, field: any}) => {
       let [_, Slug] = (arg.value as string).split('|')
 			arg.field.value = ''
@@ -348,27 +350,9 @@
   </div>
 </div>
 
-<div class="modal" tabindex="-1" id="suggestiesContainer">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title">Suggesties</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Sluit"></button>
-      </div>
-      <div class="modal-body">
-        <div style="width: 100%;">
-					<p>Onderstaande gemeenten zijn volgens Amigo het meest vergelijkbaar met {Bron.Title}</p>
-					<table>
-						<tbody id="suggestiesTableBody"></tbody>
-					</table>
-        </div>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Sluit</button>
-      </div>
-    </div>
-  </div>
-</div>
+{#if doShowSuggesties}
+<SuggestiesModal suggesties={suggesties} bronTitle={Bron.Title} />
+{/if}
 
 <nav aria-label="breadcrumb">
 	<ol class="breadcrumb">
