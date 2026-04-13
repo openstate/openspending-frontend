@@ -2,6 +2,7 @@
 	import { goto } from '$app/navigation';
 	import Currency from '$lib/Currency.svelte';
 	import { ucfirst } from '$lib/utils';
+	import SuggestionsModal from '$lib/SuggestionsModal.svelte';
 	import type { BronData, BronDetail, SingleDataSet, Verslagsoort } from '../../../../../Types.js';
 	import DataRow from '$lib/DataRow.svelte';
 	import { XSquareFill, FileEarmarkSpreadsheet, InfoCircleFill } from 'svelte-bootstrap-icons';
@@ -9,9 +10,11 @@
 
   import { page } from '$app/stores';
   $: session = $page.data.session
-	import { apiGet } from '../../../../../utils.js';
+	import { apiGet, apiPythonGet } from '../../../../../utils.js';
 
   export let data;
+	let doShowSuggestions = false
+	let suggestions: {[id: string]: []} = {}
 
 	let hideZero: boolean = true
 	const slugs = () => data.requested.map(bron => bron.Slug)
@@ -20,6 +23,7 @@
 	$: Bron = data.bronnen[0]
 	let loader: bootstrap.Modal;
   let detailgrafiekContainer: bootstrap.Modal
+
 	const go = async (showLoader: boolean = true, updateCharts: boolean = true) => {
 		const url = slugs().length === 0 ? `/gegevens/${data.params.Entity}` : `/gegevens/${data.params.Entity}/per/${data.groepering}/${slugsUrl()}${data.open.length === 0 ? '' : `/open/${data.open.join('|')}`}`
 		const opts = {keepFocus: true, noScroll: true}
@@ -123,6 +127,15 @@
 	}
 
   const isThereAnyDetaildataAvaliable = () =>  Object.values(data.datasetsWithDetaildata).filter(o => o.length>0).length > 0
+
+	const showSuggesties = async (_event: Event) => {
+		const url = `/bronnen/${Bron.Type}/${Bron.Slug}/suggesties`
+		await apiPythonGet(url, session.Token)
+			.then(async r => {
+				suggestions = (await r.json()) as {[id: string]: []}
+				doShowSuggestions = true
+			})
+	}
 
 	const setPeriode = async (ix: number, periode: string) => {
     const item = data.requested[ix]
@@ -322,6 +335,10 @@
   </div>
 </div>
 
+{#if doShowSuggestions}
+<SuggestionsModal suggesties={suggestions} bronTitle={Bron.Title} onclose={() => doShowSuggestions = false} />
+{/if}
+
 <nav aria-label="breadcrumb">
 	<ol class="breadcrumb">
 		<li class="breadcrumb-item"><a href="/">Home</a></li>
@@ -424,7 +441,13 @@
 			class:hidden={data.bronnen.length >= 3}
 		>
 			<input autocomplete="off" id="find-source" bind:this={findSource} aria-label="Zoek" class="form-control" type="text" size="20" placeholder={`voeg ${brontype} toe om te vergelijken …`}>
-			<span class="input-group-text"><kbd>/</kbd></span>
+			<span class="input-group-text">
+				{#if session.Role == 'admin' && data.params.Entity == 'Gemeenten'}
+				<a class="btn btn-primary btn-sm" href="{'#'}" on:click|preventDefault={(ev) => showSuggesties(ev)}>Suggesties</a>
+				{:else}
+				<kbd>/</kbd>
+				{/if}
+			</span>
 		</div>
 	</div>
 </div>
