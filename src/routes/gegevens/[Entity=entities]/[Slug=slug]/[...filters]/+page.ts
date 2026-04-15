@@ -33,7 +33,7 @@ export async function load({ fetch, params, data }) {
   }
 
   if (paths.length === 0 || paths.length % 3 !== 0) throw redirect(307, `/gegevens/${params.Entity}`)
-  const requested: Array<{ Slug: string, Title: string, Period: number, Verslagsoort: Verslagsoort}> = []
+  const requested: Array<{ Key?: string, Slug: string, Title: string, Period: number, Verslagsoort: Verslagsoort}> = []
 
   // eslint-disable-next-line no-constant-condition
   while(true) {
@@ -56,6 +56,7 @@ export async function load({ fetch, params, data }) {
     const verslagsoorten = await apiGet(`/bronnen/${params.Entity}/${Slug.Slug}/${Slug.Period}`, session.Token)
       .then(r => r.json())
       .then(a => {
+        Slug.Key = a.Key
         return Object.keys(a.dataset.verslagsoorten) as Verslagsoort[]
       })
     if (!verslagsoorten.includes(Slug.Verslagsoort)) {

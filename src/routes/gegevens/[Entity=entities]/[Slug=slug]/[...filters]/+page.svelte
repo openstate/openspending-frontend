@@ -3,7 +3,7 @@
 	import Currency from '$lib/Currency.svelte';
 	import { ucfirst } from '$lib/utils';
 	import SuggestionsModal from '$lib/SuggestionsModal.svelte';
-	import type { BronData, BronDetail, SingleDataSet, Verslagsoort } from '../../../../../Types.js';
+	import type { BronData, BronDetail, SelectableBronType, SingleDataSet, Verslagsoort } from '../../../../../Types.js';
 	import DataRow from '$lib/DataRow.svelte';
 	import { XSquareFill, FileEarmarkSpreadsheet, InfoCircleFill } from 'svelte-bootstrap-icons';
 	import { onMount } from 'svelte';
@@ -128,7 +128,7 @@
 
   const isThereAnyDetaildataAvaliable = () =>  Object.values(data.datasetsWithDetaildata).filter(o => o.length>0).length > 0
 
-	const showSuggesties = async (_event: Event) => {
+	const showSuggestions = async (_event: Event) => {
 		const url = `/bronnen/${Bron.Type}/${Bron.Slug}/suggesties`
 		await apiPythonGet(url, session.Token)
 			.then(async r => {
@@ -253,6 +253,28 @@
 		new Chart(chart_delta_lasten, { type: 'bar', data: { labels, datasets: dataset_delta_lasten }})
 	}
 
+  const addSuggestion = async(key: string) => {
+    const suggestedSource = allBronnen.filter((bron) => bron.key == key)[0]
+    if (suggestedSource) {
+      closeSuggestions()
+      onSelectItem({label: suggestedSource.label, value: suggestedSource.value})
+    }
+  }
+
+	const closeSuggestions = () => {
+    doShowSuggestions = false
+	}
+
+  const onSelectItem = async (arg: {label: string, value: string, field?: any}) => {
+    let [_, Slug] = (arg.value as string).split('|')
+    if (arg.field) arg.field.value = ''
+    data.requested.push({
+      Slug, Title: arg.label, Verslagsoort: data.bronnen[0].Verslagsoort, Period: data.bronnen[0].dataset.Period
+    })
+    return await go()
+  }
+
+  let allBronnen: SelectableBronType[] = []
   onMount(async () => {
 		const {Autocomplete} = await import('$lib/autocomplete');
 		const bootstrap = await import('bootstrap');
@@ -260,14 +282,6 @@
     [...document.querySelectorAll('[data-bs-toggle="tooltip"]')].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
 		loader = new bootstrap.Modal(document.getElementById('loading')!)
     detailgrafiekContainer = new bootstrap.Modal(document.getElementById('detailgrafiekContainer')!)
-    const onSelectItem = async (arg: {label: string, value: string, field: any}) => {
-      let [_, Slug] = (arg.value as string).split('|')
-			arg.field.value = ''
-			data.requested.push({
-				Slug, Title: arg.label, Verslagsoort: data.bronnen[0].Verslagsoort, Period: data.bronnen[0].dataset.Period
-			})
-			return await go()
-    }
     document.body.addEventListener('keydown', (ev) => {
       // @ts-ignore
       if (ev.target?.tagName.toUpperCase() == 'INPUT') return
@@ -279,9 +293,10 @@
     })
     apiGet(`/utils/bronnen/${data.params.Entity}/${data.bronnen[0].dataset.Period}`, session.Token)
       .then(res => res.json())
-			.then(d => d as Array<{Type: string, Slug: string, label: string, entiteit: string, value: string}>)
+			.then(d => d as SelectableBronType[])
       .then(bronnen => {
-        const opts = { 
+        allBronnen = bronnen
+        const opts = {
           data: bronnen.filter(bron => true ||!slugs().includes(bron.Slug)), 
           threshold: 1, 
           maximumItems: 10, 
@@ -336,7 +351,13 @@
 </div>
 
 {#if doShowSuggestions}
-<SuggestionsModal suggesties={suggestions} bronTitle={Bron.Title} onclose={() => doShowSuggestions = false} />
+<SuggestionsModal
+	suggestions={suggestions}
+	noLinks={data.requested.map((bron) => bron.Key || '')}
+	bronTitle={Bron.Title}
+	onclose={() => closeSuggestions()}
+	onclicked={(key) => addSuggestion(key)}
+/>
 {/if}
 
 <nav aria-label="breadcrumb">
@@ -442,8 +463,8 @@
 		>
 			<input autocomplete="off" id="find-source" bind:this={findSource} aria-label="Zoek" class="form-control" type="text" size="20" placeholder={`voeg ${brontype} toe om te vergelijken …`}>
 			<span class="input-group-text">
-				{#if session.Role == 'admin' && data.params.Entity == 'Gemeenten'}
-				<a class="btn btn-primary btn-sm" href="{'#'}" on:click|preventDefault={(ev) => showSuggesties(ev)}>Suggesties</a>
+				{#if data.params.Entity == 'Gemeenten'}
+				<a class="btn btn-primary btn-sm" href="{'#'}" on:click|preventDefault={(ev) => showSuggestions(ev)}>Suggesties</a>
 				{:else}
 				<kbd>/</kbd>
 				{/if}

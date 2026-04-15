@@ -1,6 +1,15 @@
 export type SourceType = 'Gemeenten' | 'Provincies' | 'GemeenschappelijkeRegelingen' | 'Waterschappen'
 export type Verslagsoort = 'begroting' | 'realisatie' | 'Q1' | 'Q2' | 'Q3' | 'Q4'
 
+export interface SelectableBronType {
+	key: string
+	Type: string
+	Slug: string
+	label: string
+	entiteit: string
+	value: string
+};
+
 export interface Bron {
 	Key: string
 	Title: string
