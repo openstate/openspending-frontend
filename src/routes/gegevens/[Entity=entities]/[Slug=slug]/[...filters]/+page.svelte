@@ -314,6 +314,10 @@
 <style>
 	.hidden { display: none;}
 	.summaries td { vertical-align: middle;}
+  .table_caption {
+    color: var(--bs-secondary-color);
+    padding: 0.5rem 0;
+  }
 </style>
 <svelte:head>
 	<title>{titles} | Open Spending</title>
@@ -474,8 +478,7 @@
 </div>
 
 <div>
-	<table class="table amounts table-hover caption-top table-bordered">
-  <caption>
+  <div class="table_caption">
     <form class="row row-cols-lg-auto g-3 align-items-center">
       <div class="col-12">
         <label class="form-check-label">
@@ -499,7 +502,8 @@
       </div>
     {/if}
     </form>
-	</caption>
+  </div>
+	<table class="table amounts table-hover caption-top table-bordered">
 		<thead>
 			<tr>
 				<th class="togglerow">&nbsp;</th>
