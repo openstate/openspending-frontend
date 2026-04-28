@@ -27,8 +27,8 @@
     <table class="table table-hover caption-top table-bordered">
       <thead>
         <tr>
-          <th>Naam</th>
-          <th>Jaren</th>
+          <th scope="col">Naam</th>
+          <th scope="col">Jaren</th>
         </tr>
       </thead>
       <tbody>

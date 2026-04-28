@@ -53,8 +53,8 @@
         <div style="width: 100%;">
           <table class="suggestions">
             <thead>
-              <th>Naam</th>
-              <th class="text-center">Gelijkenisscore</th>
+              <th scope="col">Naam</th>
+              <th scope="col" class="text-center">Gelijkenisscore</th>
             </thead>
             <tbody>
               {#each suggestions['Keys'] as key, index}

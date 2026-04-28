@@ -303,8 +303,8 @@
 <table class="table table-striped">
   <thead>
     <tr>
-      <th>Bron</th>
-      <th class="text-end">{ucfirst(filter.BL.label)}</th>
+      <th scope="col">Bron</th>
+      <th scope="col" class="text-end">{ucfirst(filter.BL.label)}</th>
     </tr>
   </thead>
   <tbody>

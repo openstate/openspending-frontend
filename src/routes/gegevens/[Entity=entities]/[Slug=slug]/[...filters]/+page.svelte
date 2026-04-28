@@ -415,10 +415,10 @@
 					<td></td>
 					<td></td>
 					<td></td>
-					<th class="text-end">Baten</th>
-					<th class="text-end">Lasten</th>
-					<th class="text-end"><label for="year">Jaar</label></th>
-					<th class="text-end"><label for="verslagsoort">Periode</label></th>
+					<th scope="col" class="text-end">Baten</th>
+					<th scope="col" class="text-end">Lasten</th>
+					<th scope="col" class="text-end"><label for="year">Jaar</label></th>
+					<th scope="col" class="text-end"><label for="verslagsoort">Periode</label></th>
 				</tr>
 			</thead>
 			<tbody>
@@ -509,30 +509,30 @@
 	<table class="table amounts table-hover caption-top table-bordered">
 		<thead>
 			<tr>
-				<th class="togglerow">&nbsp;</th>
-				<th class="code">Code</th>
-				<th>Titel</th>
-				<th class="text-center" colspan="{data.bronnen.length}">Baten</th>
-				<th class="text-center" colspan="{data.bronnen.length}">Lasten</th>
+				<th scope="col" class="togglerow">&nbsp;</th>
+				<th scope="col" class="code">Code</th>
+				<th scope="col">Titel</th>
+				<th scope="col" class="text-center" colspan="{data.bronnen.length}">Baten</th>
+				<th scope="col" class="text-center" colspan="{data.bronnen.length}">Lasten</th>
 			</tr>
       {#if data.bronnen.length > 1}
 			<tr>
-				<th class="togglerow">&nbsp;</th>
-				<th class="code">&nbsp;</th>
-				<th>&nbsp;</th>
+				<th scope="col" class="togglerow">&nbsp;</th>
+				<th scope="col" class="code">&nbsp;</th>
+				<th scope="col">&nbsp;</th>
 				{#each data.bronnen as bron}
-				<th class="text-center" >{bron.Title}</th>
+				<th scope="col" class="text-center" >{bron.Title}</th>
 				{/each}
 				{#each data.bronnen as bron}
-				<th class="text-center" >{bron.Title}</th>
+				<th scope="col" class="text-center" >{bron.Title}</th>
 				{/each}
 			</tr>
       {/if}
       {#if metric}
 			<tr>
-				<th>&nbsp;</th>
-				<th class="code">&nbsp;</th>
-				<th>&nbsp;</th>
+				<th scope="col">&nbsp;</th>
+				<th scope="col" class="code">&nbsp;</th>
+				<th scope="col">&nbsp;</th>
 				{#each data.bronnen as bron}
 				<td class="text-center"><small>{@html getMetricsText(bron)}</small></td>
 				{/each}
@@ -543,9 +543,9 @@
       {/if}
       {#if isThereAnyDetaildataAvaliable()}
 			<tr>
-				<th>&nbsp;</th>
-				<th class="code">&nbsp;</th>
-				<th>&nbsp;</th>
+				<th scope="col">&nbsp;</th>
+				<th scope="col" class="code">&nbsp;</th>
+				<th scope="col">&nbsp;</th>
 				{#each data.bronnen as bron}
 				<td class="text-center">
           {#if bron.dataset.hasDetaildata}
@@ -582,10 +582,10 @@
 				<td></td>
 				<td></td>
 				{#each data.bronnen as bron, ix}
-					<th class="text-end"><Currency classes="text-white p-1 bg-primary" ammount={normalize(getDatasetTotals(ix, bron.dataset)?.Baten, bron)} /></th>
+					<th scope="col" class="text-end"><Currency classes="text-white p-1 bg-primary" ammount={normalize(getDatasetTotals(ix, bron.dataset)?.Baten, bron)} /></th>
 				{/each}
 				{#each data.bronnen as bron, ix}
-					<th class="text-end"><Currency classes="text-white p-1 lasten_total" ammount={normalize(getDatasetTotals(ix, bron.dataset)?.Lasten, bron)} /></th>
+					<th scope="col" class="text-end"><Currency classes="text-white p-1 lasten_total" ammount={normalize(getDatasetTotals(ix, bron.dataset)?.Lasten, bron)} /></th>
 				{/each}
 			</tr>
 		</tfoot>
@@ -619,9 +619,9 @@
    <table class="table">
     <thead>
       <tr>
-        <th>Bron</th>
-        <th>Periode</th>
-        <th>Downloads</th>
+        <th scope="col">Bron</th>
+        <th scope="col">Periode</th>
+        <th scope="col">Downloads</th>
       </tr>
       {#each data.requested as bron, ix}
       <tr>

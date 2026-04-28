@@ -189,21 +189,21 @@
   <thead>
     <tr>
       <th class="togglerow">&nbsp;</th>
-      <th>Code</th>
-      <th>Titel</th>
-      <th class="text-end">Baten</th>
-      <th class="text-end">Lasten</th>
+      <th scope="col">Code</th>
+      <th scope="col">Titel</th>
+      <th scope="col" class="text-end">Baten</th>
+      <th scope="col" class="text-end">Lasten</th>
     </tr>
     {#if hasFilters}
     <tr class="sort">
       <td></td>
       <td></td>
       <td></td>
-      <th class="text-end">
+      <th scope="col" class="text-end">
         <button data-bl="Baten" data-volgorde="aflopend" aria-label="Sorteer Baten aflopend" class="btn-sort btn btn-light" on:click={sort}><SortNumericDownAlt /></button>
         <button data-bl="Baten" data-volgorde="oplopend" aria-label="Sorteer Baten oplopend" class="btn-sort btn btn-light"on:click={sort}><SortNumericUp /></button>
       </th>
-      <th class="text-end">
+      <th scope="col" class="text-end">
         <button data-bl="Lasten" data-volgorde="aflopend" aria-label="Sorteer Lasten aflopend" class="btn-sort btn btn-light" on:click={sort}><SortNumericDownAlt /></button>
         <button data-bl="Lasten" data-volgorde="oplopend" aria-label="Sorteer Lasten oplopend" class="btn-sort btn btn-light"on:click={sort}><SortNumericUp /></button>
       </th>
@@ -271,8 +271,8 @@
   <tfoot>
     <tr>
       <td colspan="3"></td>
-      <th class="text-end"><Currency classes="text-white p-1 bg-primary" ammount={data.rows.reduce((total, row2) => total + row2.Baten, 0)} /></th>
-      <th class="text-end"><Currency classes="text-white p-1 lasten_total" ammount={data.rows.reduce((total, row2) => total + row2.Lasten, 0)} /></th>
+      <th scope="col" class="text-end"><Currency classes="text-white p-1 bg-primary" ammount={data.rows.reduce((total, row2) => total + row2.Baten, 0)} /></th>
+      <th scope="col" class="text-end"><Currency classes="text-white p-1 lasten_total" ammount={data.rows.reduce((total, row2) => total + row2.Lasten, 0)} /></th>
     </tr>
   </tfoot>
 </table>
@@ -282,9 +282,9 @@
    <table class="table">
     <thead>
       <tr>
-        <th>Bron</th>
-        <th>Periode</th>
-        <th>Downloads</th>
+        <th scope="col">Bron</th>
+        <th scope="col">Periode</th>
+        <th scope="col">Downloads</th>
       </tr>
       <tr>
         <td>{data.bron.Title}</td>

@@ -15,11 +15,11 @@
 <table class="table table-hover table-striped">
 	<thead>
 		<tr>
-			<th>Gebruikersnaam</th>
-			<th>Voornaam</th>
-			<th>Achternaam</th>
-			<th>Gekoppelde bronnen</th>
-			<th>Acties</th>
+			<th scope="col">Gebruikersnaam</th>
+			<th scope="col">Voornaam</th>
+			<th scope="col">Achternaam</th>
+			<th scope="col">Gekoppelde bronnen</th>
+			<th scope="col">Acties</th>
 		</tr>
 	</thead>
 	<tbody>

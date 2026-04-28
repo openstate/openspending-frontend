@@ -70,10 +70,10 @@
     <table class="table table-hover table-striped">
       <thead>
         <tr>
-          <th><input type="checkbox" on:click={(e) => toggle(e.currentTarget.checked)}></th>
-          <th>Bron</th>
-          <th>Organisatie</th>
-          <th>Jaar</th>
+          <th scope="col"><input type="checkbox" on:click={(e) => toggle(e.currentTarget.checked)}></th>
+          <th scope="col">Bron</th>
+          <th scope="col">Organisatie</th>
+          <th scope="col">Jaar</th>
         </tr>
       </thead>
       <tbody>
