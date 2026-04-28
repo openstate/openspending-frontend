@@ -318,6 +318,9 @@
     color: var(--bs-secondary-color);
     padding: 0.5rem 0;
   }
+  :global(.lasten_total) {
+    background-color: var(--bs-info-text-emphasis);
+  }
 </style>
 <svelte:head>
 	<title>{titles} | Open Spending</title>
@@ -414,15 +417,15 @@
 					<td></td>
 					<th class="text-end">Baten</th>
 					<th class="text-end">Lasten</th>
-					<th class="text-end">Jaar</th>
-					<th class="text-end">Periode</th>
+					<th class="text-end"><label for="year">Jaar</label></th>
+					<th class="text-end"><label for="verslagsoort">Periode</label></th>
 				</tr>
 			</thead>
 			<tbody>
 				{#each data.bronnen as bron, ix}
 				<tr>
 					<th scope="row" style="width:1px;">
-						<a href="{'#'}" style="margin-right: 5px" on:click={() => verwijderBron(ix)}><XSquareFill/></a>
+						<a href="{'#'}" style="margin-right: 5px" title="Sluiten" on:click={() => verwijderBron(ix)}><XSquareFill/></a>
 					</th>
 					<th scope="row">
 						{bron.Title.replace(' (PV)', '')} 
@@ -437,7 +440,7 @@
 					<td class="text-end" style="white-space: nowrap;"><Currency ammount={getDatasetTotals(ix, bron.dataset)?.Baten}/></td>
 					<td class="text-end" style="white-space: nowrap;"><Currency ammount={getDatasetTotals(ix, bron.dataset)?.Lasten}/></td>
 					<td class="text-end">
-						<select class="form-select" on:change={(ev) => setPeriode(ix, ev.currentTarget.value)}>
+						<select class="form-select" on:change={(ev) => setPeriode(ix, ev.currentTarget.value)} id="year">
 							{#each bron.datasets as dataset}
 							<option selected={bron.dataset.Period === dataset.Period}>{dataset.Period} 
               {#if dataset.hasDetaildata}
@@ -451,7 +454,7 @@
 						{#if Object.keys(bron.dataset.verslagsoorten).length === 1}
 						{bron.Verslagsoort}
 						{:else}
-						<select class="form-select" on:change={(ev) => setVerslagsoort(ix, ev.currentTarget.value)}>
+						<select class="form-select" on:change={(ev) => setVerslagsoort(ix, ev.currentTarget.value)} id="verslagsoort">
 							{#each Object.keys(bron.dataset.verslagsoorten) as verslagsoort}
 							<option selected={bron.Verslagsoort === verslagsoort}>{verslagsoort}</option>
 							{/each}
@@ -582,7 +585,7 @@
 					<th class="text-end"><Currency classes="text-white p-1 bg-primary" ammount={normalize(getDatasetTotals(ix, bron.dataset)?.Baten, bron)} /></th>
 				{/each}
 				{#each data.bronnen as bron, ix}
-					<th class="text-end"><Currency classes="text-white p-1 bg-info" ammount={normalize(getDatasetTotals(ix, bron.dataset)?.Lasten, bron)} /></th>
+					<th class="text-end"><Currency classes="text-white p-1 lasten_total" ammount={normalize(getDatasetTotals(ix, bron.dataset)?.Lasten, bron)} /></th>
 				{/each}
 			</tr>
 		</tfoot>

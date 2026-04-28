@@ -188,6 +188,7 @@
           data-bs-placement="bottom"
           data-bs-content="..."
           data-bs-html="true"
+          aria-label="Delen"
         >{@html shareIcon}</button>
         <button class="navbar-toggler pe-0" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar"
           aria-controls="offcanvasNavbar" aria-label="Toggle navigation">

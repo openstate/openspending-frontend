@@ -161,7 +161,7 @@
         {row?.Description ?? row?.Title}
       </div>
       <div class="col-1 text-end">
-        <a href="{'#'}" on:click|preventDefault={(ev) => trendsPerHoofdfunctie(ev, row)}><GraphUp  class="trendsPerHoofdfunctie"/></a>
+        <a href="{'#'}" on:click|preventDefault={(ev) => trendsPerHoofdfunctie(ev, row)} title="Bekijk grafiek"><GraphUp  class="trendsPerHoofdfunctie"/></a>
       </div>
     </div>
     {:else}
@@ -173,7 +173,7 @@
   </td>
   {/each}
   {#each bronnen as bron}
-  <td class="text-end"><Currency classes="text-info" ammount={getAmount(bron, 'Lasten')} symbol="" /></td>
+  <td class="text-end"><Currency classes="text-info-emphasis" ammount={getAmount(bron, 'Lasten')} symbol="" /></td>
   {/each}
 </tr>
 {#each allDataRows as subrow, i}

@@ -99,6 +99,9 @@
   .l2 {padding-left: 36px}
   tbody > tr { cursor: pointer;}
   thead > tr.sort { cursor: inherit;}
+  :global(.lasten_total) {
+    background-color: var(--bs-info-text-emphasis);
+  }
 
 :global(tr.highlight, tr.highlight td) {
   transition-property: background-color color;
@@ -197,12 +200,12 @@
       <td></td>
       <td></td>
       <th class="text-end">
-        <button data-bl="Baten" data-volgorde="aflopend" class="btn-sort btn btn-light" on:click={sort}><SortNumericDownAlt /></button>
-        <button data-bl="Baten" data-volgorde="oplopend" class="btn-sort btn btn-light"on:click={sort}><SortNumericUp /></button>
+        <button data-bl="Baten" data-volgorde="aflopend" aria-label="Sorteer Baten aflopend" class="btn-sort btn btn-light" on:click={sort}><SortNumericDownAlt /></button>
+        <button data-bl="Baten" data-volgorde="oplopend" aria-label="Sorteer Baten oplopend" class="btn-sort btn btn-light"on:click={sort}><SortNumericUp /></button>
       </th>
       <th class="text-end">
-        <button data-bl="Lasten" data-volgorde="aflopend" class="btn-sort btn btn-light" on:click={sort}><SortNumericDownAlt /></button>
-        <button data-bl="Lasten" data-volgorde="oplopend" class="btn-sort btn btn-light"on:click={sort}><SortNumericUp /></button>
+        <button data-bl="Lasten" data-volgorde="aflopend" aria-label="Sorteer Lasten aflopend" class="btn-sort btn btn-light" on:click={sort}><SortNumericDownAlt /></button>
+        <button data-bl="Lasten" data-volgorde="oplopend" aria-label="Sorteer Lasten oplopend" class="btn-sort btn btn-light"on:click={sort}><SortNumericUp /></button>
       </th>
     </tr>
     {/if}
@@ -226,7 +229,7 @@
         <td width=1>{row.Titel.split(' ').shift()}</td>
         <td>{row.Titel.replace(/^\d+/, '').trim()}</td>
         <td class="text-end"><Currency classes="text-primary"  ammount={row.Baten}/></td>
-        <td class="text-end"><Currency classes="text-info" ammount={row.Lasten}/></td>
+        <td class="text-end"><Currency classes="text-info-emphasis" ammount={row.Lasten}/></td>
       </tr>
       {#if (Object.hasOwn(row, 'rows'))}
       {#each row.rows ?? [] as subrow}
@@ -248,7 +251,7 @@
         <td width=1>{subrow.Code}</td>
         <td>{subrow.Titel}</td>
         <td class="text-end"><Currency classes="text-primary"  ammount={subrow.Baten === 0 ? undefined : subrow.Baten}/></td>
-        <td class="text-end"><Currency classes="text-info" ammount={subrow.Lasten === 0 ? undefined : subrow.Lasten}/></td>
+        <td class="text-end"><Currency classes="text-info-emphasis" ammount={subrow.Lasten === 0 ? undefined : subrow.Lasten}/></td>
       </tr>
       {#if (Object.hasOwn(subrow, 'rows'))}
       {#each subrow.rows ?? [] as subsubrow}
@@ -257,7 +260,7 @@
           <td width=1>{subsubrow.Code}</td>
           <td>{subsubrow.Titel}</td>
           <td class="text-end"><Currency classes="text-primary"  ammount={subsubrow.Baten === 0 ? undefined : subsubrow.Baten}/></td>
-          <td class="text-end"><Currency classes="text-info" ammount={subsubrow.Lasten === 0 ? undefined : subsubrow.Lasten}/></td>
+          <td class="text-end"><Currency classes="text-info-emphasis" ammount={subsubrow.Lasten === 0 ? undefined : subsubrow.Lasten}/></td>
         </tr>
       {/each}
       {/if}
@@ -269,7 +272,7 @@
     <tr>
       <td colspan="3"></td>
       <th class="text-end"><Currency classes="text-white p-1 bg-primary" ammount={data.rows.reduce((total, row2) => total + row2.Baten, 0)} /></th>
-      <th class="text-end"><Currency classes="text-white p-1 bg-info" ammount={data.rows.reduce((total, row2) => total + row2.Lasten, 0)} /></th>
+      <th class="text-end"><Currency classes="text-white p-1 lasten_total" ammount={data.rows.reduce((total, row2) => total + row2.Lasten, 0)} /></th>
     </tr>
   </tfoot>
 </table>
