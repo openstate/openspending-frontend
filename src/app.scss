@@ -57,6 +57,7 @@
     --black: #000;
     --bs-btn-active-bg: #015c6e;
     --bs-btn-hover-color: #015c6e;
+    --cap-checkbox-border: 1px solid #888888;
 
     /*Algemeen*/
     --text-decoration: none;
@@ -176,4 +177,8 @@ ul.spaced li {margin-bottom: 8px;}
     margin-top: 1em;
     margin-bottom: 1.5em;
   }
+}
+
+.input-border-color {
+  border-color: #888888;
 }

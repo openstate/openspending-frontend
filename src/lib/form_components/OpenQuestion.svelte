@@ -37,7 +37,7 @@
     <textarea
       name="openquestion"
       bind:value={answer}
-      class="form-control"
+      class="form-control input-border-color"
       on:change={setValidClass}
       {placeholder}
       rows={numberOfLines}

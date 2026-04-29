@@ -37,7 +37,7 @@
   <div class="row mb-2">
     <div class="col">
       <input
-        class="form-control me-2"
+        class="form-control input-border-color me-2"
         type="search"
         name="q"
         placeholder="Zoek&hellip;"

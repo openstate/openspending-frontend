@@ -87,18 +87,18 @@
     <span>*</span>
     {/if}
   </p>
-  <Select {items} placeholder="Selecteer..." bind:value={selectedItem} />
+  <Select {items} placeholder="Selecteer..." containerStyles="border-color: #888888;" bind:value={selectedItem} />
   {#if showSubSelect}
   <div class="mt-2 ms-2">
     <p class="fw-bold">{subItemsTitle}</p>
-    <Select items={subItemsForItem} placeholder="Selecteer..." bind:value={selectedSubItem} />
+    <Select items={subItemsForItem} placeholder="Selecteer..." containerStyles="border-color: #888888;" bind:value={selectedSubItem} />
   </div>
   {/if}
   {#if showTextinput || showSubTextinput}
   <div class="mt-2 {marginLeftTextinput}">
     <input
       bind:value={textValue}
-      class="form-control mt-2"
+      class="form-control input-border-color mt-2"
       placeholder={textinputPlaceholder}
     />
   </div>

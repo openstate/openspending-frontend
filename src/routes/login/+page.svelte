@@ -81,11 +81,11 @@
       <div class="row mb-2">
         <label for="email" class="form-label col-sm-3">Gebruikersnaam</label>
         <div class="col-sm-3">
-          <input type="text" class="form-control" id="username">
+          <input type="text" class="form-control input-border-color" id="username">
         </div>
         <label for="wachtwoord" class="form-label col-sm-2 text-end">Wachtwoord</label>
         <div class="col-sm-3">
-          <input type="password" class="form-control" id="wachtwoord">
+          <input type="password" class="form-control input-border-color" id="wachtwoord">
         </div>
       </div>
       <div class="row mb-3">

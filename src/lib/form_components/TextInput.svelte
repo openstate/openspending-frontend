@@ -28,7 +28,7 @@
   <input
     bind:value={answer}
     id={id}
-    class="form-control mt-2"
+    class="form-control input-border-color mt-2"
     placeholder={placeholder}
   />
 </div>

@@ -355,8 +355,8 @@
   </div>
   <div class="col-sm-12 col-lg-4">
     <div class="input-group mt-2">
-      <input id="find-source" aria-label="Zoek" class="form-control" type="text" size="20" placeholder="zoek {Entity === 'GemeenschappelijkeRegelingen' ? 'Gem. regelingen' : Entity} &hellip;">
-      <span class="input-group-text"><kbd>/</kbd></span>
+      <input id="find-source" aria-label="Zoek" class="form-control input-border-color" type="text" size="20" placeholder="zoek {Entity === 'GemeenschappelijkeRegelingen' ? 'Gem. regelingen' : Entity} &hellip;">
+      <span class="input-group-text input-border-color"><kbd>/</kbd></span>
     </div>
     {#if Entity === 'Gemeenten' && sources.some(source => source.hasDetaildata)}
     <div class="input-group mt-2">

@@ -81,7 +81,7 @@
       id="find_source"
       name="find_source"
       aria-label="Zoek"
-      class="form-control"
+      class="form-control input-border-color"
       type="text" size="20"
       placeholder="Zoek gemeente &hellip;">
       <label for="find_source" class="form-label">Zoek gemeente</label>
@@ -99,7 +99,7 @@
   <div class="form-floating mb-3">
     <input
       type="text"
-      class="form-control form-control-lg"
+      class="form-control form-control-lg input-border-color"
       id="firstname"
       name="firstname"
       value={form?.data?.firstname ?? ''}
@@ -110,7 +110,7 @@
   <div class="form-floating mb-3">
     <input
       type="text"
-      class="form-control form-control-lg"
+      class="form-control form-control-lg input-border-color"
       id="lastname"
       name="lastname"
       value={form?.data?.lastname ?? ''}
@@ -122,7 +122,7 @@
     <input
       required
       type="email"
-      class="form-control form-control-lg"
+      class="form-control form-control-lg input-border-color"
       id="email_address"
       name="email_address"
       value={form?.data?.email_address ?? ''}

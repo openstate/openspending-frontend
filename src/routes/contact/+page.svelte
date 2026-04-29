@@ -48,7 +48,7 @@
 				<input
 					required
 					type="text"
-					class="form-control form-control-lg"
+					class="form-control form-control-lg input-border-color"
 					id="naam"
 					placeholder="typ uw naam&hellip;"
 					value={form?.data?.naam ?? ''}
@@ -59,7 +59,7 @@
 				<input
 					required
 					type="email"
-					class="form-control form-control-lg"
+					class="form-control form-control-lg input-border-color"
 					id="email"
 					placeholder="typ uw e-mailadres&hellip;"
 					value={form?.data?.email ?? ''}
@@ -70,7 +70,7 @@
 				<input
 					required
 					type="text"
-					class="form-control form-control-lg"
+					class="form-control form-control-lg input-border-color"
 					id="onderwerp"
 					placeholder="typ een onderwerp&hellip;"
 					value={form?.data?.onderwerp ?? ''}
@@ -81,7 +81,7 @@
 				<textarea
 					required
 					style="height: 150px;"
-					class="form-control form-control-lg"
+					class="form-control form-control-lg input-border-color"
 					id="bericht"
 					rows="3"
 					placeholder="typ uw bericht&hellip;">{form?.data?.bericht ?? ''}</textarea

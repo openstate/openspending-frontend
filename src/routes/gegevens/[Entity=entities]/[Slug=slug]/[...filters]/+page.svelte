@@ -468,7 +468,7 @@
 		<div class="input-group mt-2"
 			class:hidden={data.bronnen.length >= 3}
 		>
-			<input autocomplete="off" id="find-source" bind:this={findSource} aria-label="Zoek" class="form-control" type="text" size="20" placeholder={`voeg ${brontype} toe om te vergelijken …`}>
+			<input autocomplete="off" id="find-source" bind:this={findSource} aria-label="Zoek" class="form-control input-border-color" type="text" size="20" placeholder={`voeg ${brontype} toe om te vergelijken …`}>
 			<span class="input-group-text">
 				{#if data.params.Entity == 'Gemeenten'}
 				<a class="btn btn-primary btn-sm" href="{'#'}" on:click|preventDefault={(ev) => showSuggestions(ev)}>Suggesties</a>

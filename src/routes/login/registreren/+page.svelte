@@ -31,7 +31,7 @@
     <input
       disabled
       type="text"
-      class="form-control form-control-lg"
+      class="form-control form-control-lg input-border-color"
       id="firstname"
       name="firstname"
       value={data.user?.firstname ?? ''}
@@ -42,7 +42,7 @@
     <input
       disabled
       type="text"
-      class="form-control form-control-lg"
+      class="form-control form-control-lg input-border-color"
       id="lastname"
       name="lastname"
       value={data.user?.lastname ?? ''}
@@ -53,7 +53,7 @@
     <input
       disabled
       type="email"
-      class="form-control form-control-lg"
+      class="form-control form-control-lg input-border-color"
       id="email_address"
       name="email_address"
       value={data.user?.email_address ?? ''}
@@ -64,7 +64,7 @@
     <input
       required
       type="password"
-      class="form-control form-control-lg"
+      class="form-control form-control-lg input-border-color"
       id="password"
       name="password"
       placeholder="Wachtwoord&hellip;"
@@ -76,7 +76,7 @@
     <input
       required
       type="password"
-      class="form-control form-control-lg"
+      class="form-control form-control-lg input-border-color"
       id="confirm_password"
       name="confirm_password"
       placeholder="Wachtwoord&hellip;"

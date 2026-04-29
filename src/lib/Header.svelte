@@ -170,7 +170,7 @@
       <div id="search-and-buttons">
         <form class="d-flex" role="search" action="/zoek">
           <input
-            class="form-control me-2"
+            class="form-control me-2 input-border-color"
             type="search"
             name="q"
             id="zoekveld"

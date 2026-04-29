@@ -162,7 +162,7 @@
 	const updateRoute = async (filterName: keyof typeof filter, label: string, value: string | number) => {
 		filter[filterName] = {label, value}
 		if (filterName === 'periode') {
-			await apiGet(`/lijstenmaker/hoogste/10/${filter.bron.value}/${filter.periode.value}`, session.Token)
+			await apiGet(`/lijstenmaker/hoogste/10/${filter.BL.value}/${filter.bron.value}/${filter.periode.value}`, session.Token)
 				.then(res => res.json())
 				.then(res =>  res as {$links: string[]})
 				.then(links => {
@@ -179,6 +179,7 @@
 				})
 		}
 		route = getUrl()
+    makeAutocomplete()
 	}
 </script>
 
