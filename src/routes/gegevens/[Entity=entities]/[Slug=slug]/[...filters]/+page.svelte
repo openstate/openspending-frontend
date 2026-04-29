@@ -206,6 +206,7 @@
 	$: brontype = bronTypes.get(data.bronnen[0].Type) ?? 'bron'
 
 	const charts = async() => {
+    console.info("in charts()")
 		const dataset_delta_baten: any = []
 		const dataset_lasten: any = []
 		const dataset_baten: any = []
@@ -322,6 +323,10 @@
   }
   :global(.lasten_total) {
     background-color: var(--bs-info-text-emphasis);
+  }
+  #metric {
+    display: inline-block;
+    width: auto;
   }
 </style>
 <svelte:head>
@@ -485,7 +490,7 @@
 <div>
   <div class="table_caption">
     <form class="row row-cols-lg-auto g-3 align-items-center">
-      <div class="col-12">
+      <div class="col-12 me-3">
         <label class="form-check-label">
           <input class="form-check-input" type="checkbox" bind:checked={hideZero}/>
           verberg lege bedragen
@@ -503,7 +508,7 @@
           {#each Object.keys(Bron.metrics) as key}
           <option>{key}</option>
           {/each}
-        </select>    
+        </select>
       </div>
     {/if}
     </form>
