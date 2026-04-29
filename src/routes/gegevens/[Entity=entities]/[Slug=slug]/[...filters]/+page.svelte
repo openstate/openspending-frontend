@@ -5,7 +5,9 @@
 	import SuggestionsModal from '$lib/SuggestionsModal.svelte';
 	import type { BronData, BronDetail, SelectableBronType, SingleDataSet, Verslagsoort } from '../../../../../Types.js';
 	import DataRow from '$lib/DataRow.svelte';
-	import { XSquareFill, FileEarmarkSpreadsheet, InfoCircleFill } from 'svelte-bootstrap-icons';
+	import XSquareFill from 'svelte-bootstrap-icons/lib/XSquareFill.svelte';
+	import FileEarmarkSpreadsheet from 'svelte-bootstrap-icons/lib/FileEarmarkSpreadsheet.svelte';
+	import InfoCircleFill from 'svelte-bootstrap-icons/lib/InfoCircleFill.svelte';
 	import { onMount } from 'svelte';
 
   import { page } from '$app/stores';

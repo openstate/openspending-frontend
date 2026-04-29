@@ -3,7 +3,12 @@
 	import Currency from '$lib/Currency.svelte';
 	import { ucfirst } from '$lib/utils.js';
 	import { onMount, afterUpdate } from 'svelte';
-  import { DashSquareFill, PlusSquareFill, Download, SortNumericDownAlt, SortNumericUp, InfoCircleFill } from 'svelte-bootstrap-icons';
+  import DashSquareFill from 'svelte-bootstrap-icons/lib/DashSquareFill.svelte';
+  import PlusSquareFill from 'svelte-bootstrap-icons/lib/PlusSquareFill.svelte';
+  import Download from 'svelte-bootstrap-icons/lib/Download.svelte';
+  import SortNumericDownAlt from 'svelte-bootstrap-icons/lib/SortNumericDownAlt.svelte';
+  import SortNumericUp from 'svelte-bootstrap-icons/lib/SortNumericUp.svelte';
+  import InfoCircleFill from 'svelte-bootstrap-icons/lib/InfoCircleFill.svelte';
   export let data
 
   $: idPrefix = data.params.type.substring(0, 1).toUpperCase()

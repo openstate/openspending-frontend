@@ -1,6 +1,8 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { ExclamationTriangleFill, InfoCircleFill, ListTask } from 'svelte-bootstrap-icons';
+	import ExclamationTriangleFill from 'svelte-bootstrap-icons/lib/ExclamationTriangleFill.svelte';
+	import InfoCircleFill from 'svelte-bootstrap-icons/lib/InfoCircleFill.svelte';
+	import ListTask from 'svelte-bootstrap-icons/lib/ListTask.svelte';
 	import type { SourceType } from '../../Types.js';
   export let data
   let q: string | null

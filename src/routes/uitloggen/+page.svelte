@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
   import { page } from '$app/stores';
-	import { ExclamationCircleFill } from 'svelte-bootstrap-icons';
+	import ExclamationCircleFill from 'svelte-bootstrap-icons/lib/ExclamationCircleFill.svelte';
   $: session = $page.data.session;
   export let form;
   onMount(() => {

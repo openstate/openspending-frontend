@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { Floppy } from 'svelte-bootstrap-icons';
+	import Floppy from 'svelte-bootstrap-icons/lib/Floppy.svelte';
   import { page } from '$app/stores';
   $: session = $page.data.session
 	import { apiPost } from '../../../utils.js';

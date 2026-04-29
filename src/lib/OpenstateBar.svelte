@@ -2,7 +2,7 @@
   import { page } from '$app/stores';
   $: session = $page.data.session;
   import logo_openstate_wit from '$lib/assets/logo-openstate-wit.png';
-	import { PersonCircle } from 'svelte-bootstrap-icons';
+	import PersonCircle from 'svelte-bootstrap-icons/lib/PersonCircle.svelte';
 </script>
 
   <section class="topbar d-flex flex-row justify-content-start fixed-top">

@@ -1,9 +1,11 @@
 <script lang="ts">
-	import { goto } from '$app/navigation';
 	import LijstenMaker from '$lib/LijstenMaker.svelte';
 	import { ucfirst } from '$lib/utils';
 	import { onMount } from 'svelte';
-	import { Download, ListUl, Record, XSquareFill } from 'svelte-bootstrap-icons';
+	import Download from 'svelte-bootstrap-icons/lib/Download.svelte';
+	import ListUl from 'svelte-bootstrap-icons/lib/ListUl.svelte';
+	import Record from 'svelte-bootstrap-icons/lib/Record.svelte';
+	import XSquareFill from 'svelte-bootstrap-icons/lib/XSquareFill.svelte';
   import { page } from '$app/stores';
 	import { apiGet } from '../../utils';
   $: session = $page.data.session

@@ -154,7 +154,7 @@
           <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
         </div>
         <div class="offcanvas-body">
-          <ul class="navbar-nav justify-content-center flex-grow-1 pe-3">
+          <ul class="navbar-nav justify-content-center flex-grow-1 pe-3" aria-label="Hoofdmenu">
 					{#each menuItems as menuItem}
             <li class="nav-item">
               <a 

@@ -1,6 +1,8 @@
 <script lang="ts">
 	import { goto } from "$app/navigation";
-	import { X, XLg, Plus } from 'svelte-bootstrap-icons';
+	import X from 'svelte-bootstrap-icons/lib/X.svelte';
+	import XLg from 'svelte-bootstrap-icons/lib/XLg.svelte';
+	import Plus from 'svelte-bootstrap-icons/lib/Plus.svelte';
 
 	export let data
 </script>

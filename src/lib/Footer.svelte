@@ -1,5 +1,9 @@
 <script lang="ts">
-  import { Mastodon, TwitterX, Linkedin, Github, EnvelopeFill } from 'svelte-bootstrap-icons';
+  import Mastodon from 'svelte-bootstrap-icons/lib/Mastodon.svelte';
+  import TwitterX from 'svelte-bootstrap-icons/lib/TwitterX.svelte';
+  import Linkedin from 'svelte-bootstrap-icons/lib/Linkedin.svelte';
+  import Github from 'svelte-bootstrap-icons/lib/Github.svelte';
+  import EnvelopeFill from 'svelte-bootstrap-icons/lib/EnvelopeFill.svelte';
   import OSFLogo from '$lib/assets/logo-openstate.png';
   import OSLogo from '$lib/assets/open-spending.svg';
 </script>

@@ -9,8 +9,6 @@
   export let Entity: SourceType
   import 'leaflet/dist/leaflet.css';
 	import { goto } from '$app/navigation';
-	import { CartCheck } from 'svelte-bootstrap-icons';
-	import type { TileLayer, WMSOptions } from 'leaflet';
 	import { apiGet } from '../utils';
 
   let sources: Bron[] = []

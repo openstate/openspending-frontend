@@ -1,5 +1,7 @@
 <script lang="ts">
-	import { DashSquareFill, GraphUp, PlusSquareFill, Square } from 'svelte-bootstrap-icons';
+	import DashSquareFill from 'svelte-bootstrap-icons/lib/DashSquareFill.svelte';
+	import GraphUp from 'svelte-bootstrap-icons/lib/GraphUp.svelte';
+	import PlusSquareFill from 'svelte-bootstrap-icons/lib/PlusSquareFill.svelte';
 	import Currency from '$lib/Currency.svelte';
   import type { BronData, BronDetail } from '../Types';
   import DataRow from '$lib/DataRow.svelte';
