@@ -13,11 +13,13 @@
         <a href="https://openstate.eu"><img src="{OSFLogo}" alt="Logo Open State Foundation" width="120"></a>
       </div>
       <div class="col-lg-4 col-md-4 col-sm-12 text-center socials">
-				<a href="https://mastodon.nl/@OpenState" title="Open State Foundation | Mastodon" ><Mastodon/></a>
-				<a href="https://twitter.com/OpenStateEU" title="Open State Foundation | X/Twitter" ><TwitterX/></a>
-				<a href="https://www.linkedin.com/company/open-state-foundation/" title="Open State Foundation | LinkedIn" ><Linkedin/></a>
-				<a href="https://github.com/OpenState" title="Open State Foundation | Github" ><Github/></a>
-				<a href="https://openstate.eu/nl/contact/" title="Open State Foundation | Email" ><EnvelopeFill/></a>
+        <ul class="list-unstyled list-group list-group-horizontal justify-content-center">
+				  <li><a href="https://mastodon.nl/@OpenState" title="Open State Foundation | Mastodon" ><Mastodon/></a></li>
+				  <li><a href="https://twitter.com/OpenStateEU" title="Open State Foundation | X/Twitter" ><TwitterX/></a></li>
+				  <li><a href="https://www.linkedin.com/company/open-state-foundation/" title="Open State Foundation | LinkedIn" ><Linkedin/></a></li>
+				  <li><a href="https://github.com/OpenState" title="Open State Foundation | Github" ><Github/></a></li>
+				  <li><a href="https://openstate.eu/nl/contact/" title="Open State Foundation | Email" ><EnvelopeFill/></a></li>
+        </ul>
       </div>
       <div class="col-lg-4 col-md-4 col-sm-12 text-end">
         <img src="{OSLogo}" alt="Logo Open Spending" style="height:36px;">
@@ -28,7 +30,7 @@
 
 <style>
 	div.socials a {
-    padding: 0 3px 0 3px;
+    padding: 0 5px 0 5px;
 	}
 	div.socials a:hover {
     color: var(--purple);
