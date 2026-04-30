@@ -120,6 +120,44 @@ describe ('beheer publish detaildata page', () => {
   });
 });
 
+describe ('beheer antwoorden poll page', () => {
+	const path = '/beheer/antwoorden_polls/feedback_2026';
+
+  it('redirects to login if not logged in', async () => {
+    let { event, resolve } = mockRequest(path, mockGuestUserSessionData());
+
+		await expect(handle({ event, resolve })).rejects.toSatisfy((response) => {
+			return isRedirect(response) && response.location == '/login';
+		});
+    expect(resolve).not.toHaveBeenCalled();
+  });
+
+  it('redirects to login?noAdmin when logged in as normal user', async() => {
+    let { event, resolve } = mockRequest(path, mockNormalUserSessionData());
+
+		await expect(handle({ event, resolve })).rejects.toSatisfy((response) => {
+			return isRedirect(response) && response.location == '/login?noAdmin';
+		});
+    expect(resolve).not.toHaveBeenCalled();
+  });
+
+  it('redirects to login?noAdmin when logged in as source user', async() => {
+    let { event, resolve } = mockRequest(path, mockSourceUserSessionData());
+
+		await expect(handle({ event, resolve })).rejects.toSatisfy((response) => {
+			return isRedirect(response) && response.location == '/login?noAdmin';
+		});
+    expect(resolve).not.toHaveBeenCalled();
+  });
+
+  it('resolves when logged in as admin user', async() => {
+    let { event, resolve } = mockRequest(path, mockAdminUserSessionData());
+
+		await expect(handle({ event, resolve })).resolves.toEqual(undefined);
+    expect(resolve).toHaveBeenCalled;
+  });
+});
+
 describe ('login page', () => {
   const path = '/login';
 

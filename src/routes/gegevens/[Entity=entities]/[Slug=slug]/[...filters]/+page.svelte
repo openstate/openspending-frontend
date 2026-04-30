@@ -206,7 +206,6 @@
 	$: brontype = bronTypes.get(data.bronnen[0].Type) ?? 'bron'
 
 	const charts = async() => {
-    console.info("in charts()")
 		const dataset_delta_baten: any = []
 		const dataset_lasten: any = []
 		const dataset_baten: any = []
