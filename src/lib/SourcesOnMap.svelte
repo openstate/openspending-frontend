@@ -9,7 +9,7 @@
   export let Entity: SourceType
   import 'leaflet/dist/leaflet.css';
 	import { goto } from '$app/navigation';
-	import { apiGet } from '../utils';
+	import { apiGet, apiPythonGet } from '../utils';
 
   let sources: Bron[] = []
   let filteredSources: Bron[] = []
@@ -71,7 +71,7 @@
   const load = () => {
     if (clickmarker) clickmarker.removeFrom(map)
 
-    apiGet(`/bronnen/${Entity}`, session.Token)
+    apiPythonGet(`/bronnen/${Entity}`, session.Token)
       .then(response => {
         if (!response.ok) throw new Error(`Kan de bronnen niet laden: /bronnen/${Entity} ${response.statusText}`)
         return response.json()

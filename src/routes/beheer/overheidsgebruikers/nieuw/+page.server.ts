@@ -1,10 +1,10 @@
 import { fail } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types.js';
 import type { Bron } from '../../../../Types.js';
-import { apiGet, apiPost } from '../../../../utils.js';
+import { apiPost, apiPythonGet } from '../../../../utils.js';
 
 export const load: PageServerLoad = async ({ locals }) => {
-  const sources: Bron[] = await apiGet('/bronnen/Gemeenten', locals.session.data.Token)
+  const sources: Bron[] = await apiPythonGet('/bronnen/Gemeenten', locals.session.data.Token)
   .then(response => {
     if (!response.ok) throw new Error(`Kan de bronnen niet laden: /bronnen/Gemeenten ${response.statusText}`)
     return response.json()
