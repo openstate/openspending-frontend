@@ -1,11 +1,11 @@
 import { redirect } from '@sveltejs/kit';
 import type { BronMetDatasets } from '../../../../Types';
-import { apiGet } from '../../../../utils';
+import { apiPythonGet } from '../../../../utils';
 
 
 export async function load({ params, locals }) {
 
-	await apiGet(`/bronnen/${params.Entity}/${params.Slug}`, locals.session.data.Token)
+	await apiPythonGet(`/bronnen/${params.Entity}/${params.Slug}`, locals.session.data.Token)
 		.then(async res => {
 			if (!res.ok) {
 				throw redirect(307, '/');

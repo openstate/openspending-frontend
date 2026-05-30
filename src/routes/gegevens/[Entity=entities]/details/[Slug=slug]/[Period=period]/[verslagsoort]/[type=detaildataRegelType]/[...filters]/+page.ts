@@ -1,6 +1,6 @@
 import { error, redirect } from '@sveltejs/kit';
 import type { SourceType, BronDetail, VerslagsoortenResponseType } from '../../../../../../../../../Types';
-import { apiGet, apiPythonGet } from '../../../../../../../../../utils';
+import { apiPythonGet } from '../../../../../../../../../utils';
 
 export type DataRow = {
   Code: string | number,
@@ -22,7 +22,7 @@ export async function load({ params, data}) {
       break
   }
   const period = Number(params.Period)
-  const bron = await apiGet(`/bronnen/${entity}/${params.Slug}`, session.Token)
+  const bron = await apiPythonGet(`/bronnen/${entity}/${params.Slug}`, session.Token)
     .then(res => {
       if (!res.ok) throw error(404)
       return res.json()
