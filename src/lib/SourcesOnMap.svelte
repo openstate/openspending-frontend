@@ -150,7 +150,7 @@
 
     const clickLayer = async (ev: L.LeafletMouseEvent, feature: GeoJSON.Feature<GeoJSON.Geometry, any>, layer: L.Layer) => {
       const props = feature.properties as FeatureProperties
-      await apiGet(`/bronnen/Key/${props.statcode}`, session.Token)
+      await apiPythonGet(`/bronnen/Key/${props.statcode}`, session.Token)
         .then(async res => {
           if (res.ok) {
             const Brontype = feature.properties.rubriek === 'provincie' ? 'Provincies' : (feature.properties.rubriek === 'waterschappen' ? 'Waterschappen' : 'Gemeenten')
