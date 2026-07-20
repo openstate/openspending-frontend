@@ -152,12 +152,12 @@
 				</ul>
 			</span>
 		</li>
-    {#if data.periodes.length > 1}
 		<li class="breadcrumb-item" aria-current="page">periode</li>
 		<li class="breadcrumb-item" aria-current="page">
+      {#if data.periodes.length > 1}
 			<span class="dropdown">
 			  <a href="{'#'}" class="dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-    			{data.params.Period}
+          {data.params.Period}
 			  </a>
 				<ul class="dropdown-menu">
           {#each data.periodes as periode}
@@ -165,13 +165,15 @@
           {/each}
 				</ul>
 			</span>
+      {:else}
+        {data.params.Period}
+      {/if}
 		</li>
-    {/if}
-    {#if data.verslagsoorten.length > 1}
 		<li class="breadcrumb-item" aria-current="page">
+      {#if data.verslagsoorten.length > 1}
 			<span class="dropdown">
 			  <a href="{'#'}" class="dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-    			{data.params.verslagsoort}
+          {data.verslagsoortTekst}
 			  </a>
 				<ul class="dropdown-menu">
           {#each data.verslagsoorten as verslagsoort}
@@ -179,8 +181,10 @@
           {/each}
 				</ul>
 			</span>
+      {:else}
+        {data.verslagsoortTekst}
+      {/if}
 		</li>
-    {/if}
 	</ol>
 </nav>
 

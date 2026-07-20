@@ -40,6 +40,11 @@ export interface SingleDataSet extends DataSet {
 	verslagsoorten: Record<Verslagsoort, DatasetTotals>
 }
 
+export type VerslagsoortenResponseType = {
+  'verslagsoorten': string[],
+  'begrotingVersie'?: string
+}
+
 export interface BronMetDatasets extends Bron {
   datasets: DataSet[]
 }

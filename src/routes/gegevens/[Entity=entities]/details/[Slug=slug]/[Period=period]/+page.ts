@@ -1,5 +1,5 @@
 import { error, redirect } from '@sveltejs/kit'
-import type { BronDetail } from '../../../../../../Types'
+import type { BronDetail, VerslagsoortenResponseType } from '../../../../../../Types'
 import { apiGet, apiPythonGet } from '../../../../../../utils'
 
 export async function load({ params, data}) {
@@ -11,12 +11,13 @@ export async function load({ params, data}) {
     })
     .then(bron => bron as BronDetail)
 
-  const verslagsoorten = await apiPythonGet(`/detaildata/${params.Entity}/${bron.Slug}/${params.Period}/verslagsoorten`, session.Token)
+  const verslagsoortenResponse = await apiPythonGet(`/detaildata/${params.Entity}/${bron.Slug}/${params.Period}/verslagsoorten`, session.Token)
     .then(res => {
       if (!res.ok) throw error(res.status)
       return res.json()
     })
-    .then(verslagsoorten => verslagsoorten as Array<string>)
+    .then(res => res as VerslagsoortenResponseType)
+  const verslagsoorten = verslagsoortenResponse['verslagsoorten']
   if (verslagsoorten.length === 0) {
     throw error(404)
   }

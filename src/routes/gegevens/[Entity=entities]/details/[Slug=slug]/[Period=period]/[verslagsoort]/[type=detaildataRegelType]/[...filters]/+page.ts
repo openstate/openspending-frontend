@@ -1,5 +1,5 @@
 import { error, redirect } from '@sveltejs/kit';
-import type { SourceType, BronDetail } from '../../../../../../../../../Types';
+import type { SourceType, BronDetail, VerslagsoortenResponseType } from '../../../../../../../../../Types';
 import { apiGet, apiPythonGet } from '../../../../../../../../../utils';
 
 export type DataRow = {
@@ -31,11 +31,19 @@ export async function load({ params, data}) {
   const periodes = bron.datasets.filter(dataset => dataset.hasDetaildata).map(dataset => dataset.Period)
 
   const dataset = bron.datasets.filter(dataset => dataset.Period === period).shift()!
-  const verslagsoorten = (await apiPythonGet(`/detaildata/${entity}/${bron.Slug}/${params.Period}/verslagsoorten`, session.Token)
+  const verslagsoortenResponse = (await apiPythonGet(`/detaildata/${entity}/${bron.Slug}/${params.Period}/verslagsoorten`, session.Token)
     .then(res => {
       if (!res.ok) throw error(res.status)
       return res.json()
-    })) as string[]
+    })) as VerslagsoortenResponseType
+  const verslagsoorten = verslagsoortenResponse['verslagsoorten']
+  const begrotingVersie = verslagsoortenResponse['begrotingVersie']
+  let verslagsoortTekst
+  if (params.verslagsoort == 'begroting'){
+    verslagsoortTekst = begrotingVersie
+  } else {
+    verslagsoortTekst = params.verslagsoort
+  }
   if (params.verslagsoort === 'onbekend' || !verslagsoorten.includes(params.verslagsoort)) {
     redirect(302, `/gegevens/${entity}/details/${bron.Slug}/${params.Period}/${verslagsoorten[0]}/kostenplaats/categorie/*`)
   }
@@ -143,5 +151,5 @@ export async function load({ params, data}) {
 
   }
 
-  return { sortering, bron, dataset, params, rows, filters, grootboeken, periodes, verslagsoorten }
+  return { sortering, bron, dataset, params, rows, filters, grootboeken, periodes, verslagsoorten, verslagsoortTekst }
 }
