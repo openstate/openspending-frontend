@@ -13,6 +13,9 @@
 
   let sources: Bron[] = []
   let filteredSources: Bron[] = []
+  $: currentSources = Entity === 'Waterschappen' ? filteredSources.filter(w => !w.historicalWaterschap) : filteredSources
+  $: historicalSources = Entity === 'Waterschappen' ? filteredSources.filter(w => w.historicalWaterschap) : []
+
   let error: Error | undefined
   let findSourceField: HTMLInputElement
   let onlyDetailData: boolean = false
@@ -118,7 +121,7 @@
 
   onMount(async () => {
     const L = await import('leaflet')
-    map = L.map('map').setView([52.242111, 5.633167], 8);
+    map = L.map('map', {zoomSnap: 0.1}).setView([52.19, 5.633167], 7.5);
     L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
       attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
     })
@@ -320,6 +323,10 @@
     display: block;
     line-height: 2.5em;
   }
+  li.separator {
+    padding-top: 2em;
+    font-weight: bold;
+  }
 </style>
 
 <div class="row mb-1">
@@ -344,9 +351,9 @@
   <div class="col-sm-12 col-lg-8">
     <div class="container">
       <div id="map" style="width: 100%; height: 640px;"></div>
-      {#if Entity === 'GemeenschappelijkeRegelingen' || Entity === 'Waterschappen'}
+      {#if Entity === 'GemeenschappelijkeRegelingen'}
         <div class="position-relative bottom-0 end-0 alert alert-warning" role="alert" style="opacity: 0.7;">
-          <strong>Let op: </strong>niet alle {Entity === 'GemeenschappelijkeRegelingen' ? 'gemeenschappelijke regelingen' : 'waterschappen'} staan op de kaart, zie de lijst voor een compleet overzicht.
+          <strong>Let op: </strong>niet alle gemeenschappelijke regelingen staan op de kaart, zie de lijst voor een compleet overzicht.
         </div>
       {/if}
     </div>
@@ -365,7 +372,7 @@
     {/if}
     <div id="Sources">
       <ul class="list-unstyled mt-3" style="height: 640px; overflow: scroll;">
-      {#each filteredSources as source}
+      {#each currentSources as source}
         <li><a 
           on:mouseover={() => highlight(Entity, source.Key)} 
           on:mouseout={() => highlight(Entity, source.Key, false)} 
@@ -374,6 +381,18 @@
           href="/gegevens/{Entity}/{source.Slug}">{Entity === 'GemeenschappelijkeRegelingen' ? source.Description : source.Title.replace(' (PV)', '')}
           </a></li>
       {/each}
+      {#if historicalSources.length > 0}
+        <li class="separator">Historische waterschappen</li>
+      {#each historicalSources as source}
+        <li><a
+          on:mouseover={() => highlight(Entity, source.Key)}
+          on:mouseout={() => highlight(Entity, source.Key, false)}
+          on:focus={() => {}}
+          on:blur={() => {}}
+          href="/gegevens/{Entity}/{source.Slug}">{Entity === 'GemeenschappelijkeRegelingen' ? source.Description : source.Title.replace(' (PV)', '')}
+          </a></li>
+      {/each}
+      {/if}
       </ul>
     </div>
   </div>
