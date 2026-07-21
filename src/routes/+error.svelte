@@ -10,7 +10,7 @@
 	import { onMount } from 'svelte';
 	import type { Bron } from '../Types';
 	import { goto } from '$app/navigation';
-	import { apiGet } from '../utils';
+	import { apiPythonGet } from '../utils';
 
   let showError = false
   onMount(async () => {
@@ -20,11 +20,11 @@
         entity = 'Provincies'
         slug = slug.replace('provincie-', '') + '-pv'
       }
-      bron = await apiGet(`/bronnen/${entity}/${slug}`, session.Token)
+      bron = await apiPythonGet(`/bronnen/${entity}/${slug}`, session.Token)
         .then(async res => {
           if (res.status === 404 && entity === 'Gemeenten') {
             entity = 'GemeenschappelijkeRegelingen'
-            return await apiGet(`/bronnen/${entity}/${slug}`, session.Token)
+            return await apiPythonGet(`/bronnen/${entity}/${slug}`, session.Token)
               .then(async res => {
                 if (res.ok) return await res.json()
               })

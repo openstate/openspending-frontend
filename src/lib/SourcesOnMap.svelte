@@ -9,7 +9,7 @@
   export let Entity: SourceType
   import 'leaflet/dist/leaflet.css';
 	import { goto } from '$app/navigation';
-	import { apiGet } from '../utils';
+	import { apiGet, apiPythonGet } from '../utils';
 
   let sources: Bron[] = []
   let filteredSources: Bron[] = []
@@ -71,7 +71,7 @@
   const load = () => {
     if (clickmarker) clickmarker.removeFrom(map)
 
-    apiGet(`/bronnen/${Entity}`, session.Token)
+    apiPythonGet(`/bronnen/${Entity}`, session.Token)
       .then(response => {
         if (!response.ok) throw new Error(`Kan de bronnen niet laden: /bronnen/${Entity} ${response.statusText}`)
         return response.json()
@@ -150,7 +150,7 @@
 
     const clickLayer = async (ev: L.LeafletMouseEvent, feature: GeoJSON.Feature<GeoJSON.Geometry, any>, layer: L.Layer) => {
       const props = feature.properties as FeatureProperties
-      await apiGet(`/bronnen/Key/${props.statcode}`, session.Token)
+      await apiPythonGet(`/bronnen/Key/${props.statcode}`, session.Token)
         .then(async res => {
           if (res.ok) {
             const Brontype = feature.properties.rubriek === 'provincie' ? 'Provincies' : (feature.properties.rubriek === 'waterschappen' ? 'Waterschappen' : 'Gemeenten')

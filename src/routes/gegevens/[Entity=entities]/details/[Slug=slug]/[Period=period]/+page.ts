@@ -1,10 +1,10 @@
 import { error, redirect } from '@sveltejs/kit'
 import type { BronDetail, VerslagsoortenResponseType } from '../../../../../../Types'
-import { apiGet, apiPythonGet } from '../../../../../../utils'
+import { apiPythonGet } from '../../../../../../utils'
 
 export async function load({ params, data}) {
   const session = data.session
-  const bron = await apiGet(`/bronnen/${params.Entity}/${params.Slug}`, session.Token)
+  const bron = await apiPythonGet(`/bronnen/${params.Entity}/${params.Slug}`, session.Token)
     .then(res => {
       if (!res.ok) throw error(404)
       return res.json()
