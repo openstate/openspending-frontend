@@ -1,0 +1,27 @@
+{
+  "WS05": {
+    "nameBefore": "Hoogheemraadschap Amstel, Gooi en Vecht",
+    "date": "01-01-2017",
+    "nameAfter": "Waterschap Amstel, Gooi en Vecht"
+  },
+  "WS15": {
+    "nameBefore": "Waterschap Peel en Maasvallei",
+    "date": "01-01-2017",
+    "nameAfter": "Waterschap Limburg"
+  },
+  "WS11": {
+    "nameBefore": "Waterschap Roer en Overmaas",
+    "date": "01-01-2017",
+    "nameAfter": "Waterschap Limburg"
+  },
+  "WS89": {
+    "nameBefore": "Waterschapsbedrijf Limburg",
+    "date": "01-01-2025",
+    "nameAfter": "Waterschap Limburg"
+  },
+  "WBL": {
+    "nameBefore": "Waterschapsbedrijf Limburg",
+    "date": "01-01-2025",
+    "nameAfter": "Waterschap Limburg"
+  }
+}

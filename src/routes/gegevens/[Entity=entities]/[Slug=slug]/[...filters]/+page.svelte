@@ -26,7 +26,7 @@
 	let loader: bootstrap.Modal;
   let detailgrafiekContainer: bootstrap.Modal
 
-  const municipalityChanges = data.municipalityChanges
+  const sourceChanges = data.sourceChanges
 
 	const go = async (showLoader: boolean = true, updateCharts: boolean = true) => {
 		const url = slugs().length === 0 ? `/gegevens/${data.params.Entity}` : `/gegevens/${data.params.Entity}/per/${data.groepering}/${slugsUrl()}${data.open.length === 0 ? '' : `/open/${data.open.join('|')}`}`
@@ -432,7 +432,7 @@
 			</thead>
 			<tbody>
 				{#each data.bronnen as bron, ix}
-        {@const historical = municipalityChanges[bron.Key]}
+        {@const historical = sourceChanges[bron.Key]}
 				<tr>
 					<th scope="row" style="width:1px;">
 						<a href="{'#'}" style="margin-right: 5px" title="Sluiten" on:click={() => verwijderBron(ix)}><XSquareFill/></a>

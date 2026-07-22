@@ -16,7 +16,7 @@ function extractKeyNumber(key: string, pattern: string) {
 
 export async function load({ fetch, params, data }) {
   const session = data.session
-  const municipalityChanges = data.municipalityChanges
+  const sourceChanges = data.sourceChanges
   const paths = params.filters.split('/').filter(p => p !== 'per')
   if (paths.length === 0) {
     throw redirect(307, `/gegevens/${params.Entity}`)
@@ -106,5 +106,5 @@ export async function load({ fetch, params, data }) {
       documentsUrl = `${baseUrl}/provinciale-financi%c3%able-stukken?Regionlevel=provincie&Regioncode=${findoPvNumber}`
     }
   }
-	return { params, requested, bronnen, open, groepering, datasetsWithDetaildata, documentsUrl, municipalityChanges };
+	return { params, requested, bronnen, open, groepering, datasetsWithDetaildata, documentsUrl, sourceChanges };
 }
