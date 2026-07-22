@@ -26,6 +26,8 @@
 	let loader: bootstrap.Modal;
   let detailgrafiekContainer: bootstrap.Modal
 
+  const municipalityChanges = data.municipalityChanges
+
 	const go = async (showLoader: boolean = true, updateCharts: boolean = true) => {
 		const url = slugs().length === 0 ? `/gegevens/${data.params.Entity}` : `/gegevens/${data.params.Entity}/per/${data.groepering}/${slugsUrl()}${data.open.length === 0 ? '' : `/open/${data.open.join('|')}`}`
 		const opts = {keepFocus: true, noScroll: true}
@@ -320,6 +322,7 @@
     color: var(--bs-secondary-color);
     padding: 0.5rem 0;
   }
+  td.limit-15 {width: 15%;}
   :global(.lasten_total) {
     background-color: var(--bs-info-text-emphasis);
   }
@@ -429,6 +432,7 @@
 			</thead>
 			<tbody>
 				{#each data.bronnen as bron, ix}
+        {@const historical = municipalityChanges[bron.Key]}
 				<tr>
 					<th scope="row" style="width:1px;">
 						<a href="{'#'}" style="margin-right: 5px" title="Sluiten" on:click={() => verwijderBron(ix)}><XSquareFill/></a>
@@ -445,8 +449,11 @@
 					</th>
 					<td class="text-end" style="white-space: nowrap;"><Currency ammount={getDatasetTotals(ix, bron.dataset)?.Baten}/></td>
 					<td class="text-end" style="white-space: nowrap;"><Currency ammount={getDatasetTotals(ix, bron.dataset)?.Lasten}/></td>
-					<td class="text-end">
+					<td class="text-end limit-15">
 						<select class="form-select" on:change={(ev) => setPeriode(ix, ev.currentTarget.value)} id="year">
+              {#if historical}
+              <option disabled>{historical['nameBefore']} is per {historical['date']} opgegaan in {historical['nameAfter']}</option>
+              {/if}
 							{#each bron.datasets as dataset}
 							<option selected={bron.dataset.Period === dataset.Period}>{dataset.Period} 
               {#if dataset.hasDetaildata}
