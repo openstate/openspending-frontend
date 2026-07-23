@@ -17,7 +17,6 @@ export interface Bron {
 	Description: string
 	Type: SourceType
   hasDetaildata: boolean
-  historicalWaterschap?: boolean
 };
 
 export interface DataSet {

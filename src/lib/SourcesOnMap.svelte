@@ -13,8 +13,6 @@
 
   let sources: Bron[] = []
   let filteredSources: Bron[] = []
-  $: currentSources = Entity === 'Waterschappen' ? filteredSources.filter(w => !w.historicalWaterschap) : filteredSources
-  $: historicalSources = Entity === 'Waterschappen' ? filteredSources.filter(w => w.historicalWaterschap) : []
 
   let error: Error | undefined
   let findSourceField: HTMLInputElement
@@ -323,10 +321,6 @@
     display: block;
     line-height: 2.5em;
   }
-  li.separator {
-    padding-top: 2em;
-    font-weight: bold;
-  }
 </style>
 
 <div class="row mb-1">
@@ -372,7 +366,7 @@
     {/if}
     <div id="Sources">
       <ul class="list-unstyled mt-3" style="height: 640px; overflow: scroll;">
-      {#each currentSources as source}
+      {#each filteredSources as source}
         <li><a 
           on:mouseover={() => highlight(Entity, source.Key)} 
           on:mouseout={() => highlight(Entity, source.Key, false)} 
@@ -381,18 +375,6 @@
           href="/gegevens/{Entity}/{source.Slug}">{Entity === 'GemeenschappelijkeRegelingen' ? source.Description : source.Title.replace(' (PV)', '')}
           </a></li>
       {/each}
-      {#if historicalSources.length > 0}
-        <li class="separator">Historische waterschappen</li>
-      {#each historicalSources as source}
-        <li><a
-          on:mouseover={() => highlight(Entity, source.Key)}
-          on:mouseout={() => highlight(Entity, source.Key, false)}
-          on:focus={() => {}}
-          on:blur={() => {}}
-          href="/gegevens/{Entity}/{source.Slug}">{Entity === 'GemeenschappelijkeRegelingen' ? source.Description : source.Title.replace(' (PV)', '')}
-          </a></li>
-      {/each}
-      {/if}
       </ul>
     </div>
   </div>
