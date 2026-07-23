@@ -4,10 +4,14 @@ import type { PageServerLoad } from './$types.js';
 const getRenamings = async (path: string) => {
   const renamings = await apiPythonGet(path, '')
     .then(async res => {
+      console.info(`Response for ${path}: ${res.status}`)
       if (res.ok) return await res.json()
       else return {}
     })
-    .catch(e => {return {}})
+    .catch(e => {
+      console.error(`Error when retrieving ${path}: ${e}`)
+      return {}
+    })
   return renamings
 }
 
