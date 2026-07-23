@@ -1,13 +1,18 @@
+import { apiPythonGet } from '../../../../../utils.js';
 import type { PageServerLoad } from './$types.js';
-import { readFileSync } from 'node:fs';
 
-const readChanges = (path: string) => {
-  const json = readFileSync(path, 'utf-8')
-  return JSON.parse(json)
+const getRenamings = async (path: string) => {
+  const renamings = await apiPythonGet(path, '')
+    .then(async res => {
+      if (res.ok) return await res.json()
+      else return {}
+    })
+    .catch(e => {return {}})
+  return renamings
 }
 
-const municipalityChanges = readChanges('src/lib/data/gemeentelijke_herindelingen.json')
-const waterschappenChanges = readChanges('src/lib/data/waterschappen_herindelingen.json')
+const municipalityChanges = await getRenamings('/bronnen/Gemeenten/herindelingen')
+const waterschappenChanges = await getRenamings('/bronnen/Waterschappen/herindelingen')
 const sourceChanges = Object.assign({}, municipalityChanges, waterschappenChanges)
 
 export const load: PageServerLoad = async ({ locals }) => {
